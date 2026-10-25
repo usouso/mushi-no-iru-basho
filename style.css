@@ -17,3 +17,5 @@
 /* Keep longer control hints out of the movement-status area without shrinking type. */
 @media(min-width:761px){.controls-hint{max-width:calc(100vw - 240px)}.quiet-label{max-width:150px;text-align:right}}
 @media(max-width:760px){.controls-hint{max-width:calc(100vw - 180px)}.quiet-label{max-width:130px;text-align:right}}
+
+.title-version{margin-top:5px;font-size:12px;line-height:1.6;letter-spacing:.08em;color:var(--ink-soft)}

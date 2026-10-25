@@ -4,6 +4,9 @@ export function createInput(canvas, callbacks) {
   let lookX = 0, lookY = 0, drag = false, lastX = 0, lastY = 0;
   let mouseQuiet = false, padLast = [], padActive = false, clearVersion = 0;
   let mode = callbacks.mode();
+  // Gameplay owns the secondary gesture, not just its current quiet state.
+  // clear()/unlock/blur may happen before the browser emits its context menu.
+  let secondaryGesture = null;
   const blockedPadModifiers = new Set();
   const movement = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight']);
   const controls = new Set([...movement, 'Space', 'KeyJ']);
@@ -46,9 +49,26 @@ export function createInput(canvas, callbacks) {
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { clear(); callbacks.blur(); }
   });
+  const beginPointerGesture = e => {
+    // A left capture click while right is held belongs to the existing gesture.
+    // A new right press or a later unrelated press must never inherit ownership.
+    if (secondaryGesture && (e.button === 2 || !secondaryGesture.held ||
+        (typeof e.buttons === 'number' && !(e.buttons & 2)))) secondaryGesture = null;
+  };
+  document.addEventListener('pointerdown', beginPointerGesture, true);
+  document.addEventListener('mousedown', beginPointerGesture, true);
+  document.addEventListener('contextmenu', e => {
+    // Keyboard menus and fresh modal gestures remain native. Capture also sees
+    // the release-target overlay after pointer lock has been relinquished.
+    if (e.button !== 2 || !secondaryGesture) return;
+    e.preventDefault();
+    secondaryGesture.menuSeen = true;
+    if (!secondaryGesture.held) secondaryGesture = null;
+  }, true);
   canvas.addEventListener('mousedown', e => {
     const currentMode = syncMode();
     if (e.button === 2) {
+      secondaryGesture = currentMode === 'playing' ? { held: true, menuSeen: false } : null;
       if (currentMode === 'playing') mouseQuiet = true;
       return;
     }
@@ -59,7 +79,13 @@ export function createInput(canvas, callbacks) {
     else { drag = true; lastX = e.clientX; lastY = e.clientY; callbacks.lock(); }
   });
   document.addEventListener('mouseup', e => {
-    if (e.button === 2) mouseQuiet = false;
+    if (e.button === 2) {
+      mouseQuiet = false;
+      if (secondaryGesture) {
+        secondaryGesture.held = false;
+        if (secondaryGesture.menuSeen) secondaryGesture = null;
+      }
+    }
     if (e.button === 0) drag = false;
   });
   document.addEventListener('mousemove', e => {

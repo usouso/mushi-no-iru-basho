@@ -92,7 +92,7 @@ function swing(){
 }
 function release({lock=true}={}){
  if(state.mode!=='inspect')return;
- const item=simulation.release();state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(`${SPECIES[item?.species]?.name||'虫'}を、もとの草木へ。`,3.8);
+ const item=simulation.release(state.player);state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(`${SPECIES[item?.species]?.name||'虫'}が、野原へ飛び立ちました。`,3.8);
 }
 function locationLabel(x,z){return Math.hypot(x-24,z+20)<16?'水辺の草むら':Math.hypot(x+10,z+8)<10?'大きな木の下':z<-32?'森の入り口':'風の通る野原';}
 function openJournal(speciesId){
@@ -158,7 +158,7 @@ function frame(ms){
  const actions=input.read(dt);
  if(state.mode==='playing'){
   state.elapsed+=dt;updatePlayer(dt,actions);simulation.update(dt,state.player);
-  for(const item of simulation.items){if(item.state==='startled'&&insectStates.get(item.id)!=='startled'&&Math.hypot(item.x-state.player.x,item.z-state.player.z)<7)toast('足音に気づいたようだ。右クリック / LB で、そっと近づこう。',4);insectStates.set(item.id,item.state);}
+  for(const item of simulation.items){if(item.state==='startled'&&insectStates.get(item.id)!=='startled'&&Math.hypot(item.x-state.player.x,item.z-state.player.z)<7)toast(state.player.quiet||state.player.speed<.12?'近づきすぎたようだ。少し離れて見守ろう。':'足音に気づいたようだ。右クリック / LB で、そっと近づこう。',4);insectStates.set(item.id,item.state);}
   world.update(state.time,dt);audio.update(dt,state.player,simulation.items,state.time);
   state.cooldown=Math.max(0,state.cooldown-dt);if(state.swing>0){state.swing+=dt/.48;if(state.swing>=1)state.swing=0;}
   if(captureDelay>0){captureDelay-=dt;if(captureDelay<=0&&simulation.caught)showInspection(simulation.caught);}
