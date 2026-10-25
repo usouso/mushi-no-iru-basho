@@ -1,14 +1,15 @@
 /** Physical input is mapped to actions here, outside gameplay state. */
 export function createInput(canvas, callbacks) {
   const keys=new Set();
-  let lookX=0,lookY=0,drag=false,lastX=0,lastY=0,padLast=[],padActive=false;
-  const controls=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight','Space']);
+  let lookX=0,lookY=0,drag=false,lastX=0,lastY=0,padLast=[],padActive=false,running=false;
+  const controls=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight','Space','KeyR']);
   const elementIsControl=e=>/INPUT|BUTTON|TEXTAREA|SELECT/.test(e.target?.tagName||'');
   document.addEventListener('keydown',e=>{
     if(e.code==='Escape'){ e.preventDefault(); if(!e.repeat) callbacks.pause({lock:false}); return; }
     if(elementIsControl(e)) return;
     if(controls.has(e.code)) e.preventDefault();
     if(e.code==='Space'&&!e.repeat) callbacks.action();
+    if(e.code==='KeyR'&&!e.repeat)running=!running;
     keys.add(e.code);
   });
   document.addEventListener('keyup',e=>keys.delete(e.code));
@@ -29,7 +30,7 @@ export function createInput(canvas, callbacks) {
   canvas.addEventListener('contextmenu',e=>e.preventDefault());
   const dead=v=>Math.abs(v)<.16?0:Math.sign(v)*(Math.abs(v)-.16)/.84;
   return {
-    clear(){keys.clear();lookX=lookY=0;drag=false;},
+    clear(){keys.clear();lookX=lookY=0;drag=false;running=false;},
     read(dt){
       let x=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
       let z=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
@@ -43,13 +44,15 @@ export function createInput(canvas, callbacks) {
         yaw+=dead(pad.axes[2]||0)*dt*800;pitch+=dead(pad.axes[3]||0)*dt*650;
         quiet=quiet||!!pad.buttons[4]?.pressed;
         const b=pad.buttons.map(b=>b.pressed);
+        if(b[5]&&!padLast[5])running=!running;
         if((b[0]&&!padLast[0])||(b[7]&&!padLast[7]))callbacks.action();
         if(b[9]&&!padLast[9])callbacks.pause();
         if(b[1]&&!padLast[1])callbacks.back();
         padLast=b;padActive=true;
       }else {padLast=[];padActive=false;}
       const mag=Math.hypot(x,z);if(mag>1){x/=mag;z/=mag;}
-      return {x,z,quiet,yaw,pitch,gamepad:padActive};
+      if(quiet)running=false;
+      return {x,z,quiet,run:running,yaw,pitch,gamepad:padActive};
     }
   };
 }

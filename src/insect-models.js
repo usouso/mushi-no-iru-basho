@@ -7,7 +7,7 @@ function texture(kind) {
   if (cache[kind]) return cache[kind];
   const canvas = document.createElement('canvas'); canvas.width = canvas.height = 256;
   const c = canvas.getContext('2d');
-  c.fillStyle = kind === 'butterfly' ? '#fffbe5' : kind === 'cicada' ? '#a47c4f' : '#d5e8d8';
+  c.fillStyle = kind === 'butterfly' ? '#fffee9' : kind === 'cicada' ? '#b58b55' : '#e7eee2';
   c.fillRect(0, 0, 256, 256);
   let seed = 41;
   const random = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
@@ -17,10 +17,10 @@ function texture(kind) {
     c.fillRect(random()*256,random()*256,r,r);
   }
   if (kind === 'butterfly') {
-    c.fillStyle='#343c31'; c.beginPath();c.moveTo(175,0);c.lineTo(256,0);c.lineTo(256,95);c.bezierCurveTo(235,58,204,47,175,0);c.fill();
+    c.fillStyle='#252d24'; c.beginPath();c.moveTo(175,0);c.lineTo(256,0);c.lineTo(256,95);c.bezierCurveTo(235,58,204,47,175,0);c.fill();
     [[156,94,13,17],[162,157,12,15]].forEach(([x,y,a,b])=>{c.beginPath();c.ellipse(x,y,a,b,-.1,0,Math.PI*2);c.fill();});
     c.strokeStyle='rgba(144,134,96,.26)'; c.lineWidth=1.1;
-  } else { c.strokeStyle=kind==='cicada' ? 'rgba(65,38,18,.65)' : 'rgba(67,92,74,.65)';c.lineWidth=kind==='cicada'?1.8:1; }
+  } else { c.strokeStyle=kind==='cicada' ? 'rgba(65,38,18,.75)' : 'rgba(55,76,59,.72)';c.lineWidth=kind==='cicada'?1.8:1; }
   // Branched longitudinal and cross veins, intentionally drawn rather than downloaded.
   for(let n=0;n<9;n++) {
     const end = 12+n*29;
@@ -73,7 +73,7 @@ function butterfly(root) {
     thread(root,[[s*.005,.007,.056],[s*.015,.025,.079],[s*.022,.03,.084]],'#343b2a');
     ellipsoid(root,[s*.022,.03,.084],[.0025,.0025,.0035],dark,6);
   }
-  const wingMat=material('#fffceb',{map:texture('butterfly'),side:THREE.DoubleSide,roughness:.9});
+  const wingMat=material('#fffef4',{map:texture('butterfly'),side:THREE.DoubleSide,roughness:.9});
   const pivots=[];
   for(const side of [-1,1]) {
     const pivot=new THREE.Group();root.add(pivot);pivot.scale.x=side;pivot.userData.side=side;
@@ -83,7 +83,7 @@ function butterfly(root) {
   legs(root,dark,.65);root.userData.wings=pivots;
 }
 function dragonfly(root) {
-  const red=material('#a93f2e'),dark=material('#3a3325'),thorax=material('#92743b'),eyeMat=material('#7c4928',{roughness:.3});
+  const red=material('#ba442d'),dark=material('#3a3325'),thorax=material('#ad8744'),eyeMat=material('#7c4928',{roughness:.3});
   ellipsoid(root,[0,0,.02],[.015,.017,.026],thorax);
   ellipsoid(root,[0,0,.054],[.019,.013,.014],dark);
   for(const s of [-1,1]) ellipsoid(root,[s*.013,.005,.057],[.012,.014,.013],eyeMat,12);
@@ -91,7 +91,7 @@ function dragonfly(root) {
     const z=-.013-i*.014;
     ellipsoid(root,[0,0,z],[.008-i*.00045,.007-i*.00035,.0085],i%3===2?dark:red,8);
   }
-  const glass=material('#e3eee1',{map:texture('dragonfly'),side:THREE.DoubleSide,transparent:true,opacity:.57,roughness:.25,metalness:.08,depthWrite:false});
+  const glass=material('#f4f4de',{map:texture('dragonfly'),side:THREE.DoubleSide,transparent:true,opacity:.72,roughness:.25,metalness:.08,depthWrite:false});
   const pivots=[];
   for(const side of [-1,1]) for(const back of [false,true]) {
     const pivot=new THREE.Group();pivot.scale.x=side;pivot.position.z=back?-.006:.025;root.add(pivot);pivot.userData.side=side;pivot.userData.back=back;
@@ -103,7 +103,7 @@ function dragonfly(root) {
   legs(root,dark,.85);root.userData.wings=pivots;
 }
 function cicada(root) {
-  const brown=material('#6e5330'),dark=material('#332b1d'),eyeMat=material('#3d2516',{roughness:.25});
+  const brown=material('#8d683c'),dark=material('#30281b'),eyeMat=material('#3d2516',{roughness:.25});
   ellipsoid(root,[0,0,-.025],[.032,.028,.065],brown);
   for(let n=0;n<6;n++) {
     const z=-.015-n*.014;
@@ -116,7 +116,7 @@ function cicada(root) {
     thread(root,[[s*.016,.014,.078],[s*.024,.019,.094],[s*.029,.017,.104]],'#322c22');
     ellipsoid(root,[s*.015,.027,.034],[.008,.004,.019],brown);
   }
-  const wings=material('#b89261',{map:texture('cicada'),side:THREE.DoubleSide,roughness:.72,transparent:true,opacity:.96});
+  const wings=material('#e0c99b',{map:texture('cicada'),side:THREE.DoubleSide,roughness:.72,transparent:true,opacity:.96});
   const pivots=[];
   for(const side of [-1,1]) {
     const pivot=new THREE.Group();pivot.position.set(side*.013,.018,.035);pivot.scale.x=side;pivot.rotation.z=-side*.32;root.add(pivot);pivot.userData.side=side;
@@ -164,6 +164,8 @@ export function createInsectModel(species, { inspection = false } = {}) {
   const visual=new THREE.Group();group.add(visual);
   (species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual);
   batchBody(visual);
+  // Field readability only: inspection framing and the simulation capture centre stay unchanged.
+  if (!inspection) visual.scale.setScalar(1.2);
   group.userData.species=species;group.userData.inspection=inspection;group.userData.visual=visual;
   group.userData.wings=visual.userData.wings;
   // Perched cicadas climb with the head upwards, dorsal wing surface facing out.
@@ -187,11 +189,18 @@ export function updateInsectModel(group, item, time = 0) {
   for(const pivot of wings) {
     const side=pivot.userData.side;
     if(species==='butterfly') {
-      const angle=inspection?.12+Math.sin(time*1.4)*.06:.2+Math.sin(phase)*(.10+flight*.72);
+      const restAngle=.30+Math.sin(time*2+(item.phase||0))*.22;
+      const flightAngle=.2+Math.sin(phase)*.82;
+      const angle=inspection?.12+Math.sin(time*1.4)*.06:restAngle*(1-flight)+flightAngle*flight;
       pivot.rotation.z=side*angle;
     } else if(species==='dragonfly') {
-      pivot.rotation.z=side*(inspection?Math.sin(time*1.1)*.015:Math.sin(phase+(pivot.userData.back?1.2:0))*(.018+flight*.22));
-    } else pivot.rotation.z=-side*(.32+(inspection?Math.sin(time)*.018:flight*.2*Math.sin(phase)));
+      const restAngle=Math.sin(time*2.2+(item.phase||0)+(pivot.userData.back?.5:0))*.045;
+      const flightAngle=Math.sin(phase+(pivot.userData.back?1.2:0))*.238;
+      pivot.rotation.z=side*(inspection?Math.sin(time*1.1)*.015:restAngle*(1-flight)+flightAngle*flight);
+    } else {
+      const restMotion=Math.sin(time*1.7+(item.phase||0))*.028;
+      pivot.rotation.z=-side*(.32+(inspection?Math.sin(time)*.018:restMotion*(1-flight)+flight*.2*Math.sin(phase)));
+    }
   }
   if(!inspection&&species==='cicada') visual.rotation.x=-Math.PI/2*(1-flight);
   if(!inspection&&species!=='cicada') visual.rotation.x=Math.sin(time*2+(item.phase||0))*.035*flight;
