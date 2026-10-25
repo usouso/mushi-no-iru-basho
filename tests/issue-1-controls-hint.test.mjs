@@ -14,7 +14,7 @@ const text=id=>html.match(new RegExp(`<[^>]+id="${id}"[^>]*>([\\s\\S]*?)<\\/p>`)
 function fixture(target=null){
  const nodes=new Map();for(const match of html.matchAll(/\bid="([^"]+)"/g))nodes.set(match[1],{textContent:text(match[1])||'',hidden:false,classList:{toggle(){}}});
  const canvas=nodes.get('game-canvas'),document={pointerLockElement:canvas},state={elapsed:1,player:{x:0,z:0,quiet:false,running:false}};
- const context={document,canvas,state,$:id=>{assert.ok(nodes.has(id),id);return nodes.get(id);},simulation:{findTarget:()=>target},direction:()=>({}),journal:{entries:[]},locationLabel:()=> '野原'};
+ const context={nearbyBaitStation:()=>null,document,canvas,state,$:id=>{assert.ok(nodes.has(id),id);return nodes.get(id);},simulation:{findTarget:()=>target},direction:()=>({}),journal:{entries:[]},locationLabel:()=> '野原'};
  vm.createContext(context);vm.runInContext(hud+'\nthis.update=updateHUD;',context);
  return{nodes,state,document,canvas,update:context.update};
 }
@@ -49,7 +49,7 @@ test('declared stacked hint region reserves status width and retains text sizes 
  assert.match(css,/\.hud-controls\{[^}]*left:34px;[^}]*bottom:29px;[^}]*max-width:calc\(100vw - 240px\);[^}]*display:flex;[^}]*flex-direction:column;[^}]*gap:6px;/);
  assert.match(css,/\.hud-controls \.controls-hint\{position:static;left:auto;bottom:auto;max-width:none\}/);
  assert.match(css,/@media\(max-width:760px\)\{\.hud-controls\{left:18px;bottom:20px;max-width:calc\(100vw - 180px\)\}/);
- assert.match(css,/\.look-resume-hint\{font-size:12px;/);assert.match(css,/\.look-resume-hint\{font-size:11px\}/);
+ assert.match(css,/\.look-resume-hint(?:,\.interaction-hint)?\{font-size:12px;/);assert.match(css,/\.look-resume-hint(?:,\.interaction-hint)?\{font-size:11px\}/);
  for(const width of [320,400,600,760,761,800,1024,1280,1920]){
   const mobile=width<=760,left=mobile?18:34,right=mobile?18:34,reserved=mobile?180:240,statusWidth=mobile?130:150;
   assert.ok(width-reserved>0);assert.ok(width-right-statusWidth-(left+width-reserved)>=14,`${width}px declared horizontal gap`);

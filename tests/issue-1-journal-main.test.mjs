@@ -1,3 +1,4 @@
+import {createTestLocks} from './fixtures/journal-locks.mjs';
 /** Issue #1 actual-main integration; self-contained Node standard-library test.
  * Run: node --test tests/issue-1-journal-main.test.mjs (also without package.json).
  * In-memory test-only exports do not modify or ship a production debug API.
@@ -25,7 +26,7 @@ let rendererChecks=0;class Renderer {constructor(){this.shadowMap={};this.info={
 THREE.WebGLRenderer=Renderer;
 const window=new EventTarget();window.THREE=THREE;window.AudioContext=AudioContext;
 let blockStorage=false;const savedSettings=new Map();
-let gamepads=[];let nextFrame,now=0;const globals={window,document,innerWidth:1280,innerHeight:800,devicePixelRatio:1,matchMedia:()=>({matches:false}),location:{search:''},localStorage:{getItem:key=>{if(blockStorage)throw Error('Storage blocked');return savedSettings.get(key)??null;},setItem:(key,value)=>{if(blockStorage)throw Error('Storage blocked');savedSettings.set(key,String(value));}},requestAnimationFrame:fn=>{nextFrame=fn;return 1;},navigator:{getGamepads:()=>gamepads}};for(const[key,value]of Object.entries(globals))Object.defineProperty(globalThis,key,{value,configurable:true,writable:true});
+let gamepads=[];let nextFrame,now=0;const globals={window,document,innerWidth:1280,innerHeight:800,devicePixelRatio:1,matchMedia:()=>({matches:false}),location:{search:''},localStorage:{getItem:key=>{if(blockStorage)throw Error('Storage blocked');return savedSettings.get(key)??null;},setItem:(key,value)=>{if(blockStorage)throw Error('Storage blocked');savedSettings.set(key,String(value));}},requestAnimationFrame:fn=>{nextFrame=fn;return 1;},navigator:{locks:createTestLocks(),getGamepads:()=>gamepads}};for(const[key,value]of Object.entries(globals))Object.defineProperty(globalThis,key,{value,configurable:true,writable:true});
 function frame(n=1){for(let i=0;i<n;i++){now+=1000/60;assert.ok(nextFrame,'No animation callback scheduled');const fn=nextFrame;nextFrame=null;fn(now);}}
 function key(type,code,repeat=false){const e=new Event(type,{cancelable:true});Object.defineProperties(e,{target:{value:document.activeElement||elements.get('game-canvas')},code:{value:code},repeat:{value:repeat}});document.dispatchEvent(e);return e;}
 const screen=(id,visible)=>assert.equal(elements.get(id).hidden,!visible,`${id} visibility`);
@@ -33,6 +34,8 @@ const screen=(id,visible)=>assert.equal(elements.get(id).hidden,!visible,`${id} 
 // package.json, a private git baseline, node_modules, or a production debug block.
 const moduleURLs=new Map();
 function moduleURL(name){
+ // Emulate URL-to-file resolution only; published-graph.test checks every token before stripping.
+ name=name.split('?',1)[0];
  if(moduleURLs.has(name))return moduleURLs.get(name);
  let source=fs.readFileSync(path.join(root,'src',name),'utf8');
  source=source.replace(/\/\* DEV-ONLY-START \*\/[\s\S]*?\/\* DEV-ONLY-END \*\//g,'');

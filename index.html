@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20392b">
-  <meta name="application-version" content="0.1.8">
-  <meta name="description" content="草の揺れに目をこらし、夏の野原で小さな生きものに出会う。静かな一人称の虫とり体験。">
-  <title>虫のいる場所 — 夏の観察手帖</title>
-  <link rel="stylesheet" href="./style.css">
+  <meta name="application-version" content="0.2.8">
+  <meta name="description" content="草木の揺れに目をこらし、小さな生きものに出会う。静かな一人称の虫とり体験。">
+  <title>虫のいる場所 — 生きものの観察手帖</title>
+  <link rel="stylesheet" href="./style.css?v=0.2.8&b=07cd86e22594">
 </head>
 <body>
   <canvas id="game-canvas" aria-label="夏の野原。マウスで見回し、移動して虫を探します。" tabindex="-1"></canvas>
@@ -15,11 +15,18 @@
   <main id="app-shell">
     <section id="start-screen" class="screen title-screen" aria-label="虫のいる場所 タイトル画面">
       <div class="title-content">
-        <p class="eyebrow"><span class="sun-mark" aria-hidden="true"></span> FIELD NOTES / SUMMER 01</p>
-        <p class="small-heading">夏の観察手帖</p>
+        <p class="eyebrow"><span class="sun-mark" aria-hidden="true"></span> FIELD NOTES / HABITAT STUDIES</p>
+        <p class="small-heading">生きものの観察手帖</p>
         <h1>虫のいる場所</h1>
-        <p class="title-version">試遊版 <span data-build-version>0.1.8</span></p>
+        <p class="title-version">試遊版 <span data-build-version>0.2.8</span></p>
         <p class="title-intro">草をかきわけると、<br>小さな世界が、動きだす。</p>
+        <div class="habitat-choice">
+          <label for="habitat-select">散策する再現区画</label>
+          <select id="habitat-select" name="habitat">
+            <option value="meadow" selected>温帯の草地・林縁</option>
+            <option value="tropical">中米熱帯林の再現区画</option>
+          </select>
+        </div>
         <button id="start-button" class="primary-button" type="button">野原へ <span aria-hidden="true">↗</span></button>
         <p class="journey">そっと近づく <span aria-hidden="true">—</span> 網をふる <span aria-hidden="true">—</span> 野原へかえす</p>
         <div class="start-controls" aria-label="操作方法">
@@ -33,11 +40,11 @@
             <div><dt>Esc</dt><dd>ひと休み</dd></div>
             <div><dt>J</dt><dd>図鑑をひらく</dd></div>
           </dl>
-          <p class="gamepad-help">ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB 保持 そっと歩く · RB 保持 ダッシュ · View 図鑑 · Start ひと休み<br>同時に押したときは、そっと歩く操作を優先。</p>
+          <p class="gamepad-help">ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB 保持 そっと歩く · RB 保持 ダッシュ · View 図鑑 · Start ひと休み<br>同時に押したときは、そっと歩く操作を優先。<br>E / X / □：熱帯の果実台で置く・片付ける</p>
         </div>
         <p class="phone-note">この野原は、キーボードとマウスでの散策がおすすめです。</p>
       </div>
-      <div class="title-footnote" aria-hidden="true"><span>風の向こうに、目をこらす。</span><span>35° N — A SUMMER AFTERNOON</span></div>
+      <div class="title-footnote" aria-hidden="true"><span>風の向こうに、目をこらす。</span><span>A SMALL WINDOW INTO LIVING PLACES</span></div>
     </section>
 
     <section id="hud" aria-label="散策中の表示" hidden>
@@ -54,6 +61,7 @@
       <div class="hud-controls">
         <p id="controls-hint" class="controls-hint">WASD 歩く · Shift 走る · 右クリック そっと · マウス 見回す · Space 網（見回し中は左クリックも）</p>
         <p id="look-resume-hint" class="look-resume-hint" role="status" hidden>見回し停止中 · 左クリックで見回し再開</p>
+        <p id="interaction-hint" class="interaction-hint" role="status" hidden></p>
       </div>
       <p id="quiet-label" class="quiet-label" role="status" hidden>そっと歩いています</p>
     </section>
@@ -73,9 +81,9 @@
         <button id="pause-journal-button" class="text-button pause-journal-button" type="button">出会いの図鑑を見る</button>
         <div class="secondary-actions">
           <button id="restart-button" class="text-button" type="button">はじめから歩く</button>
-          <button id="title-button" class="text-button" type="button">表紙にもどる</button>
+          <button id="title-button" class="text-button" type="button">表紙・区画選びへ</button>
         </div>
-        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.1.8</span></p>
+        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.2.8</span></p>
       </div>
     </section>
 
@@ -99,7 +107,7 @@
       <div class="error-card"><p class="eyebrow">FIELD NOTES</p><h2>野原を開けませんでした</h2><p id="error-message">このブラウザでは3D表示を開始できませんでした。WebGLに対応したブラウザで、もう一度お試しください。</p><p class="error-note">ページを再読み込みするか、別のブラウザでお試しください。</p></div>
     </section>
   </main>
-  <script src="./assets/vendor/three.min.js"></script>
-  <script type="module" src="./src/main.js"></script>
+  <script src="./assets/vendor/three.min.js?v=0.2.8&b=07cd86e22594"></script>
+  <script type="module" src="./src/main.js?v=0.2.8&b=07cd86e22594"></script>
 </body>
 </html>
