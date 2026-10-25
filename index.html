@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20392b">
-  <meta name="application-version" content="0.1.2">
+  <meta name="application-version" content="0.1.3">
   <meta name="description" content="草の揺れる音に耳をすませ、夏の野原で小さな生きものに出会う。静かな一人称の虫とり体験。">
   <title>虫のいる場所 — 夏の観察手帖</title>
   <link rel="stylesheet" href="./style.css">
@@ -12,7 +12,7 @@
 <body>
   <canvas id="game-canvas" aria-label="夏の野原。マウスで見回し、移動して虫を探します。" tabindex="-1"></canvas>
 
-  <main>
+  <main id="app-shell">
     <section id="start-screen" class="screen title-screen" aria-label="虫のいる場所 タイトル画面">
       <div class="title-content">
         <p class="eyebrow"><span class="sun-mark" aria-hidden="true"></span> FIELD NOTES / SUMMER 01</p>
@@ -30,8 +30,9 @@
             <div><dt>R</dt><dd>ダッシュ切替</dd></div>
             <div><dt>クリック / Space</dt><dd>網をふる</dd></div>
             <div><dt>Esc</dt><dd>ひと休み</dd></div>
+            <div><dt>J</dt><dd>図鑑をひらく</dd></div>
           </dl>
-          <p class="gamepad-help">ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB そっと歩く · RB ダッシュ切替 · Start ひと休み</p>
+          <p class="gamepad-help">ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB そっと歩く · RB ダッシュ切替 · View 図鑑 · Start ひと休み</p>
         </div>
         <p class="phone-note">この野原は、キーボードとマウスでの散策がおすすめです。</p>
       </div>
@@ -45,6 +46,7 @@
         <p id="count-label">出会った虫 0 匹</p>
       </div>
       <button id="pause-button" class="pause-button" type="button" aria-label="ひと休み・設定を開く"><span aria-hidden="true">Ⅱ</span><span>ひと休み</span></button>
+      <button id="journal-button" class="journal-button" type="button">図鑑 <span>J</span></button>
       <div id="crosshair" aria-hidden="true"></div>
       <p id="target-hint" class="target-hint" role="status"></p>
       <p id="toast" class="toast" role="status" aria-live="polite"></p>
@@ -64,11 +66,12 @@
           <label for="volume"><span>野原の音</span><span class="setting-caption">しずか — おおきく</span></label>
           <input id="volume" type="range" min="0" max="1" step="0.05" value="0.25">
         </div>
+        <button id="pause-journal-button" class="text-button pause-journal-button" type="button">出会いの図鑑を見る</button>
         <div class="secondary-actions">
           <button id="restart-button" class="text-button" type="button">はじめから歩く</button>
           <button id="title-button" class="text-button" type="button">表紙にもどる</button>
         </div>
-        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 0.1.2</p>
+        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 0.1.3</p>
       </div>
     </section>
 
@@ -82,7 +85,8 @@
         <p id="insect-description" class="insect-description"></p>
         <p id="insect-hint" class="insect-hint"></p>
         <button id="release-button" class="primary-button" type="button">野原へかえす <span aria-hidden="true">↗</span></button>
-        <p class="release-note">出会いを覚えて、また次の草むらへ。</p>
+        <button id="inspect-journal-button" class="text-button inspect-journal-button" type="button">図鑑に記録済み · メモを書く（任意）</button>
+        <p class="release-note">記録を残しても、虫は野原へかえします。</p>
       </div>
       <p class="observation-controls">ドラッグして、いろいろな角度から観察</p>
     </section>

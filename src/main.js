@@ -4,6 +4,8 @@ import { createInsectModel, updateInsectModel } from './insect-models.js';
 import { createInput } from './input.js';
 import { createAudio } from './audio.js';
 import { createNet } from './net.js';
+import { createJournal } from './journal.js';
+import { createJournalUI } from './journal-ui.js';
 
 const THREE=window.THREE;
 const $=id=>document.getElementById(id);
@@ -15,13 +17,16 @@ let toastTime=0,captureDelay=0,lastTime=0,accumulator=0,frames=0,disposed=false;
 const insectStates=new Map();
 // Own the lock transition explicitly; browsers may queue duplicate unlock events.
 let pointerOwned=false;
+let journal,journalUI,journalReturn='playing';
 const forward=new THREE.Vector3();
-function fatal(message){state.mode='error';$('error-message').textContent=message;$('error-screen').hidden=false;$('start-screen').hidden=true;$('hud').hidden=true;audio?.pause();audio?.dispose?.();}
+function fatal(message){state.mode='error';$('error-message').textContent=message;$('error-screen').hidden=false;$('start-screen').hidden=true;$('hud').hidden=true;audio?.pause();audio?.dispose?.();journalUI?.close();$('app-shell').inert=false;canvas.inert=false;}
 function toast(text,duration=3){$('toast').textContent=text;toastTime=duration;}
 function direction(){return {x:-Math.sin(state.player.yaw)*Math.cos(state.player.pitch),y:Math.sin(state.player.pitch),z:-Math.cos(state.player.yaw)*Math.cos(state.player.pitch)};}
 function syncScreens(){
  $('start-screen').hidden=state.mode!=='title';$('hud').hidden=state.mode!=='playing';$('pause-screen').hidden=state.mode!=='paused';$('inspect-screen').hidden=state.mode!=='inspect';
  net.group.visible=state.mode==='playing';
+ $('app-shell').inert=state.mode==='journal';canvas.inert=state.mode==='journal';
+ if(state.mode!=='journal')journalUI?.close();
 }
 function unlock(){pointerOwned=false;if(document.pointerLockElement===canvas)document.exitPointerLock();}
 function applySettings(){
@@ -50,6 +55,7 @@ function start(){
  state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast('白い翅が、草花の上でひと休み。近づいてみよう。',6);
 }
 function pause({lock=true}={}){
+ if(state.mode==='journal'){closeJournal({lock});return;}
  if(state.mode==='paused'){resume({lock});return;}
  if(state.mode==='inspect'){release({lock});return;}
  if(state.mode!=='playing')return;
@@ -80,12 +86,27 @@ function swing(){
  const result=simulation.swing(state.player,direction());
  if(result.ok){
   state.captures++;if(!state.seen.includes(result.item.species))state.seen.push(result.item.species);
+  journal.record({species:result.item.species,location:locationLabel(result.item.x,result.item.z),x:Math.round(result.item.x*10)/10,z:Math.round(result.item.z*10)/10});
   captureDelay=.28;audio.capture();toast('そっと、つかまえた。',.6);
  }else toast(result.reason,2.4);
 }
 function release({lock=true}={}){
  if(state.mode!=='inspect')return;
  const item=simulation.release();state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(`${SPECIES[item?.species]?.name||'虫'}を、もとの草木へ。`,3.8);
+}
+function locationLabel(x,z){return Math.hypot(x-24,z+20)<16?'水辺の草むら':Math.hypot(x+10,z+8)<10?'大きな木の下':z<-32?'森の入り口':'風の通る野原';}
+function openJournal(speciesId){
+ if(state.mode==='journal'){closeJournal({lock:false});return;}
+ if(!['playing','paused','inspect'].includes(state.mode))return;
+ journalReturn=state.mode;state.mode='journal';state.player.speed=0;input.clear();unlock();audio.pause();syncScreens();
+ journalUI.open(typeof speciesId==='string'?speciesId:undefined);
+}
+function closeJournal({lock=true}={}){
+ if(state.mode!=='journal')return;
+ journalUI.close();state.mode=journalReturn;syncScreens();input.clear();
+ if(state.mode==='playing'){applySettings();audio.start();restoreControl(lock);}
+ else if(state.mode==='paused')$('resume-button').focus({preventScroll:true});
+ else $('release-button').focus({preventScroll:true});
 }
 function positionInspector(){
  if(!inspectCamera)return;
@@ -109,14 +130,14 @@ function updatePlayer(dt,actions){
 }
 function updateHUD(){
  const p=state.player,t=simulation.findTarget(p,direction());
- $('count-label').textContent=`出会った虫 ${state.seen.length} 種`;
- $('location-label').textContent=Math.hypot(p.x-24,p.z+20)<16?'水辺の草むら':Math.hypot(p.x+10,p.z+8)<10?'大きな木の下':p.z<-32?'森の入り口':'風の通る野原';
+ $('count-label').textContent=`図鑑の記録 ${journal.entries.length} 種`;
+ $('location-label').textContent=locationLabel(p.x,p.z);
  $('quiet-label').hidden=!p.quiet&&!p.running;
  $('quiet-label').textContent=p.quiet?'そっと歩いています':p.running?'ダッシュ · R / RB で歩く':'';
  $('crosshair').classList.toggle('near',!!t);$('crosshair').classList.toggle('ready',!!t?.catchable);
  $('target-hint').textContent=t?(t.catchable?'網が届く · クリック / Space':t.reason):'';
  const unlocked=document.pointerLockElement!==canvas;
- $('controls-hint').textContent=unlocked?'クリックで見回しを再開 · Space で網をふる':'WASD 歩く · R ダッシュ切替 · Shift そっと歩く · クリック 網';
+ $('controls-hint').textContent=unlocked?'クリックで見回しを再開 · Space で網をふる':'WASD 歩く · R ダッシュ · Shift そっと · クリック 網 · J 図鑑';
  $('controls-hint').hidden=!unlocked&&state.elapsed>24;
 }
 function render(time,dt){
@@ -157,13 +178,14 @@ try{
  inspectScene=new THREE.Scene();inspectScene.background=new THREE.Color(0x748678);inspectScene.add(new THREE.HemisphereLight(0xf8f4da,0x344635,1.05));
  const key=new THREE.DirectionalLight(0xffedcc,1.2);key.position.set(-3,5,4);inspectScene.add(key);const fill=new THREE.DirectionalLight(0xd2e7f2,.65);fill.position.set(3,1,-2);inspectScene.add(fill);
  inspectCamera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.05,20);inspectCamera.position.set(0,1.35,3.4);inspectCamera.lookAt(0,0,0);
- audio=createAudio();
- input=createInput(canvas,{action:swing,pause,back:()=>{if(state.mode==='inspect')release();else pause();},blur:()=>{if(state.mode==='playing')pause();else audio.pause();},mode:()=>state.mode,lock:requestLock});
+ audio=createAudio();journal=createJournal();journalUI=createJournalUI({journal,species:SPECIES,onClose:()=>closeJournal()});
+ input=createInput(canvas,{action:swing,pause,journal:()=>openJournal(),back:()=>{if(state.mode==='inspect')release();else pause();},blur:()=>{if(state.mode==='playing')pause();else audio.pause();},mode:()=>state.mode,lock:requestLock});
  try{const saved=JSON.parse(localStorage.getItem('mushi-settings-v1')||'null');if(saved){state.sensitivity=Math.max(.3,Math.min(2,Number(saved.sensitivity)||1));state.volume=Math.max(0,Math.min(1,Number(saved.volume)||0));}}catch{}
  $('sensitivity').value=state.sensitivity;$('volume').value=state.volume;audio.setVolume(state.volume);
  $('sensitivity').addEventListener('input',applySettings);$('volume').addEventListener('input',applySettings);
  $('sensitivity').addEventListener('change',applySettings);$('volume').addEventListener('change',applySettings);
  $('start-button').onclick=start;$('pause-button').onclick=pause;$('resume-button').onclick=resume;$('restart-button').onclick=restart;$('title-button').onclick=title;$('release-button').onclick=release;
+ $('journal-button').onclick=()=>openJournal();$('pause-journal-button').onclick=()=>openJournal();$('inspect-journal-button').onclick=()=>openJournal(simulation.caught?.species);
  document.addEventListener('pointerlockchange',()=>{const locked=document.pointerLockElement===canvas;const lost=pointerOwned&&!locked;pointerOwned=locked;if(lost&&state.mode==='playing'&&!simulation.caught)pause();});
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();fatal('3D表示が中断されました。ページを再読み込みすると、野原の入り口から再開できます。');disposed=true;});
  window.addEventListener('pagehide',()=>{if(state.mode==='playing')pause();else audio.pause();input.clear();audio.dispose?.();});

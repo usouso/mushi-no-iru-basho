@@ -11,3 +11,5 @@
 
 /* Functional instructions stay readable; decorative folio labels may be smaller. */
 .start-controls dt,.start-controls dd{font-size:12px}.gamepad-help{font-size:11px}#count-label,.pause-button,.controls-hint,.quiet-label,.insect-size,.insect-hint,.text-button{font-size:12px}.release-note,.observation-controls,.pause-bottom{font-size:11px}@media(max-width:760px){.controls-hint{font-size:11px;max-width:75vw}.quiet-label{font-size:11px}.observation-controls{font-size:10px}}
+
+.journal-button{position:absolute;top:88px;right:33px;pointer-events:auto;padding:10px 15px;border:1px solid rgba(246,243,231,.35);background:rgba(29,48,28,.35);color:var(--paper);font-size:13px;letter-spacing:.08em}.journal-button span{margin-left:9px;font-size:11px;opacity:.8}.journal-button:hover{background:rgba(29,48,28,.65)}.pause-journal-button{display:block;margin:0 auto 18px}.inspect-journal-button{display:block;line-height:1.9;width:100%;margin-top:15px;text-align:left}@media(max-width:760px){.journal-button{top:76px;right:18px;padding:9px 11px;font-size:12px}.journal-button span{display:none}.inspect-journal-button{font-size:11px}}

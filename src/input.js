@@ -2,7 +2,7 @@
 export function createInput(canvas, callbacks) {
   const keys=new Set();
   let lookX=0,lookY=0,drag=false,lastX=0,lastY=0,padLast=[],padActive=false,running=false;
-  const controls=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight','Space','KeyR']);
+  const controls=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight','Space','KeyR','KeyJ']);
   const elementIsControl=e=>/INPUT|BUTTON|TEXTAREA|SELECT/.test(e.target?.tagName||'');
   document.addEventListener('keydown',e=>{
     if(e.code==='Escape'){ e.preventDefault(); if(!e.repeat) callbacks.pause({lock:false}); return; }
@@ -10,6 +10,7 @@ export function createInput(canvas, callbacks) {
     if(controls.has(e.code)) e.preventDefault();
     if(e.code==='Space'&&!e.repeat) callbacks.action();
     if(e.code==='KeyR'&&!e.repeat)running=!running;
+    if(e.code==='KeyJ'&&!e.repeat)callbacks.journal?.();
     keys.add(e.code);
   });
   document.addEventListener('keyup',e=>keys.delete(e.code));
@@ -47,6 +48,7 @@ export function createInput(canvas, callbacks) {
         if(b[5]&&!padLast[5])running=!running;
         if((b[0]&&!padLast[0])||(b[7]&&!padLast[7]))callbacks.action();
         if(b[9]&&!padLast[9])callbacks.pause();
+        if(b[8]&&!padLast[8])callbacks.journal?.();
         if(b[1]&&!padLast[1])callbacks.back();
         padLast=b;padActive=true;
       }else {padLast=[];padActive=false;}
