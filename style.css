@@ -14,8 +14,11 @@
 
 .journal-button{position:absolute;top:88px;right:33px;pointer-events:auto;padding:10px 15px;border:1px solid rgba(246,243,231,.35);background:rgba(29,48,28,.35);color:var(--paper);font-size:13px;letter-spacing:.08em}.journal-button span{margin-left:9px;font-size:11px;opacity:.8}.journal-button:hover{background:rgba(29,48,28,.65)}.pause-journal-button{display:block;margin:0 auto 18px}.inspect-journal-button{display:block;line-height:1.9;width:100%;margin-top:15px;text-align:left}@media(max-width:760px){.journal-button{top:76px;right:18px;padding:9px 11px;font-size:12px}.journal-button span{display:none}.inspect-journal-button{font-size:11px}}
 
-/* Keep longer control hints out of the movement-status area without shrinking type. */
-@media(min-width:761px){.controls-hint{max-width:calc(100vw - 240px)}.quiet-label{max-width:150px;text-align:right}}
-@media(max-width:760px){.controls-hint{max-width:calc(100vw - 180px)}.quiet-label{max-width:130px;text-align:right}}
+/* Stack the stable controls and temporary look-resume notice; reserve the right status area. */
+.hud-controls{position:absolute;left:34px;bottom:29px;max-width:calc(100vw - 240px);display:flex;flex-direction:column;gap:6px;overflow-wrap:anywhere}
+.hud-controls .controls-hint{position:static;left:auto;bottom:auto;max-width:none}
+.look-resume-hint{font-size:12px;letter-spacing:.07em;line-height:1.9;opacity:.9}
+@media(min-width:761px){.quiet-label{max-width:150px;text-align:right}}
+@media(max-width:760px){.hud-controls{left:18px;bottom:20px;max-width:calc(100vw - 180px)}.look-resume-hint{font-size:11px}.quiet-label{max-width:130px;text-align:right}}
 
 .title-version{margin-top:5px;font-size:12px;line-height:1.6;letter-spacing:.08em;color:var(--ink-soft)}

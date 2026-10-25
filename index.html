@@ -51,7 +51,10 @@
       <div id="crosshair" aria-hidden="true"></div>
       <p id="target-hint" class="target-hint" role="status"></p>
       <p id="toast" class="toast" role="status" aria-live="polite"></p>
-      <p id="controls-hint" class="controls-hint">WASD 歩く <span>·</span> Shift 保持 ダッシュ <span>·</span> 右クリック保持 そっと <span>·</span> 左クリック 網</p>
+      <div class="hud-controls">
+        <p id="controls-hint" class="controls-hint">WASD 歩く · Shift 走る · 右クリック そっと · マウス 見回す · Space 網（見回し中は左クリックも）</p>
+        <p id="look-resume-hint" class="look-resume-hint" role="status" hidden>見回し停止中 · 左クリックで見回し再開</p>
+      </div>
       <p id="quiet-label" class="quiet-label" role="status" hidden>そっと歩いています</p>
     </section>
 

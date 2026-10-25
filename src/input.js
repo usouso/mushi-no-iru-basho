@@ -9,7 +9,7 @@ export function createInput(canvas, callbacks) {
   let secondaryGesture = null;
   const blockedPadModifiers = new Set();
   const movement = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight']);
-  const controls = new Set([...movement, 'Space', 'KeyJ']);
+  const controls = new Set([...movement, 'Space']);
   const elementIsControl = e => /^(INPUT|BUTTON|TEXTAREA|SELECT)$/.test(e.target?.tagName || '') || e.target?.isContentEditable;
   const editableMenuTarget = target => /^(INPUT|TEXTAREA|SELECT)$/.test(target?.tagName || '') || target?.isContentEditable || !!target?.closest?.('input, textarea, select');
   const inspectionMenuTarget = target => target === canvas || target?.id === 'inspect-screen' || !!target?.closest?.('#inspect-screen');
@@ -39,11 +39,18 @@ export function createInput(canvas, callbacks) {
       if (!e.repeat) { clear(); callbacks.pause({ lock: false }); }
       return;
     }
+    // Journal open() focuses its close button: J must precede the button guard,
+    // while text editing, IME composition and browser shortcuts stay untouched.
+    if (e.code === 'KeyJ') {
+      if (editableMenuTarget(e.target) || e.isComposing || e.keyCode === 229 || e.ctrlKey || e.altKey || e.metaKey) return;
+      e.preventDefault();
+      if (!e.repeat) callbacks.journal?.();
+      return;
+    }
     if (elementIsControl(e)) return;
     if (controls.has(e.code)) e.preventDefault();
     if (e.repeat) return; // Held keys cannot re-arm themselves after clear/blur.
     if (e.code === 'Space') callbacks.action();
-    if (e.code === 'KeyJ') callbacks.journal?.();
     if (movement.has(e.code) && syncMode() === 'playing') keys.add(e.code);
   });
   document.addEventListener('keyup', e => keys.delete(e.code));
