@@ -1,5 +1,7 @@
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
+// Initial prototype display dimensions; inspection keeps its independent framing.
+export const FIELD_VISUAL_SCALE = Object.freeze({ butterfly: 1, dragonfly: 1, cicada: 1 });
 const cache = {};
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .76, ...extra });
 
@@ -201,7 +203,7 @@ export function createInsectModel(species, { inspection = false } = {}) {
   (species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual,!inspection);
   batchBody(visual);
   // Field readability only: inspection framing and the simulation capture centre stay unchanged.
-  if (!inspection) visual.scale.setScalar(species==='butterfly'?.308:species==='dragonfly'?.322:.49);
+  if (!inspection) visual.scale.setScalar(FIELD_VISUAL_SCALE[species] ?? 1);
   group.userData.species=species;group.userData.inspection=inspection;group.userData.visual=visual;
   group.userData.wings=visual.userData.wings;
   // Perched cicadas climb with the head upwards, dorsal wing surface facing out.
