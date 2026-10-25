@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20392b">
-  <meta name="application-version" content="0.1.3">
-  <meta name="description" content="草の揺れる音に耳をすませ、夏の野原で小さな生きものに出会う。静かな一人称の虫とり体験。">
+  <meta name="application-version" content="0.1.4">
+  <meta name="description" content="草の揺れに目をこらし、夏の野原で小さな生きものに出会う。静かな一人称の虫とり体験。">
   <title>虫のいる場所 — 夏の観察手帖</title>
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -26,13 +26,13 @@
           <dl>
             <div><dt>W A S D / 矢印</dt><dd>歩く</dd></div>
             <div><dt>マウス</dt><dd>見回す</dd></div>
-            <div><dt>Shift</dt><dd>そっと歩く</dd></div>
-            <div><dt>R</dt><dd>ダッシュ切替</dd></div>
-            <div><dt>クリック / Space</dt><dd>網をふる</dd></div>
+            <div><dt>Shift 保持</dt><dd>ダッシュ</dd></div>
+            <div><dt>右クリック保持</dt><dd>そっと歩く</dd></div>
+            <div><dt>左クリック / Space</dt><dd>網をふる</dd></div>
             <div><dt>Esc</dt><dd>ひと休み</dd></div>
             <div><dt>J</dt><dd>図鑑をひらく</dd></div>
           </dl>
-          <p class="gamepad-help">ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB そっと歩く · RB ダッシュ切替 · View 図鑑 · Start ひと休み</p>
+          <p class="gamepad-help">ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB 保持 そっと歩く · RB 保持 ダッシュ · View 図鑑 · Start ひと休み<br>同時に押したときは、そっと歩く操作を優先。</p>
         </div>
         <p class="phone-note">この野原は、キーボードとマウスでの散策がおすすめです。</p>
       </div>
@@ -50,7 +50,7 @@
       <div id="crosshair" aria-hidden="true"></div>
       <p id="target-hint" class="target-hint" role="status"></p>
       <p id="toast" class="toast" role="status" aria-live="polite"></p>
-      <p id="controls-hint" class="controls-hint">WASD 歩く <span>·</span> Shift そっと歩く <span>·</span> クリック 網をふる</p>
+      <p id="controls-hint" class="controls-hint">WASD 歩く <span>·</span> Shift 保持 ダッシュ <span>·</span> 右クリック保持 そっと <span>·</span> 左クリック 網</p>
       <p id="quiet-label" class="quiet-label" role="status" hidden>そっと歩いています</p>
     </section>
 
@@ -71,7 +71,7 @@
           <button id="restart-button" class="text-button" type="button">はじめから歩く</button>
           <button id="title-button" class="text-button" type="button">表紙にもどる</button>
         </div>
-        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 0.1.3</p>
+        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 0.1.4</p>
       </div>
     </section>
 

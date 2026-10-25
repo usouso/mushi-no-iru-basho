@@ -1,6 +1,6 @@
 /** Small original synthesized soundscape. No downloads, recordings, or tracking. */
 export function createAudio(){
- let ctx,master,windGain,cicadaGain,cicadaPan,chirpTimer=0,lastStep=0,level=.25,active=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;
+ let ctx,master,windGain,lastStep=0,level=.25,active=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;
  const timers=new Set(),oneShots=new Set(),loops=new Set();
  function gain(value){if(!master)return;const now=ctx.currentTime;master.gain.cancelScheduledValues?.(now);master.gain.setValueAtTime(value,now);}
  function clearSounds(){soundEpoch++;for(const timer of timers)clearTimeout(timer);timers.clear();for(const source of oneShots){try{source.stop();}catch{}}oneShots.clear();}
@@ -22,8 +22,7 @@ export function createAudio(){
   if(disposed)return;
   if(!ctx){
    ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0;contextRunning=ctx.state===undefined||ctx.state==='running';master.connect(ctx.destination);
-   const noise=ctx.createBufferSource();noise.buffer=makeNoise();noise.loop=true;const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=900;windGain=ctx.createGain();windGain.gain.value=.18;noise.connect(filter);filter.connect(windGain);windGain.connect(master);noise.start();loops.add(noise);
-   const osc=ctx.createOscillator();osc.type='sawtooth';osc.frequency.value=3200;const filter2=ctx.createBiquadFilter();filter2.type='bandpass';filter2.frequency.value=3600;filter2.Q.value=3;cicadaGain=ctx.createGain();cicadaGain.gain.value=0;cicadaPan=ctx.createStereoPanner();osc.connect(filter2);filter2.connect(cicadaGain);cicadaGain.connect(cicadaPan);cicadaPan.connect(master);osc.start();loops.add(osc);
+   const noise=ctx.createBufferSource();noise.buffer=makeNoise();noise.loop=true;const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=700;windGain=ctx.createGain();windGain.gain.value=.08;noise.connect(filter);filter.connect(windGain);windGain.connect(master);noise.start();loops.add(noise);
   }
   active=true;lifecycle++;reconcileContext();
  }
@@ -39,12 +38,8 @@ export function createAudio(){
   release(){tone(900,.3,.025,'sine',1450);},
   update(dt,player,items,time){
    if(!ctx||!active||!ready||disposed)return;
-   windGain.gain.setTargetAtTime(.15+Math.sin(time*.18)*.04,ctx.currentTime,.3);
-   const cicadas=items.filter(i=>i.species==='cicada'&&!i.caught);
-   let nearest=null,distance=100;for(const i of cicadas){const d=Math.hypot(i.x-player.x,i.z-player.z);if(d<distance){distance=d;nearest=i;}}
-   cicadaGain.gain.setTargetAtTime(Math.max(0,1-distance/30)*(.007+.005*Math.sin(time*21)**2),ctx.currentTime,.05);
-   if(nearest){const dx=nearest.x-player.x,dz=nearest.z-player.z;const pan=(dx*Math.cos(player.yaw)-dz*Math.sin(player.yaw))/Math.max(1,distance);cicadaPan.pan.setTargetAtTime(Math.max(-1,Math.min(1,pan)),ctx.currentTime,.1);}
-   chirpTimer-=dt;if(chirpTimer<0){chirpTimer=5+Math.random()*7;tone(2200,.12,.025,'sine',3300);later(()=>tone(2900,.11,.018,'sine',2400),180);}
+   // Ambient sound is only quiet, low-pass wind: no cicada oscillator or bird timers.
+   windGain.gain.setTargetAtTime(.08+Math.sin(time*.18)*.02,ctx.currentTime,.3);
    lastStep-=dt;if(player.speed>.1&&lastStep<0){lastStep=player.quiet?.7:player.running?.34:.48;noiseBurst(.12,player.quiet?.02:.055,500);}
   }
  };

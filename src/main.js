@@ -133,11 +133,11 @@ function updateHUD(){
  $('count-label').textContent=`図鑑の記録 ${journal.entries.length} 種`;
  $('location-label').textContent=locationLabel(p.x,p.z);
  $('quiet-label').hidden=!p.quiet&&!p.running;
- $('quiet-label').textContent=p.quiet?'そっと歩いています':p.running?'ダッシュ · R / RB で歩く':'';
+ $('quiet-label').textContent=p.quiet?'そっと歩行中':p.running?'ダッシュ中':'';
  $('crosshair').classList.toggle('near',!!t);$('crosshair').classList.toggle('ready',!!t?.catchable);
- $('target-hint').textContent=t?(t.catchable?'網が届く · クリック / Space':t.reason):'';
+ $('target-hint').textContent=t?(t.catchable?'網が届く · 左クリック / Space':t.reason):'';
  const unlocked=document.pointerLockElement!==canvas;
- $('controls-hint').textContent=unlocked?'クリックで見回しを再開 · Space で網をふる':'WASD 歩く · R ダッシュ · Shift そっと · クリック 網 · J 図鑑';
+ $('controls-hint').textContent=unlocked?'左クリックで見回しを再開 · Space で網をふる':'WASD 歩く · Shift 走る · 右クリック そっと · 左クリック 網';
  $('controls-hint').hidden=!unlocked&&state.elapsed>24;
 }
 function render(time,dt){
@@ -158,7 +158,7 @@ function frame(ms){
  const actions=input.read(dt);
  if(state.mode==='playing'){
   state.elapsed+=dt;updatePlayer(dt,actions);simulation.update(dt,state.player);
-  for(const item of simulation.items){if(item.state==='startled'&&insectStates.get(item.id)!=='startled'&&Math.hypot(item.x-state.player.x,item.z-state.player.z)<7)toast('足音に気づいたようだ。Shift で、そっと近づこう。',4);insectStates.set(item.id,item.state);}
+  for(const item of simulation.items){if(item.state==='startled'&&insectStates.get(item.id)!=='startled'&&Math.hypot(item.x-state.player.x,item.z-state.player.z)<7)toast('足音に気づいたようだ。右クリック / LB で、そっと近づこう。',4);insectStates.set(item.id,item.state);}
   world.update(state.time,dt);audio.update(dt,state.player,simulation.items,state.time);
   state.cooldown=Math.max(0,state.cooldown-dt);if(state.swing>0){state.swing+=dt/.48;if(state.swing>=1)state.swing=0;}
   if(captureDelay>0){captureDelay-=dt;if(captureDelay<=0&&simulation.caught)showInspection(simulation.caught);}
