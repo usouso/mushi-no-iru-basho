@@ -11,6 +11,8 @@ export function createInput(canvas, callbacks) {
   const movement = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight']);
   const controls = new Set([...movement, 'Space', 'KeyJ']);
   const elementIsControl = e => /^(INPUT|BUTTON|TEXTAREA|SELECT)$/.test(e.target?.tagName || '') || e.target?.isContentEditable;
+  const editableMenuTarget = target => /^(INPUT|TEXTAREA|SELECT)$/.test(target?.tagName || '') || target?.isContentEditable || !!target?.closest?.('input, textarea, select');
+  const inspectionMenuTarget = target => target === canvas || target?.id === 'inspect-screen' || !!target?.closest?.('#inspect-screen');
   const currentPad = () => Array.from(navigator.getGamepads?.() || []).find(p => p?.connected);
   const buttons = pad => pad?.buttons.map(b => !!b.pressed) || [];
   const dead = v => Math.abs(v) < .16 ? 0 : Math.sign(v) * (Math.abs(v) - .16) / .84;
@@ -58,12 +60,16 @@ export function createInput(canvas, callbacks) {
   document.addEventListener('pointerdown', beginPointerGesture, true);
   document.addEventListener('mousedown', beginPointerGesture, true);
   document.addEventListener('contextmenu', e => {
-    // Keyboard menus and fresh modal gestures remain native. Capture also sees
-    // the release-target overlay after pointer lock has been relinquished.
-    if (e.button !== 2 || !secondaryGesture) return;
-    e.preventDefault();
-    secondaryGesture.menuSeen = true;
-    if (!secondaryGesture.held) secondaryGesture = null;
+    // Only secondary-button menus belong to this gameplay/inspection policy.
+    if (e.button !== 2) return;
+    const owned = !!secondaryGesture;
+    if (owned) {
+      secondaryGesture.menuSeen = true;
+      if (!secondaryGesture.held) secondaryGesture = null;
+    }
+    // Keep native editing menus, especially the journal memo, available.
+    if (editableMenuTarget(e.target)) return;
+    if (owned || (syncMode() === 'inspect' && inspectionMenuTarget(e.target))) e.preventDefault();
   }, true);
   canvas.addEventListener('mousedown', e => {
     const currentMode = syncMode();
@@ -95,7 +101,8 @@ export function createInput(canvas, callbacks) {
     else if (drag) { lookX += e.clientX - lastX; lookY += e.clientY - lastY; lastX = e.clientX; lastY = e.clientY; }
   });
   canvas.addEventListener('contextmenu', e => {
-    if (syncMode() === 'playing') e.preventDefault();
+    const currentMode = syncMode();
+    if (currentMode === 'playing' || (currentMode === 'inspect' && e.button === 2 && !editableMenuTarget(e.target))) e.preventDefault();
   });
   return {
     clear,

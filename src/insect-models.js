@@ -201,7 +201,7 @@ export function createInsectModel(species, { inspection = false } = {}) {
   (species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual,!inspection);
   batchBody(visual);
   // Field readability only: inspection framing and the simulation capture centre stay unchanged.
-  if (!inspection) visual.scale.setScalar(species==='butterfly'?.22:species==='dragonfly'?.23:.35);
+  if (!inspection) visual.scale.setScalar(species==='butterfly'?.308:species==='dragonfly'?.322:.49);
   group.userData.species=species;group.userData.inspection=inspection;group.userData.visual=visual;
   group.userData.wings=visual.userData.wings;
   // Perched cicadas climb with the head upwards, dorsal wing surface facing out.
