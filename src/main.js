@@ -135,10 +135,11 @@ function updateHUD(){
  $('quiet-label').hidden=!p.quiet&&!p.running;
  $('quiet-label').textContent=p.quiet?'そっと歩行中':p.running?'ダッシュ中':'';
  $('crosshair').classList.toggle('near',!!t);$('crosshair').classList.toggle('ready',!!t?.catchable);
- $('target-hint').textContent=t?(t.catchable?'網が届く · 左クリック / Space':t.reason):'';
  const unlocked=document.pointerLockElement!==canvas;
- $('controls-hint').textContent=unlocked?'左クリックで見回しを再開 · Space で網をふる':'WASD 歩く · Shift 走る · 右クリック そっと · 左クリック 網';
+ $('target-hint').textContent=t?(t.catchable?(unlocked?'網が届く · Space':'網が届く · 左クリック / Space'):t.reason):'';
+ $('controls-hint').textContent='WASD 歩く · Shift 走る · 右クリック そっと · マウス 見回す · Space 網（見回し中は左クリックも）';
  $('controls-hint').hidden=!unlocked&&state.elapsed>24;
+ $('look-resume-hint').hidden=!unlocked;
 }
 function render(time,dt){
  const p=state.player;camera.position.set(p.x,p.y,p.z);camera.rotation.set(p.pitch,p.yaw,0,'YXZ');
