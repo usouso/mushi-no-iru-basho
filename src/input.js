@@ -5,7 +5,7 @@ export function createInput(canvas, callbacks) {
   const controls=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight','Space']);
   const elementIsControl=e=>/INPUT|BUTTON|TEXTAREA|SELECT/.test(e.target?.tagName||'');
   document.addEventListener('keydown',e=>{
-    if(e.code==='Escape'){ e.preventDefault(); if(!e.repeat) callbacks.pause(); return; }
+    if(e.code==='Escape'){ e.preventDefault(); if(!e.repeat) callbacks.pause({lock:false}); return; }
     if(elementIsControl(e)) return;
     if(controls.has(e.code)) e.preventDefault();
     if(e.code==='Space'&&!e.repeat) callbacks.action();

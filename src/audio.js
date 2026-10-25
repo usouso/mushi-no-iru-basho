@@ -1,6 +1,6 @@
 /** Small original synthesized soundscape. No downloads, recordings, or tracking. */
 export function createAudio(){
- let ctx,master,windGain,cicadaGain,cicadaPan,chirpTimer=0,lastStep=0,level=.55,active=false;
+ let ctx,master,windGain,cicadaGain,cicadaPan,chirpTimer=0,lastStep=0,level=.25,active=false;
  const makeNoise=()=>{const b=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate),d=b.getChannelData(0);let v=0;for(let i=0;i<d.length;i++){v=(v+Math.random()*.16-.08)*.96;d[i]=v;}return b;};
  function start(){
   if(!ctx){
@@ -16,9 +16,9 @@ export function createAudio(){
   start,
   setVolume(v){level=v;if(ctx)master.gain.setTargetAtTime(active?level:0,ctx.currentTime,.1);},
   pause(){active=false;if(ctx)master.gain.setTargetAtTime(0,ctx.currentTime,.2);},
-  swing(){noiseBurst(.28,.45,1800);},
-  capture(){tone(750,.13,.07,'sine',1100);setTimeout(()=>tone(1150,.19,.05,'sine',900),100);},
-  release(){tone(900,.3,.04,'sine',1450);},
+  swing(){noiseBurst(.28,.25,1800);},
+  capture(){tone(750,.13,.045,'sine',1100);setTimeout(()=>tone(1150,.19,.035,'sine',900),100);},
+  release(){tone(900,.3,.025,'sine',1450);},
   update(dt,player,items,time){
    if(!ctx||!active)return;
    windGain.gain.setTargetAtTime(.15+Math.sin(time*.18)*.04,ctx.currentTime,.3);
@@ -27,7 +27,7 @@ export function createAudio(){
    cicadaGain.gain.setTargetAtTime(Math.max(0,1-distance/30)*(.007+.005*Math.sin(time*21)**2),ctx.currentTime,.05);
    if(nearest){const dx=nearest.x-player.x,dz=nearest.z-player.z;const pan=(dx*Math.cos(player.yaw)-dz*Math.sin(player.yaw))/Math.max(1,distance);cicadaPan.pan.setTargetAtTime(Math.max(-1,Math.min(1,pan)),ctx.currentTime,.1);}
    chirpTimer-=dt;if(chirpTimer<0){chirpTimer=5+Math.random()*7;tone(2200,.12,.025,'sine',3300);setTimeout(()=>tone(2900,.11,.018,'sine',2400),180);}
-   lastStep-=dt;if(player.speed>.1&&lastStep<0){lastStep=player.quiet?.7:.48;noiseBurst(.12,player.quiet?.035:.09,500);}
+   lastStep-=dt;if(player.speed>.1&&lastStep<0){lastStep=player.quiet?.7:.48;noiseBurst(.12,player.quiet?.02:.055,500);}
   }
  };
 }
