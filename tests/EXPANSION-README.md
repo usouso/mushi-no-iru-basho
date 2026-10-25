@@ -3,7 +3,7 @@
 Node.js 24.22.1で検証。repoのrootで:
 
 ```sh
-node --experimental-default-type=module --test tests/*.test.mjs
+node --test tests/*.test.mjs
 ```
 
 `npm install`、package.json、private git履歴、外部ネットワークは不要。テスト用公開APIはメモリ上のソースへだけ追加し、配信ファイルは変更しません。ゲームはtestsを読み込みません。
