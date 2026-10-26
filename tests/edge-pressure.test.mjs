@@ -9,7 +9,7 @@ const read=name=>fs.readFileSync(new URL('../src/'+name,import.meta.url),'utf8')
 const sha=text=>createHash('sha256').update(text).digest('hex');
 const oldLine="if(species==='stag'&&ownPosition<=-1.5)return .10;";
 const newLine="if(species==='stag'&&ownPosition<=-1.5)return .05;";
-const source=read('beetle-battle.js'),newSpeciesLine=",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",priorSpeciesSource=source.replace(newSpeciesLine,''),referenceSource=priorSpeciesSource.replace(newLine,oldLine);
+const source=read('beetle-battle.js'),newSpeciesLine=",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",goliathSpeciesLine=",\n goliath:{label:'ゴライアス',role:'短いY字角で押し合う',help:'白黒の胸と、短い二叉の頭角が目印。'}",priorSpeciesSource=source.replace(newSpeciesLine,'').replace(goliathSpeciesLine,''),referenceSource=priorSpeciesSource.replace(newLine,oldLine);
 const load=source=>import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const reference=await load(referenceSource);
 // Test-only exposure, never written to or exported from production runtime.
@@ -26,7 +26,7 @@ test('old species retain the hash-pinned single edge adjustment beside the exact
  assert.equal(source.split(newLine).length,2);assert.equal(source.includes(oldLine),false);
  assert.equal(sha(referenceSource),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b');
  assert.notEqual(priorSpeciesSource,source);assert.equal(referenceSource.replace(oldLine,newLine),priorSpeciesSource);
- assert.deepEqual(Object.fromEntries(Object.entries(current.BATTLE_SPECIES).filter(([key])=>key!=='elephant')),reference.BATTLE_SPECIES);assert.deepEqual(current.BATTLE_LIMITS,reference.BATTLE_LIMITS);
+ assert.deepEqual(Object.fromEntries(Object.entries(current.BATTLE_SPECIES).filter(([key])=>!['elephant','goliath'].includes(key))),reference.BATTLE_SPECIES);assert.deepEqual(current.BATTLE_LIMITS,reference.BATTLE_LIMITS);
  assert.deepEqual(Object.keys(current).sort(),Object.keys(reference).sort());
  assert.equal(current.BATTLE_SPECIES.stag.help,'端に近づいたときの踏ん張りが少し得意。');
 });
@@ -40,7 +40,7 @@ test('only stag at or beyond its losing-side -1.5 boundary retains a reduced pos
 });
 
 test('every non-stag ordered matchup keeps all state output identical on two fixed seeds',()=>{
- const species=Object.keys(current.BATTLE_SPECIES).filter(s=>s!=='stag'&&s!=='elephant');assert.equal(species.length,5);let matches=0;
+ const species=Object.keys(current.BATTLE_SPECIES).filter(s=>!['stag','elephant','goliath'].includes(s));assert.equal(species.length,5);let matches=0;
  for(const playerSpecies of species)for(const opponentSpecies of species)for(const seed of[0,17]){
   const options={playerSpecies,opponentSpecies,seed};let a=reference.createBattle(options),b=current.createBattle(options);
   assert.deepEqual(b,a);
@@ -82,10 +82,17 @@ test('old six-species contact/landing/ring-out paths are unchanged apart from ex
   'battle-choreography.js':'3979b9eae782743f2f7a13d1b0c2d746d587ad787307ce1ef5c7db45e7565673',
   'battle-pose.js':'56756df3184b582dac9ccfc34c5214e31e21f6cd95f3f495e3df54c58c0628db'
  };
- // Remove only explicit elephant adapter branches before comparing the old six-species code.
+ // Remove only the explicit new short-horn adapter before applying the prior
+ // elephant/large-giant normalization. Actual old seven-species poses are also
+ // compared independently; this guard never treats changed rules as metadata.
+ const beforeGoliath=(text,name)=>{
+  if(name==='battle-view.js')text=text.replace("   attack.rig.resetContactTargets();receive.rig.resetContactTargets();\n",'').replace("   if(attack.species==='goliath'){attack.rig.selectFrontWeapon(sign);receive.rig.selectFrontContact(-sign);}\n",'');
+  if(name==='battle-pose.js')text=text.replace("let contactMesh=hit.object;const contactLocal=","const contactMesh=hit.object,contactLocal=").replace(" const defaultWeaponIndex=weaponIndex,defaultContactMesh=contactMesh,defaultContactLocal=contactLocal.clone();\n",'').replace(/  resetContactTargets\(\)\{[\s\S]*?(?=  setJaws\()/,'').replace("restore(){rig.resetContactTargets();","restore(){");
+  return text.replaceAll(",'goliath'",'').replaceAll("['elephant'].includes(attack.species)","attack.species==='elephant'").replaceAll("['elephant'].includes(species)","species==='elephant'");
+ }; // Remove only explicit elephant adapter branches before comparing the old six-species code.
  const oldView=text=>text.replace(" const scaledGiantPair=[player,opponent].some(e=>e.species==='giantstag'&&e.model.userData.individualScale>1);\n","").replace("createBattleRig(e.model,e.species,{groundedKnees:scaledGiantPair&&e.species==='giantstag'})","createBattleRig(e.model,e.species)").replace("'atlas','giantstag','elephant']","'atlas','giantstag']").replace("attack.species==='elephant'?0:","").replace("['rhino','atlas','elephant']","['rhino','atlas']").replace("let low=attack.rig.torsoBox(scratch).min.y;if(attack.species==='elephant'){const mesh=attack.rig.weapon.mesh,a=mesh.geometry.attributes.position;for(let i=0;i<a.count;i++)low=Math.min(low,corner.fromBufferAttribute(a,i).applyMatrix4(mesh.matrixWorld).y);}","const low=attack.rig.torsoBox(scratch).min.y;");
  const oldPose=text=>text.replace("createBattleRig(model,species,{groundedKnees=false}={})","createBattleRig(model,species)").replace("if(species==='elephant'||groundedKnees){const vertical=","if(species==='elephant'){const vertical=").replace("['giantstag','elephant'].includes(species)","species==='giantstag'").replace("species==='elephant'?[data.weaponHint.mesh]:","").replaceAll("['atlas','elephant'].includes(species)","species==='atlas'").replace("angle*(species==='elephant'?.60:.70)","angle*.70").replace("if(species==='elephant'){const vertical=new T.Vector3(0,1,0).transformDirection(inv);vertical.addScaledVector(axis,-vertical.dot(axis));const capacity=vertical.length();if(capacity>1e-8&&h>1e-8){vertical.divideScalar(capacity);const center=hip.clone().addScaledVector(axis,a).applyMatrix4(parent.matrixWorld),required=(.006*rig.scale-center.y)/(h*rig.scale*capacity);if(up.dot(vertical)<required){const k=Math.min(1,Math.max(-1,required)),side=up.clone().addScaledVector(vertical,-up.dot(vertical));if(side.lengthSq()<1e-12)side.crossVectors(axis,vertical);side.normalize();up.copy(vertical).multiplyScalar(k).addScaledVector(side,Math.sqrt(Math.max(0,1-k*k)));}}}","");
- for(const [name,hash]of Object.entries(expected)){let text=read(name).replace(/\?v=[^'"\s]+/g,'');if(name==='battle-view.js')text=oldView(text);if(name==='battle-pose.js')text=oldPose(text);assert.equal(sha(text),hash,name);}
+ for(const [name,hash]of Object.entries(expected)){let text=read(name).replace(/\?v=[^'"\s]+/g,'');if(name==='battle-view.js')text=oldView(beforeGoliath(text,name));if(name==='battle-pose.js')text=oldPose(beforeGoliath(text,name));assert.equal(sha(text),hash,name);}
  // This is preservation evidence, not a substitute for an actual terminal-view
  // test on the few newly resolved outcomes (owned by the integration task).
 });

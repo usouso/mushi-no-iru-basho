@@ -1,4 +1,4 @@
-import {sampleBeePose,BEE_DIMENSIONS as D} from './bee-kinematics.js?v=0.27.0&b=572abb81497f';
+import {sampleBeePose,BEE_DIMENSIONS as D} from './bee-kinematics.js?v=0.28.0&b=52b81ed2c56b';
 /** Original Japanese honeybee-worker approximation. No feeding contact, colony, attack or stinging rig. */
 const T=window.THREE;
 function ellipsoid(parent,p,s,material){const m=new T.Mesh(new T.SphereGeometry(1,8,6),material);m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}

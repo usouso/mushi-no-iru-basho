@@ -1,4 +1,4 @@
-import {sampleMantisPose,MANTIS_DIMENSIONS as D} from './mantis-kinematics.js?v=0.27.0&b=572abb81497f';
+import {sampleMantisPose,MANTIS_DIMENSIONS as D} from './mantis-kinematics.js?v=0.28.0&b=52b81ed2c56b';
 /** Original procedural male T. sinensis display study, not registered in the game.
  * Four supporting legs, two folded capture legs, two tegmina and two hindwings.
  * CPU geometry does not establish naturalness or actual screen readability. */

@@ -1,20 +1,21 @@
-import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.27.0&b=572abb81497f';
-import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.27.0&b=572abb81497f';
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.27.0&b=572abb81497f';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.27.0&b=572abb81497f';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.27.0&b=572abb81497f';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.27.0&b=572abb81497f';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.27.0&b=572abb81497f';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.27.0&b=572abb81497f';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.27.0&b=572abb81497f';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.27.0&b=572abb81497f';
-import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.27.0&b=572abb81497f';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.27.0&b=572abb81497f';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.27.0&b=572abb81497f';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.27.0&b=572abb81497f';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.27.0&b=572abb81497f';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.27.0&b=572abb81497f';
-import {applyInsectReadability} from './insect-readability.js?v=0.27.0&b=572abb81497f';
+import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.28.0&b=52b81ed2c56b';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.28.0&b=52b81ed2c56b';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {applyInsectReadability} from './insect-readability.js?v=0.28.0&b=52b81ed2c56b';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -751,6 +752,7 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
 }
 
 function buildInsectModel(species, { inspection = false, fieldFlight = false } = {}) {
+  if(species==='goliath'){const root=createGoliathModel({inspection});root.userData.species='goliath';return root;}
   if(species==='elephant'){const root=createElephantModel({inspection});root.userData.species='elephant';return root;}
   if(species==='giantstag'){const root=createGiantStagModel({inspection});root.userData.species='giantstag';return root;}
   if(species==='atlas'){const root=createAtlasModel({inspection});root.userData.species='atlas';return root;}
@@ -809,6 +811,10 @@ export function updateInsectModel(group, item, time = 0, support = null) {
   if(group.userData.species==='elephant'){
     if(!group.userData.inspection)group.visible=!item.caught;
     return updateElephantModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,headLift:item.headLift,warningBlend:item.warningBlend,phase:item.elephantPhase,caught:item.caught});
+  }
+  if(group.userData.species==='goliath'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateGoliathModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,warningBlend:item.warningBlend,phase:item.goliathPhase,caught:item.caught});
   }
   if(group.userData.species==='giantstag'){
     if(!group.userData.inspection)group.visible=!item.caught;

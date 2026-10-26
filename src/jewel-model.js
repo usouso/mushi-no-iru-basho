@@ -1,4 +1,4 @@
-import {sampleJewelPose,JEWEL_DIMENSIONS as D} from './jewel-kinematics.js?v=0.27.0&b=572abb81497f';
+import {sampleJewelPose,JEWEL_DIMENSIONS as D} from './jewel-kinematics.js?v=0.28.0&b=52b81ed2c56b';
 /** Original wedge-shaped jewel beetle. Closed wings and leaf walking only; no feeding or flight.
  * Metallic materials approximate appearance, not physical structural-color spectra. */
 const T=window.THREE;
