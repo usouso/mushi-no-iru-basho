@@ -59,7 +59,7 @@ test('shore-height downward capture, inspection memo, water release and paused c
   }
   elements.get('inspect-journal-button').click();assert.equal(g.state.mode,'journal');
   const editor=find('fj-note');assert.equal(document.activeElement,editor);editor.value=note;editor.dispatchEvent(new Event('input'));
-  assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,23);
+  assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,24);
   const heldTime=g.simulation.time;frame(20);assert.equal(g.simulation.time,heldTime);assert.deepEqual(point(i),caughtAt);
   key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'inspect');
   g.release({lock:false});assert.equal(g.state.mode,'playing');assert.equal(g.simulation.caught,null);assert.deepEqual(point(i),caughtAt);
@@ -71,7 +71,7 @@ test('shore-height downward capture, inspection memo, water release and paused c
  await g.journal.flush();
  const oldRipples=[...g.waterHabitat.meshes];let disposedGeometry=0;
  for(const geometry of new Set(oldRipples.map(m=>m.geometry)))geometry.addEventListener('dispose',()=>disposedGeometry++);
- for(const [id,count]of [['tropical',10],['understory',5],['meadow',29]]){
+ for(const [id,count]of [['tropical',11],['understory',5],['meadow',29]]){
   choose(id);assert.equal(g.simulation.items.length,count);assert.equal(g.simulation.items.filter(i=>i.species==='waterstrider').length,id==='meadow'?1:0);
   assert.equal(!!g.waterHabitat,id==='meadow');assert.equal(g.journal.entries.find(e=>e.species==='waterstrider').note,note);
  }

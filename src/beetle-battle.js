@@ -17,7 +17,8 @@ export const BATTLE_SPECIES=freeze({
  stag:{label:'ノコギリクワガタ',role:'端で踏みとどまる',help:'端に近づいたときの踏ん張りが少し得意。'},
  metallifer:{label:'メタリフェルホソアカクワガタ',role:'長い顎を掛け直す',help:'顎を掛け直した後の押し合いが少し得意。'},
  atlas:{label:'アトラスオオカブト',role:'三本の角で掛かりを保つ',help:'押した直後の踏ん張りが少し得意。'},
- giantstag:{label:'オオクワガタ',role:'幅広い顎で押し合う',help:'幅広い頭と太い大顎が目印。'}
+ giantstag:{label:'オオクワガタ',role:'幅広い顎で押し合う',help:'幅広い頭と太い大顎が目印。'},
+ elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}
 });
 // Integer mixing is deliberately independent of Math.random and wall time.
 // Domain-separated slots give a repeatable temperament and exchange variation.

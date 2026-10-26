@@ -62,7 +62,8 @@ test('title selector does not change live habitat until start; default meadow st
  assert.equal(g.state.mode,'title');assert.equal(g.state.habitat,'meadow');assert.equal(g.simulation.items.length,29);
  const original=g.world;elements.get('habitat-select').value='tropical';elements.get('habitat-select').dispatchEvent(new Event('change'));frame(3);
  assert.equal(g.state.mode,'title');assert.equal(g.world,original);assert.equal(g.simulation.items.length,29);
- elements.get('start-button').click();frame(1);assert.equal(g.state.habitat,'tropical');assert.equal(g.simulation.items.length,10);
+ elements.get('start-button').click();frame(1);assert.equal(g.state.habitat,'tropical');assert.equal(g.simulation.items.length,11);
+ assert.deepEqual(g.simulation.items.map(i=>[i.id,i.species]),['morpho','morpho','morpho','morpho','hercules','hercules','leafcutterant','leafcutterant','leafcutterant','leafcutterant','elephant'].map((species,i)=>['insect-'+(i+1),species]),'old ten IDs/order remain; elephant is appended insect-11');
  assert.ok(g.simulation.items.filter(i=>i.species==='morpho').length===4&&g.simulation.items.every(i=>!i.caught));assert.equal(g.state.player.x,0);assert.equal(g.state.player.z,12);assert.equal(g.state.captures,0);
  const enteredWorld=g.world;g.swing();assert.equal(g.state.cooldown,.7);g.pause();g.title();assert.equal(g.state.cooldown,0);g.start();assert.equal(g.world,enteredWorld,'same-habitat entry reuses its world');
  g.swing();assert.equal(g.state.swing,.001,'net is immediately reusable after title re-entry');g.restart();
@@ -77,7 +78,7 @@ test('morpho actual capture, inspection, journal note, release and recapture com
 });
 test('restart retains selected habitat and notes but resets held catch, counters and modifier state',()=>{
  const journal=JSON.stringify(g.journal.entries);elements.get('habitat-select').value='meadow';g.restart();frame(1);
- assert.equal(g.state.habitat,'tropical');assert.equal(g.simulation.items.length,10);assert.equal(g.simulation.caught,null);assert.equal(g.state.captures,0);assert.deepEqual(g.state.seen,[]);
+ assert.equal(g.state.habitat,'tropical');assert.equal(g.simulation.items.length,11);assert.equal(g.simulation.caught,null);assert.equal(g.state.captures,0);assert.deepEqual(g.state.seen,[]);
  assert.equal(g.state.player.z,12);assert.equal(g.state.player.running,false);assert.equal(g.state.player.quiet,false);assert.equal(JSON.stringify(g.journal.entries),journal);
  g.pause();const elapsed=g.state.elapsed;frame(10);assert.equal(g.state.elapsed,elapsed);g.resume({lock:false});assert.equal(g.state.habitat,'tropical');
 });
@@ -95,7 +96,7 @@ test('four actual species records and notes survive habitat switching and fresh 
  assert.equal(g.journal.entries.length,4);const expected=g.journal.entries;
  await g.journal.flush();const {createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
  choose('tropical');assert.equal(g.simulation.caught,null);assert.deepEqual(g.journal.entries,expected);
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,23);g.closeJournal({lock:false});
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,24);g.closeJournal({lock:false});
  choose('meadow');assert.deepEqual(g.journal.entries,expected);
 });
 test('repeated habitat switches dispose obsolete geometry/material/world textures while retaining cached insect maps',()=>{

@@ -26,7 +26,7 @@ test('stationary observation spans two circuits with fixed cargo, then both role
  const mouse=(type,button)=>{const target=elements.get('game-canvas'),e=new Event(type,{cancelable:true});Object.defineProperties(e,{target:{value:target},button:{value:button}});(type==='mousedown'?target:document).dispatchEvent(e);};
  const bgm=()=>a.liveAssets().filter(n=>n.buffer.file==='bgm_temperate_preview_01.ogg');
  t.after(()=>window.dispatchEvent(new Event('pagehide')));
- choose('tropical');await a.flush();assert.equal(g.simulation.items.length,10);assert.equal(bgm().length,0);
+ choose('tropical');await a.flush();assert.equal(g.simulation.items.length,11);assert.equal(bgm().length,0);
  assert.equal(g.simulation.items.filter(i=>i.species==='morpho').length,4);assert.equal(g.simulation.items.filter(i=>i.species==='hercules').length,2);
  assert.equal(g.simulation.items.filter(i=>i.species==='leafcutterant').length,4);assert.equal(a.requests.length,13);assert.ok(!a.requests.some(r=>/ant|leafcutter/.test(r.file)));
  // Keep the actual main player stationary while all four workers complete
@@ -73,6 +73,6 @@ test('stationary observation spans two circuits with fixed cargo, then both role
   step(1);assert.equal(g.models.get(i.id).getObjectByName('ant-carried-leaf').visible,i.carryingLeaf);assert.equal(i.carryingLeaf,cargo);
  }
  await g.journal.flush();const note=g.journal.entries.find(e=>e.species==='leafcutterant').note;
- for(const[id,count]of[['meadow',29],['understory',5],['tropical',10]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(!!g.antHabitat,id==='tropical');assert.equal(bgm().length,id==='meadow'?1:0);assert.equal(g.journal.entries.find(e=>e.species==='leafcutterant').note,note);}
+ for(const[id,count]of[['meadow',29],['understory',5],['tropical',11]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(!!g.antHabitat,id==='tropical');assert.equal(bgm().length,id==='meadow'?1:0);assert.equal(g.journal.entries.find(e=>e.species==='leafcutterant').note,note);}
  const{createJournal}=await import(h.moduleURL('journal.js'));assert.equal(createJournal(localStorage).entries.find(e=>e.species==='leafcutterant').note,note);
 });

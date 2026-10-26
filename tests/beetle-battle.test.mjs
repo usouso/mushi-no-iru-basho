@@ -10,9 +10,9 @@ function frozen(x){if(!x||typeof x!=='object')return;assert.ok(Object.isFrozen(x
 function play(p,o,seed){let s=fresh(p,o,seed);const history=[s];while(s.phase==='watching'){s=tick(s);history.push(s);}return history;}
 const audits=[];for(const p of species)for(const o of species)for(let seed=0;seed<128;seed++)audits.push({p,o,seed,history:play(p,o,seed)});
 
-test('only six eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
+test('only seven eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
  assert.deepEqual(Object.keys(rules).sort(),['BATTLE_LIMITS','BATTLE_SPECIES','advanceBattle','cancelBattle','createBattle'].sort());
- assert.deepEqual(species,['hercules','rhino','stag','metallifer','atlas','giantstag']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
+ assert.deepEqual(species,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
  for(const p of species)for(const o of species){const s=fresh(p,o,0xffffffff);assert.equal(s.phase,'watching');assert.equal(s.seed,0xffffffff);assert.equal(s.elapsed,0);assert.equal(s.turn,1);assert.equal(s.exchanges,0);assert.equal(s.position,0);assert.equal(s.lastExchange,null);assert.equal(s.winner,null);assert.ok(motions.includes(s.intent));frozen(s);}
  assert.equal(createBattle({playerSpecies:'stag',opponentSpecies:'rhino'}).seed,1);
  for(const v of ['butterfly','constructor','__proto__',null,undefined,0])assert.throws(()=>createBattle({playerSpecies:v,opponentSpecies:'rhino'}),TypeError);
@@ -30,7 +30,7 @@ test('intro and fixed exchanges advance only with simulation seconds, never with
  assert.equal(JSON.stringify(s),before);frozen(first);assert.throws(()=>{first.position=99;},TypeError);
 });
 
-test('all thirty-six matchups finish automatically within 59.6 seconds, with finite bounded progress and both winners across fixed test seeds',()=>{
+test('all forty-nine matchups finish automatically within 59.6 seconds, with finite bounded progress and both winners across fixed test seeds',()=>{
  const pairs=new Map();let ringouts=0,timeouts=0;
  for(const {p,o,history} of audits){const key=p+'/'+o;if(!pairs.has(key))pairs.set(key,new Set());const end=history.at(-1);pairs.get(key).add(end.winner);
   assert.equal(end.phase,'finished');assert.ok(end.elapsed>=16.4&&end.elapsed<=59.6);assert.ok(end.elapsed<=BATTLE_LIMITS.maxSeconds);assert.ok(end.exchanges>=9&&end.exchanges<=BATTLE_LIMITS.turns);
@@ -38,7 +38,7 @@ test('all thirty-six matchups finish automatically within 59.6 seconds, with fin
   assert.equal(end.winner,end.finishReason==='ring-out'?(end.position>0?'player':'opponent'):'draw');
   for(const s of history){assert.ok(Number.isFinite(s.position)&&Math.abs(s.position)<=4);assert.ok(Number.isFinite(s.elapsed));for(const energy of [s.playerEnergy,s.opponentEnergy])assert.ok(Number.isInteger(energy)&&energy>=0&&energy<=4);if(s.lastExchange){assert.ok(Math.abs(s.lastExchange.delta)<=.450000001);assert.equal(s.lastExchange.positionAfter,s.position);assert.ok(Math.abs(s.lastExchange.positionBefore+s.lastExchange.delta-s.position)<1e-8);}}
  }
- assert.equal(pairs.size,36);for(const [key,winners] of pairs){assert.ok(winners.has('player'),key);assert.ok(winners.has('opponent'),key);}assert.ok(ringouts>0&&timeouts>0);
+ assert.equal(pairs.size,49);for(const [key,winners] of pairs){assert.ok(winners.has('player'),key);assert.ok(winners.has('opponent'),key);}assert.ok(ringouts>0&&timeouts>0);
  // Counts are test coverage, not an estimate of natural or game spawn rarity.
 });
 
