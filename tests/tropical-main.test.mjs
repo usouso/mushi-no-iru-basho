@@ -59,9 +59,9 @@ function choose(id){g.title();elements.get('habitat-select').value=id;elements.g
 function catchSpecies(species,{wait=true}={}){const i=g.simulation.items.find(i=>i.species===species);assert.ok(i);g.setPose({x:i.x,y:i.y+.5,z:i.z+1.5,yaw:0,pitch:-.3});g.swing();assert.equal(g.simulation.caught?.species,species);if(wait){frame(22);assert.equal(g.state.mode,'inspect');}return i;}
 function resources(scene){const all=new Set(),worldMaps=new Set(),insectMaps=new Set();for(const root of scene.children){if(root.isCamera)continue;root.traverse(o=>{if(o.geometry)all.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){all.add(m);for(const value of Object.values(m))if(value?.isTexture)(root.userData.species?insectMaps:worldMaps).add(value);}});}return {all,worldMaps,insectMaps};}
 test('title selector does not change live habitat until start; default meadow stays eighteen',()=>{
- assert.equal(g.state.mode,'title');assert.equal(g.state.habitat,'meadow');assert.equal(g.simulation.items.length,21);
+ assert.equal(g.state.mode,'title');assert.equal(g.state.habitat,'meadow');assert.equal(g.simulation.items.length,22);
  const original=g.world;elements.get('habitat-select').value='tropical';elements.get('habitat-select').dispatchEvent(new Event('change'));frame(3);
- assert.equal(g.state.mode,'title');assert.equal(g.world,original);assert.equal(g.simulation.items.length,21);
+ assert.equal(g.state.mode,'title');assert.equal(g.world,original);assert.equal(g.simulation.items.length,22);
  elements.get('start-button').click();frame(1);assert.equal(g.state.habitat,'tropical');assert.equal(g.simulation.items.length,6);
  assert.ok(g.simulation.items.filter(i=>i.species==='morpho').length===4&&g.simulation.items.every(i=>!i.caught));assert.equal(g.state.player.x,0);assert.equal(g.state.player.z,12);assert.equal(g.state.captures,0);
 });
@@ -83,7 +83,7 @@ test('switching during pending catch discards held state without phantom inspect
  g.restart();catchSpecies('morpho',{wait:false});assert.equal(g.state.mode,'playing');
  elements.get('volume').value='0';elements.get('volume').dispatchEvent(new Event('input'));elements.get('sensitivity').value='1.4';elements.get('sensitivity').dispatchEvent(new Event('change'));
  const old=g.simulation;choose('meadow');frame(40);await settle();
- assert.notEqual(g.simulation,old);assert.equal(old.caught,null);assert.equal(g.simulation.caught,null);assert.equal(g.state.mode,'playing');assert.equal(g.simulation.items.length,21);
+ assert.notEqual(g.simulation,old);assert.equal(old.caught,null);assert.equal(g.simulation.caught,null);assert.equal(g.state.mode,'playing');assert.equal(g.simulation.items.length,22);
  assert.equal(g.state.captures,0);assert.deepEqual(g.state.seen,[]);assert.equal(g.state.volume,0);assert.equal(g.state.sensitivity,1.4);assert.equal(master().value,0);
  assert.equal(g.journal.entries.find(e=>e.species==='morpho').note,'青い表と褐色の裏');
  key('keydown','KeyW');const z=g.state.player.z;frame(10);key('keyup','KeyW');assert.ok(g.state.player.z<z);
@@ -93,7 +93,7 @@ test('four actual species records and notes survive habitat switching and fresh 
  assert.equal(g.journal.entries.length,4);const expected=g.journal.entries;
  await g.journal.flush();const {createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
  choose('tropical');assert.equal(g.simulation.caught,null);assert.deepEqual(g.journal.entries,expected);
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,6);g.closeJournal({lock:false});
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,8);g.closeJournal({lock:false});
  choose('meadow');assert.deepEqual(g.journal.entries,expected);
 });
 test('repeated habitat switches dispose obsolete geometry/material/world textures while retaining cached insect maps',()=>{
