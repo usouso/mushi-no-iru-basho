@@ -1,4 +1,4 @@
-import {sampleLonghornPose,LONGHORN_DIMENSIONS as D} from './longhorn-kinematics.js?v=0.18.0&b=f75693c4884e';
+import {sampleLonghornPose,LONGHORN_DIMENSIONS as D} from './longhorn-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
 /** Original longhorn display with long segmented antennae. Fixed closed wings; no feeding or flight. */
 const T=window.THREE;
 function ellipsoid(parent,p,s,material){const m=new T.Mesh(new T.SphereGeometry(1,8,6),material);m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}

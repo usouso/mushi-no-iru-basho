@@ -1,8 +1,8 @@
-import {createInsectModel} from './insect-models.js?v=0.18.0&b=f75693c4884e';
+import {createInsectModel} from './insect-models.js?v=0.18.1&b=0f85c9d0b1ba';
 
 /** Small presentation-only sumo table. Automatic exchanges are supplied
  * by the pure watching/finished/cancelled battle snapshot. This is a restrained push/stance illustration,
- * not a new realistic walking/fighting simulation. No renderer or audio owned.
+ * with close framing and brief contact accents. No battle rules, renderer or audio owned.
  */
 const T=window.THREE;
 const ELIGIBLE=new Set(['rhino','stag','hercules','metallifer']);
@@ -25,7 +25,8 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
   const bodyBounds=model.userData.visual?.userData.bodyBounds;
   if(bodyBounds)scratch.copy(bodyBounds);else if(model.userData.bodyMesh)scratch.setFromObject(model.userData.bodyMesh);
   const bodyCenter=scratch.getCenter(new T.Vector3());
-  anchor.rotation.y=heading;return{anchor,model,front,height,bodyCenter,baseX:0};
+  const jaws=(model.userData.jaws||[]).map(jaw=>{const pivot=jaw.pivot||jaw;return{pivot,angle:pivot.rotation.y,side:jaw.side||Math.sign(pivot.position.x)};});
+  anchor.rotation.y=heading;return{anchor,model,front,height,bodyCenter,jaws,baseX:0};
  }
  const player=beetle(playerSpecies,'battle-player',Math.PI/2),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2);
  // Heads point toward the centre (+Z in each existing model). Keep horn/jaw
@@ -47,38 +48,51 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
  const positiveEnd=ringRadius-corner.copy(opponent.bodyCenter).applyMatrix4(opponent.anchor.matrixWorld).x;
  const negativeEnd=-ringRadius-corner.copy(player.bodyCenter).applyMatrix4(player.anchor.matrixWorld).x;
  const mapPosition=value=>{const p=clamp(finite(value),-4,4);return p>=0?p/4*positiveEnd:-p/4*negativeEnd;};
- // Conservative content box includes the entire table and all allowed stance/
- // push displacement. Fit it above the lower result area, even in portrait.
- fit.min.set(-radius*1.08,-.14,-radius*1.08);fit.max.set(radius*1.08,Math.max(player.height,opponent.height)+.12,radius*1.08);
- let disposed=false,displayPosition=0,exchangeAge=1,exchangeKey=null;
- function resize(nextAspect){
-  if(disposed)return;
-  const a=clamp(finite(nextAspect,1),.1,10);let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+ // Keep a constant close scale based on the insects, not the whole stump.
+ // The stump may leave the viewport, like ground in a close arena shot. Both
+ // complete beetles are fitted every stance, including long jaws and portrait.
+ scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);
+ const closeSize=fit.getSize(new T.Vector3()).addScalar(.20);
+ const dust=new T.Group();dust.name='battle-contact-dust';scene.add(dust);
+ const dustGeometry=new T.SphereGeometry(.009,5,3),dustMaterial=new T.MeshBasicMaterial({color:'#bfa67e',transparent:true,opacity:0,depthWrite:false});
+ for(let i=0;i<6;i++){const mote=new T.Mesh(dustGeometry,dustMaterial);dust.add(mote);}dust.visible=false;
+ let disposed=false,displayPosition=0,exchangeAge=1,exchangeKey=null,viewAspect=1;
+ function frameBeetles(){
+  scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);
+  const centre=fit.getCenter(new T.Vector3()),safe=fit.clone().expandByScalar(.035),stable=new T.Box3().setFromCenterAndSize(centre,closeSize);safe.union(stable);
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
   camera.updateMatrixWorld(true);
-  for(const x of[fit.min.x,fit.max.x])for(const y of[fit.min.y,fit.max.y])for(const z of[fit.min.z,fit.max.z]){
+  for(const x of[safe.min.x,safe.max.x])for(const y of[safe.min.y,safe.max.y])for(const z of[safe.min.z,safe.max.z]){
    corner.set(x,y,z).applyMatrix4(camera.matrixWorldInverse);minX=Math.min(minX,corner.x);maxX=Math.max(maxX,corner.x);minY=Math.min(minY,corner.y);maxY=Math.max(maxY,corner.y);
   }
-  // NDC x [-.90,.90], y [-.08,.84]: 46% of screen height is reserved
-  // beneath the table. Caller owns the compact result/cancel panel and its layout.
-  const span=Math.max((maxX-minX)/(.90*a),(maxY-minY)/.46),cy=(minY+maxY)/2-.38*span/2,cx=(minX+maxX)/2;
-  camera.left=cx-span*a/2;camera.right=cx+span*a/2;camera.top=cy+span/2;camera.bottom=cy-span/2;camera.updateProjectionMatrix();
+  // Insects occupy the central arena; only compact edge UI is reserved.
+  const span=Math.max((maxX-minX)/(.88*viewAspect),(maxY-minY)/.58),cy=(minY+maxY)/2,cx=(minX+maxX)/2;
+  camera.left=cx-span*viewAspect/2;camera.right=cx+span*viewAspect/2;camera.top=cy+span/2;camera.bottom=cy-span/2;camera.updateProjectionMatrix();
  }
+ function resize(nextAspect){if(disposed)return;viewAspect=clamp(finite(nextAspect,1),.1,10);frameBeetles();}
  function update(snapshot={},dt=0,{reducedMotion=false}={}){
   if(disposed)return;
   const step=clamp(finite(dt),0,.1),position=mapPosition(snapshot.position);
   const last=snapshot.lastExchange,key=last?`${finite(snapshot.exchanges)}:${finite(last.positionBefore)}:${finite(last.positionAfter)}:${finite(last.delta)}`:null;
   if(key!==exchangeKey){exchangeKey=key;exchangeAge=0;}
   exchangeAge=Math.min(1,exchangeAge+step);
-  const resolving=!!last&&exchangeAge<.65,p=clamp(exchangeAge/.65,0,1),ease=p*p*(3-2*p);
+  const resolving=!!last&&exchangeAge<.85;
+  // A 70ms contact hold is presentation only: simulation time/results are not paused.
+  const clipTime=exchangeAge<=.18?exchangeAge:exchangeAge<.25?.18:exchangeAge-.07;
+  const progress=clamp((clipTime-.18)/.60,0,1),ease=progress*progress*(3-2*progress);
   displayPosition=reducedMotion?position:resolving?mapPosition(last.positionBefore)+(position-mapPosition(last.positionBefore))*ease:position;
   // Show BOTH automatic resolved actions; never preview a future decision. Under
   // reduced motion this is one fixed action pose, not an oscillating clip.
-  const amount=resolving?(reducedMotion?1:Math.sin(p*Math.PI)):0;
+  const attack=clamp(clipTime/.18,0,1),decay=clamp((clipTime-.18)/.60,0,1);
+  const amount=resolving&&!reducedMotion?(clipTime<.18?attack*attack*(3-2*attack):1-decay*decay*(3-2*decay)):0;
   function actionPose(entry,sign,action){
    const push=action==='push',evade=action==='evade',brace=action==='brace';
-   const approach=(push?.035:brace?-.012:0)*amount*sign;
-   const lean=(push?-.055:brace?.035:0)*amount*sign;
-   place(entry,entry.baseX+displayPosition+approach,sign*Math.PI/2+(evade?.16*amount*sign:0),lean,evade?.09*amount*sign:0);
+   const reaction=last&&last.delta*sign<0?-.025:0;
+   const approach=((push?.055:brace?-.015:0)+reaction)*amount*sign;
+   // Stay on all six feet: horizontal drive, sidestep and jaw grip, not a
+   // whole-model airborne tilt. This is a short illustration, not new gait AI.
+   for(const jaw of entry.jaws)jaw.pivot.rotation.y=jaw.angle+jaw.side*(push?.065:brace?.025:0)*amount;
+   place(entry,entry.baseX+displayPosition+approach,sign*Math.PI/2+(evade?.22*amount*sign:0),0,evade?.105*amount*sign:0);
   }
   actionPose(player,1,resolving?last.playerAction:null);
   actionPose(opponent,-1,resolving?last.opponentAction:null);
@@ -87,6 +101,14 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
   scratch.setFromObject(player.anchor);otherBox.setFromObject(opponent.anchor);
   const overlap=.004-(otherBox.min.x-scratch.max.x);
   if(overlap>0){player.anchor.position.x-=overlap/2;opponent.anchor.position.x+=overlap/2;player.anchor.updateMatrixWorld(true);opponent.anchor.updateMatrixWorld(true);}
+  const puff=clamp((exchangeAge-.18)/.35,0,1);
+  dust.visible=!reducedMotion&&resolving&&exchangeAge>=.18&&exchangeAge<.53&&(last.playerAction==='push'||last.opponentAction==='push');
+  if(dust.visible){
+   scratch.setFromObject(player.anchor);otherBox.setFromObject(opponent.anchor);dust.position.set((scratch.max.x+otherBox.min.x)/2,.006,(player.anchor.position.z+opponent.anchor.position.z)/2);
+   dustMaterial.opacity=.42*(1-puff);
+   dust.children.forEach((mote,i)=>{const a=i*Math.PI/3;mote.position.set(Math.cos(a)*(.015+puff*.12),Math.sin(puff*Math.PI)*(.012+i%2*.012),Math.sin(a)*(.015+puff*.08));mote.scale.setScalar(.7+puff*.9);});
+  }
+  frameBeetles();
  }
  function dispose(){
   if(disposed)return;disposed=true;const geometries=new Set(),materials=new Set();

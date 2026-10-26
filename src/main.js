@@ -1,32 +1,32 @@
-import { createWorld } from './world.js?v=0.18.0&b=f75693c4884e';
-import { createTropicalWorld } from './world-tropical.js?v=0.18.0&b=f75693c4884e';
-import { createUnderstoryWorld } from './world-understory.js?v=0.18.0&b=f75693c4884e';
-import { createNightWorld } from './world-night.js?v=0.18.0&b=f75693c4884e';
-import { createSavannaWorld } from './world-savanna.js?v=0.18.0&b=f75693c4884e';
-import { createWaterHabitat } from './water-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createDivingHabitat } from './diving-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createMantisHabitat } from './mantis-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createBeeHabitat } from './bee-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createJewelHabitat } from './jewel-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createLonghornHabitat } from './longhorn-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createRhinoHabitat } from './rhino-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createStagHabitat } from './stag-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createAntHabitat } from './ant-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.18.0&b=f75693c4884e';
-import { createInsects, SPECIES } from './insects.js?v=0.18.0&b=f75693c4884e';
-import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.18.0&b=f75693c4884e';
-import { createInput } from './input.js?v=0.18.0&b=f75693c4884e';
-import { createAudio } from './audio.js?v=0.18.0&b=f75693c4884e';
-import { createNet } from './net.js?v=0.18.0&b=f75693c4884e';
-import { createJournal } from './journal.js?v=0.18.0&b=f75693c4884e';
-import { createJournalUI } from './journal-ui.js?v=0.18.0&b=f75693c4884e';
-import { createCaptureVisibility } from './capture-visibility.js?v=0.18.0&b=f75693c4884e';
-import { createCompanionRoster, isCompanionSpecies } from './companion-roster.js?v=0.18.0&b=f75693c4884e';
-import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.18.0&b=f75693c4884e';
-import { createBattleView } from './battle-view.js?v=0.18.0&b=f75693c4884e';
+import { createWorld } from './world.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createTropicalWorld } from './world-tropical.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createUnderstoryWorld } from './world-understory.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createNightWorld } from './world-night.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createSavannaWorld } from './world-savanna.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createWaterHabitat } from './water-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createDivingHabitat } from './diving-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createMantisHabitat } from './mantis-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createBeeHabitat } from './bee-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createJewelHabitat } from './jewel-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createLonghornHabitat } from './longhorn-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createRhinoHabitat } from './rhino-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createStagHabitat } from './stag-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createAntHabitat } from './ant-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createInsects, SPECIES } from './insects.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createInput } from './input.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createAudio } from './audio.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createNet } from './net.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createJournal } from './journal.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createJournalUI } from './journal-ui.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createCaptureVisibility } from './capture-visibility.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createCompanionRoster, isCompanionSpecies } from './companion-roster.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createBattleView } from './battle-view.js?v=0.18.1&b=0f85c9d0b1ba';
 
 const HABITATS={
  meadow:{name:'温帯の草地・林縁',create:createWorld,hint:'白い翅が、草花の上でひと休み。近づいてみよう。'},
@@ -47,7 +47,7 @@ const insectStates=new Map();
 // Own the lock transition explicitly; browsers may queue duplicate unlock events.
 let pointerOwned=false;
 let journal,journalUI,journalReturn='playing';
-let roster,companionReturn='playing',releaseArmed=null,battle,battleView,battleSuspended=false,companionEdited=false;
+let roster,companionReturn='playing',releaseArmed=null,battle,battleView,battleSuspended=false,battleAudioFresh=false,companionEdited=false;
 const forward=new THREE.Vector3();
 function fatal(message){state.mode='error';$('error-message').textContent=message;$('error-screen').hidden=false;$('start-screen').hidden=true;$('hud').hidden=true;audio?.pause();audio?.dispose?.();journalUI?.close();$('app-shell').inert=false;canvas.inert=false;}
 function toast(text,duration=3){$('toast').textContent=text;toastTime=duration;}
@@ -306,31 +306,43 @@ function startBattle(){
  const entry=roster.entries.find(e=>e.id===$('companion-select').value),opponentSpecies=$('battle-opponent-select').value;
  if(!entry||!Object.prototype.hasOwnProperty.call(BATTLE_SPECIES,opponentSpecies))return;
  battle=createBattle({playerSpecies:entry.species,opponentSpecies,seed:battleSeed()});battleView?.dispose();battleView=createBattleView({playerSpecies:entry.species,opponentSpecies,aspect:innerWidth/innerHeight});battleSuspended=document.hidden||document.hasFocus?.()===false;
- releaseArmed=null;state.mode='battle';input.clear();audio.pause();syncScreens();refreshBattle();$('battle-exit-button').focus({preventScroll:true});
+ releaseArmed=null;state.mode='battle';battleAudioFresh=true;input.clear();if(battleSuspended)audio.pause();else resumeBattleAudio();syncScreens();refreshBattle();$('battle-exit-button').focus({preventScroll:true});
+}
+function battleMoveName(species,action){
+ if(action==='evade')return 'かわし返し';if(action==='brace')return '踏んばり';
+ return {rhino:'角押し',stag:'大あご押し',hercules:'大角突進',metallifer:'長あご攻め'}[species]||'押し込み';
 }
 function refreshBattle(){
- if(!battle)return;const watching=battle.phase==='watching';
- $('battle-heading').textContent=`自分（左）：${BATTLE_SPECIES[battle.playerSpecies].label} / COM（右）：${BATTLE_SPECIES[battle.opponentSpecies].label}`;
- $('battle-state').textContent=watching?(battleSuspended?'一時停止中 · この画面に戻ると続きます':battle.exchanges===0?'角や顎を合わせています':'押し合いを見守っています'):'取り組み終了';
- $('battle-position').textContent=Math.abs(battle.position)<.1?'中央 · 互角':battle.position>0?'自分が押し込んでいます →':'← COMが押し込んでいます';
- $('battle-cue').textContent=watching?'操作は不要です。相手を押し出すか、最後に押し込んだ側が勝ち。':battle.winner==='player'?'こちらの勝ち！':battle.winner==='opponent'?'今回は相手の勝ち。':'引き分け。';
- $('battle-result').textContent=battle.lastExchange?.reason||'約20秒の練習試合。途中でやめても、仲間はいなくなりません。';
- $('battle-finish-button').hidden=watching;$('battle-exit-button').textContent=watching?'対戦をやめて仲間へ':'仲間の一覧へ';
+ if(!battle)return;const watching=battle.phase==='watching',last=battle.lastExchange;
+ $('battle-heading').textContent=`自分：${BATTLE_SPECIES[battle.playerSpecies].label}　VS　COM：${BATTLE_SPECIES[battle.opponentSpecies].label}`;
+ $('battle-state').textContent=watching?(battleSuspended?'一時停止中':battle.exchanges===0?'まもなく開始':'対戦中'):'取り組み終了';
+ $('battle-position').textContent=Math.abs(battle.position)<.1?'互角':battle.position>0?'自分が優勢 →':'← COMが優勢';
+ $('battle-cue').textContent=watching?(last?'':'操作は不要 · 見守ろう'):battle.winner==='player'?'こちらの勝ち！':battle.winner==='opponent'?'相手の勝ち':'引き分け';
+ // The move call belongs over the arena, never in a small paragraph below it.
+ $('battle-move-player').textContent=last?battleMoveName(battle.playerSpecies,last.playerAction):'構え';
+ $('battle-move-opponent').textContent=last?battleMoveName(battle.opponentSpecies,last.opponentAction):'構え';
+ $('battle-moves').hidden=!watching||battleSuspended;
+ $('battle-result').textContent=last?.reason||''; // optional accessible detail, not persistent visual prose
+ $('battle-finish-button').hidden=watching;$('battle-exit-button').textContent=watching?'中止して仲間へ':'仲間へ';
+ $('battle-screen').dataset.phase=watching?'watching':'finished';
 }
-function suspendBattle(){if(state.mode==='battle'){battleSuspended=true;refreshBattle();}}
+function resumeBattleAudio(){audio.battle({fresh:battleAudioFresh});battleAudioFresh=false;}
+function suspendBattle(){if(state.mode==='battle'){battleSuspended=true;audio.pause();refreshBattle();}}
 function continueVisibleActivity(){
  continueObservationAudio();
- if(state.mode==='battle'&&!document.hidden&&document.hasFocus?.()!==false){battleSuspended=false;refreshBattle();}
+ if(state.mode==='battle'&&!document.hidden&&document.hasFocus?.()!==false){battleSuspended=false;resumeBattleAudio();refreshBattle();}
 }
 function advanceVisibleBattle(dt){
  if(state.mode!=='battle'||!battle||battleSuspended||document.hidden||document.hasFocus?.()===false)return;
  const previous=battle;battle=advanceBattle(battle,dt);
+ if(previous.exchanges!==battle.exchanges)audio.battleExchange(battle.lastExchange);
+ if(previous.phase==='watching'&&battle.phase==='finished')audio.battleResult(battle.winner);
  if(previous.exchanges!==battle.exchanges||previous.phase!==battle.phase)refreshBattle();
 }
 function leaveBattle(){
  if(state.mode!=='battle')return;
  if(battle.phase==='watching')battle=cancelBattle(battle);
- battleView?.dispose();battleView=null;state.mode='companions';input.clear();refreshCompanions();syncScreens();$('companions-close-button').focus({preventScroll:true});
+ audio.pause();battleView?.dispose();battleView=null;state.mode='companions';input.clear();refreshCompanions();syncScreens();$('companions-close-button').focus({preventScroll:true});
 }
 function returnFromBattle(){leaveBattle();companionReturn='playing';closeCompanions();}
 function positionInspector(){

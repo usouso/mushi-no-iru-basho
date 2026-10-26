@@ -1,10 +1,11 @@
 /** Brief-1 trial samples with the original wind/footstep/action fallbacks.
  * Gains/radii are game tuning, not a claim of measured listening comfort.
  */
-import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.18.0&b=f75693c4884e';
+import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.18.1&b=0f85c9d0b1ba';
 export function createAudio({assetBaseURL}={}){
  const MAX_SHOTS=6,LOAD_PARALLELISM=3;
  let ctx,master,windGain,lastStep=0,level=.25,active=false,observing=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;
+ let battling=false,battleExchangeNumber=0,battleResultPlayed=false;
  let habitat='meadow',fieldTime=0,nextCicada=12,cicada=null,bgm=null,bgmOffset=0,loading=false,loadAbort,pendingRelease=null;
  const timers=new Set(),oneShots=new Set(),loops=new Set(),buffers=new Map(),previous=new Map(),walkers=new Map();
  const playable=()=>!!ctx&&active&&ready&&!disposed&&level>0;
@@ -21,11 +22,13 @@ export function createAudio({assetBaseURL}={}){
  }
  function stopBGM(){if(!bgm)return;const old=bgm;bgm=null;bgmOffset=(old.offset+Math.max(0,ctx.currentTime-old.started))%old.end;try{old.source.stop();}catch{}old.source.onended=null;disconnect(old.nodes);}
  function syncBGM(){
-  if(!playable()||habitat!=='meadow'){stopBGM();return;}
-  const buffer=buffers.get(ASSETS.bgm);if(bgm||!buffer)return;
+  if(!playable()||(!battling&&habitat!=='meadow')){stopBGM();return;}
+  const volume=battling?.07:.12;
+  if(bgm){bgm.gain.gain.setTargetAtTime(volume,ctx.currentTime,.12);return;}
+  const buffer=buffers.get(ASSETS.bgm);if(!buffer)return;
   const end=Math.min(36.36,buffer.duration);if(!(end>0))return;
-  const source=ctx.createBufferSource(),g=ctx.createGain();source.buffer=buffer;source.loop=true;source.loopStart=0;source.loopEnd=end;g.gain.setValueAtTime(.12,ctx.currentTime);source.connect(g);g.connect(master);
-  const record={source,nodes:[source,g],started:ctx.currentTime,offset:bgmOffset%end,end};bgm=record;
+  const source=ctx.createBufferSource(),g=ctx.createGain();source.buffer=buffer;source.loop=true;source.loopStart=0;source.loopEnd=end;g.gain.setValueAtTime(volume,ctx.currentTime);source.connect(g);g.connect(master);
+  const record={source,gain:g,nodes:[source,g],started:ctx.currentTime,offset:bgmOffset%end,end};bgm=record;
   source.onended=()=>{if(bgm===record)bgm=null;disconnect(record.nodes);};
   try{source.start(0,record.offset);}catch{bgm=null;disconnect(record.nodes);}
  }
@@ -78,10 +81,11 @@ export function createAudio({assetBaseURL}={}){
    ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0;contextRunning=ctx.state===undefined||ctx.state==='running';master.connect(ctx.destination);
    const noise=ctx.createBufferSource();noise.buffer=makeNoise();noise.loop=true;const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=700;windGain=ctx.createGain();windGain.gain.value=.08;noise.connect(filter);filter.connect(windGain);windGain.connect(master);noise.start();loops.add({source:noise,nodes:[noise,filter,windGain]});
   }
+  if(battling)clearSounds();battling=false;battleExchangeNumber=0;battleResultPlayed=false;
   observing=false;active=true;lifecycle++;windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);reconcileContext();loadAssets();
  }
- function tone(f,d=.14,vol=.06,type='sine',end=f*1.2){if(!playable()||oneShots.size>=MAX_SHOTS)return;const o=ctx.createOscillator(),g=ctx.createGain();const record=track(o,[o,g]);o.type=type;o.frequency.setValueAtTime(f,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(end,ctx.currentTime+d);g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(vol,ctx.currentTime+.015);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+d);o.connect(g);g.connect(master);try{o.start();o.stop(ctx.currentTime+d+.02);}catch{stop(record);}}
- function noiseBurst(duration,vol,freq){if(!playable()||oneShots.size>=MAX_SHOTS)return;const n=ctx.createBufferSource();n.buffer=makeNoise();const f=ctx.createBiquadFilter(),g=ctx.createGain(),record=track(n,[n,f,g]);f.type='lowpass';f.frequency.value=freq;g.gain.setValueAtTime(vol,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);n.connect(f);f.connect(g);g.connect(master);try{n.start();n.stop(ctx.currentTime+duration);}catch{stop(record);}}
+ function tone(f,d=.14,vol=.06,type='sine',end=f*1.2,delay=0){if(!playable()||oneShots.size>=MAX_SHOTS)return;const at=ctx.currentTime+delay,o=ctx.createOscillator(),g=ctx.createGain();const record=track(o,[o,g]);o.type=type;o.frequency.setValueAtTime(f,at);o.frequency.exponentialRampToValueAtTime(end,at+d);g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(vol,at+.015);g.gain.exponentialRampToValueAtTime(.0001,at+d);o.connect(g);g.connect(master);try{o.start(at);o.stop(at+d+.02);}catch{stop(record);}}
+ function noiseBurst(duration,vol,freq,delay=0){if(!playable()||oneShots.size>=MAX_SHOTS)return;const at=ctx.currentTime+delay,n=ctx.createBufferSource();n.buffer=makeNoise();const f=ctx.createBiquadFilter(),g=ctx.createGain(),record=track(n,[n,f,g]);f.type='lowpass';f.frequency.value=freq;g.gain.setValueAtTime(vol,at);g.gain.exponentialRampToValueAtTime(.0001,at+duration);n.connect(f);f.connect(g);g.connect(master);try{n.start(at);n.stop(at+duration);}catch{stop(record);}}
  function spatial(player,item,radius){
   const dx=item.x-player.x,dz=item.z-player.z,dy=Number.isFinite(item.y)&&Number.isFinite(player.y)?item.y-player.y:0,distance=Math.hypot(dx,dy,dz);
   if(!Number.isFinite(distance)||distance>=radius)return null;
@@ -111,10 +115,40 @@ export function createAudio({assetBaseURL}={}){
    if(candidate){const offset=Math.random()<.5?0:19.3,duration=offset?12.6:14.3;const record=sample(ASSETS.cicada,.18,{where:candidate.where,offset,duration,onFinish:r=>{if(cicada?.record===r)cicada=null;}});if(record){cicada={id:candidate.item.id,record};nextCicada=record.ends+25+Math.random()*15;}}
   }
  }
+ // Battle callers send only newly resolved exchanges. Numbers also deduplicate
+ // repeated render/focus calls; fresh:true starts a new match, never a resume.
+ function battle({fresh=false}={}){
+  if(disposed)return;if(!ctx)start();
+  if(!battling||fresh){clearSounds();battleExchangeNumber=0;battleResultPlayed=false;}
+  battling=true;observing=false;active=true;lifecycle++;
+  windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(0,ctx.currentTime);
+  reconcileContext();loadAssets();
+ }
+ function battleExchange(exchange){
+  if(!battling||disposed||!exchange||!Number.isInteger(exchange.number)||exchange.number<1||exchange.number>12||exchange.number<=battleExchangeNumber||
+   !['push','brace','evade'].includes(exchange.playerAction)||!['push','brace','evade'].includes(exchange.opponentAction)||!Number.isFinite(exchange.delta))return;
+  battleExchangeNumber=exchange.number;
+  if(!playable())return; // muted/hidden/resume-delayed history is not replayed
+  const name=ASSETS.net[(exchange.number-1)%ASSETS.net.length];
+  if(buffers.has(name))sample(name,.25,{duration:.35});else noiseBurst(.14,.13,1200);
+  const pushing=exchange.playerAction==='push'||exchange.opponentAction==='push';
+  // AudioContext scheduling, not an orphan timeout: every scheduled source is
+  // tracked and stopped by pause/mute/dispose before its .18s impact can fire.
+  noiseBurst(pushing?.13:.09,pushing?.14:.08,650,.18);
+  tone(pushing?145:180,.14,pushing?.045:.025,'triangle',85,.18);
+ }
+ function battleResult(winner){
+  if(!battling||disposed||battleResultPlayed||!['player','opponent','draw'].includes(winner))return;
+  battleResultPlayed=true;if(!playable())return;
+  if(winner==='player'){
+   if(buffers.has(ASSETS.capture))sample(ASSETS.capture,.22,{duration:.8});
+   else{tone(330,.18,.035,'sine',440,.12);tone(440,.23,.03,'sine',550,.32);}
+  }else tone(winner==='draw'?180:130,.22,.035,'triangle',winner==='draw'?160:85,.12);
+ }
  function pause(){if(disposed)return;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();reconcileContext();}
  return {
-  start,
-  resetField(next){if(disposed)return;observing=false;clearSounds();stopBGM();bgmOffset=0;habitat=next==='meadow'?'meadow':null;fieldTime=0;nextCicada=12;lastStep=0;previous.clear();syncBGM();},
+  start,battle,battleExchange,battleResult,
+  resetField(next){if(disposed)return;battling=false;battleExchangeNumber=0;battleResultPlayed=false;observing=false;clearSounds();stopBGM();bgmOffset=0;habitat=next==='meadow'?'meadow':null;fieldTime=0;nextCicada=12;lastStep=0;previous.clear();syncBGM();},
   setVolume(v){if(disposed||!Number.isFinite(Number(v)))return;level=Math.max(0,Math.min(1,Number(v)));gain(active&&ready?level:0);if(level===0){clearSounds();stopBGM();}else syncBGM();},
   pause,
   inspect(){
@@ -122,14 +156,15 @@ export function createAudio({assetBaseURL}={}){
    // This is an explicit caller-owned transition, including return from a
    // journal/pause. No DOM/visibility listener or automatic hidden-tab resume.
    // Preserve the same BGM source/offset, wind graph and naturally ending SFX.
+   if(battling){clearSounds();battling=false;battleExchangeNumber=0;battleResultPlayed=false;windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);}
    observing=true;active=true;lifecycle++;reconcileContext();
   },
-  dispose(){if(disposed)return;disposed=true;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();loadAbort?.abort();buffers.clear();previous.clear();for(const record of loops){try{record.source.stop();}catch{}disconnect(record.nodes);}loops.clear();master?.disconnect?.();try{ctx?.close?.()?.catch?.(()=>{});}catch{}},
-  swing(){if(observing)return;const name=choose(ASSETS.net);if(buffers.has(name))sample(name,.35);else noiseBurst(.28,.25,1800);},
-  capture(){if(observing)return;if(buffers.has(ASSETS.capture))sample(ASSETS.capture,.35);else{tone(750,.13,.045,'sine',1100);later(()=>tone(1150,.19,.035,'sine',900),100);}},
-  release(){if(playable()){releaseTone();return;}if(!ctx||!active||disposed||level===0)return;clearPendingRelease();const pending={until:Date.now()+750,timer:null};pending.timer=setTimeout(()=>{timers.delete(pending.timer);if(pendingRelease===pending)pendingRelease=null;},750);pendingRelease=pending;timers.add(pending.timer);},
+  dispose(){if(disposed)return;disposed=true;battling=false;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();loadAbort?.abort();buffers.clear();previous.clear();for(const record of loops){try{record.source.stop();}catch{}disconnect(record.nodes);}loops.clear();master?.disconnect?.();try{ctx?.close?.()?.catch?.(()=>{});}catch{}},
+  swing(){if(observing||battling)return;const name=choose(ASSETS.net);if(buffers.has(name))sample(name,.35);else noiseBurst(.28,.25,1800);},
+  capture(){if(observing||battling)return;if(buffers.has(ASSETS.capture))sample(ASSETS.capture,.35);else{tone(750,.13,.045,'sine',1100);later(()=>tone(1150,.19,.035,'sine',900),100);}},
+  release(){if(battling)return;if(playable()){releaseTone();return;}if(!ctx||!active||disposed||level===0)return;clearPendingRelease();const pending={until:Date.now()+750,timer:null};pending.timer=setTimeout(()=>{timers.delete(pending.timer);if(pendingRelease===pending)pendingRelease=null;},750);pendingRelease=pending;timers.add(pending.timer);},
   update(dt,player,items,time){
-   if(!ctx||!active||disposed)return;
+   if(!ctx||!active||disposed||battling)return;
    const step=Number.isFinite(dt)&&dt>0?dt:0;fieldTime+=step;
    const edges=[],present=new Set();for(const item of items){present.add(item.id);edges.push({item,before:previous.get(item.id)});previous.set(item.id,{airborne:!!item.airborne,caught:!!item.caught});}for(const id of previous.keys())if(!present.has(id))previous.delete(id);
    if(!ready)return;

@@ -1,6 +1,6 @@
 /** A second live branch of the existing rhino tree; old geometry stays untouched. */
-import {STAG_BRANCH as B,STAG_ORIGIN as O} from './stag-layout.js?v=0.18.0&b=f75693c4884e';
-import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.18.0&b=f75693c4884e';
+import {STAG_BRANCH as B,STAG_ORIGIN as O} from './stag-layout.js?v=0.18.1&b=0f85c9d0b1ba';
+import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
 const T=window.THREE;
 function collector(){const p=[],c=[];return{add(g,m,color){const copy=g.index?g.toNonIndexed():g.clone();copy.applyMatrix4(m);p.push(...copy.attributes.position.array);const tint=new T.Color(color);for(let i=0;i<copy.attributes.position.count;i++)c.push(tint.r,tint.g,tint.b);copy.dispose();},finish(){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
 function segment(batch,a,b,r0,r1){const start=new T.Vector3(...a),delta=new T.Vector3(...b).sub(start),g=new T.CylinderGeometry(r1,r0,delta.length(),4),m=new T.Matrix4().compose(start.addScaledVector(delta,.5),new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize()),new T.Vector3(1,1,1));batch.add(g,m,'#65765b');g.dispose();}
