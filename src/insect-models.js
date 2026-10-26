@@ -1,17 +1,17 @@
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.21.0&b=80addd8ed820';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.21.0&b=80addd8ed820';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.21.0&b=80addd8ed820';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.21.0&b=80addd8ed820';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.21.0&b=80addd8ed820';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.21.0&b=80addd8ed820';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.21.0&b=80addd8ed820';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.21.0&b=80addd8ed820';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.21.0&b=80addd8ed820';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.21.0&b=80addd8ed820';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.21.0&b=80addd8ed820';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.21.0&b=80addd8ed820';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.21.0&b=80addd8ed820';
-import {applyInsectReadability} from './insect-readability.js?v=0.21.0&b=80addd8ed820';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.22.0&b=cb8cdca3a903';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import {applyInsectReadability} from './insect-readability.js?v=0.22.0&b=cb8cdca3a903';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -945,7 +945,8 @@ export function updateInsectModel(group, item, time = 0, support = null) {
   // Restrained game-readable preparation, not a measured pre-flight behaviour.
   // Only a genuinely perched, uncaught field insect may add the small hinge
   // motion; body/support placement and all existing flight poses stay unchanged.
-  const warning=!inspection&&!item.caught&&item.resting===true&&flight<.01&&item.awarenessStage==='warning'
+  const perchedWarning=flight<.01||(species==='morpho'&&item.state==='feeding');
+  const warning=!inspection&&!item.caught&&item.resting===true&&perchedWarning&&item.awarenessStage==='warning'
     ?Math.max(0,Math.min(1,Number.isFinite(item.alertBlend)?item.alertBlend:0)):0;
   const wings=group.userData.wings||[];
   for(const pivot of wings) {
@@ -954,7 +955,11 @@ export function updateInsectModel(group, item, time = 0, support = null) {
       const restAngle=1.30+Math.sin(time*1.1+(item.phase||0))*.07;
       const flap=.10+Math.sin(phase+(pivot.userData.back?.22:0))*1.15;
       const inspectionAngle=.55+Math.sin(time*.7)*.12;
-      pivot.rotation.z=side*(inspection?inspectionAngle:restAngle*(1-flight)+flap*flight);
+      // A small opening of the upright wings makes a wary perch readable.
+      // Only the wing hinges move; size, body/feet and existing flight stay exact.
+      // Fruit landings can still fade their flap blend while perched; the cue
+      // emerges continuously with that fade instead of being silently hidden.
+      pivot.rotation.z=side*(inspection?inspectionAngle:restAngle*(1-flight)+flap*flight-warning*(1-Math.min(1,Math.max(0,flight)))*(.24+.035*Math.sin(time*10)));
     } else if(species==='butterfly') {
       const restAngle=.60+Math.sin(time*2+(item.phase||0))*.18;
       const flightAngle=.2+Math.sin(phase)*.82;

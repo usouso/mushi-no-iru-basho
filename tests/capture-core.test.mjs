@@ -41,7 +41,8 @@ test('stopping during the white butterfly warning decays the cue gradually and a
 });
 
 test('a real off-axis miss startles the nearest visible butterfly only; opaque, far, behind and held targets remain excluded',()=>{
- const homes=[['morpho',0,.2,1.15],['butterfly',0,0,1.15],['butterfly',.1,-.25,1.15],['dragonfly',0,-.7,1.15],['butterfly',0,5,1.15]],p={x:0,y:1.15,z:2.3,speed:0},off={x:.8,y:0,z:-.6};
+ // Morpho is also reactive now; this first insect is behind the missed swing.
+ const homes=[['morpho',0,4,1.15],['butterfly',0,0,1.15],['butterfly',.1,-.25,1.15],['dragonfly',0,-.7,1.15],['butterfly',0,5,1.15]],p={x:0,y:1.15,z:2.3,speed:0},off={x:.8,y:0,z:-.6};
  const sim=createInsects(()=>0,{homes});assert.equal(sim.swing(p,off).ok,false);const target=sim.startleFromNet(p,off);assert.equal(target.id,'insect-2');assert.equal(sim.items.filter(i=>i.awarenessStage==='warning').length,1);assert.equal(sim.items[0].alert,0);assert.equal(target.departures,0);for(let n=0;n<18;n++)sim.update(step,p);assert.equal(target.departures,0);
  for(const value of[false,null,undefined,1]){const blocked=make({hasLineOfSight:()=>value});assert.equal(blocked.startleFromNet(p,off),null);for(let n=0;n<120;n++)blocked.update(step,{...p,speed:5.4});assert.equal(blocked.items[0].alert,0);assert.equal(blocked.items[0].departures,0);}
  const other=make();assert.equal(other.startleFromNet({...p,z:3.201},off),null);assert.equal(other.startleFromNet(p,{x:0,y:0,z:1}),null);assert.equal(other.swing(p,aim(p,other.items[0])).ok,true);const before=structuredClone(other.items);assert.equal(other.startleFromNet(p,off),null);assert.deepEqual(other.items,before);

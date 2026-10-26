@@ -2,7 +2,8 @@
 export const CAPTURE_AWARENESS = Object.freeze({
   butterfly: Object.freeze({ walkRadius: 3.2, dashRadius: 4.2, quietRadius: .95 }),
   dragonfly: Object.freeze({ walkRadius: 3.3, dashRadius: 4.4, quietRadius: 1.05 }),
-  cicada: Object.freeze({ walkRadius: 3.5, dashRadius: 4.6, quietRadius: 1.15 })
+  cicada: Object.freeze({ walkRadius: 3.5, dashRadius: 4.6, quietRadius: 1.15 }),
+  morpho: Object.freeze({ walkRadius: 3.2, dashRadius: 4.2, quietRadius: .9 })
 });
 export const NET_STARTLE = Object.freeze({ range: 3.2, minDot: .5 });
 const clamp = value => Math.max(0, Math.min(1, value));
