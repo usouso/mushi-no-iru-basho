@@ -29,7 +29,7 @@ function signature(m){m.updateMatrixWorld(true);const h=createHash('sha256');m.t
 test('hash-verified old five-species baseline stays pinned and current non-stag outcomes match it',async()=>{
  const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
  // The new species registry line is isolated; all old rule bytes stay hash-pinned.
- const priorSpeciesSource=source.replace(",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",'');assert.notEqual(priorSpeciesSource,source);
+ const priorSpeciesSource=source.replace(",\n miyama:{label:'ミヤマクワガタ',role:'張り出した頭と大顎',help:'頭の後ろの張出しと、左右の大顎が目印。'}",'').replace(",\n fivehorn:{label:'ゴホンヅノカブト',role:'五本の角を合わせる',help:'立ち上がる頭角と、二対の胸角が目印。'}",'').replace(",\n goliath:{label:'ゴライアス',role:'短いY字角で押し合う',help:'白黒の胸と、短い二叉の頭角が目印。'}",'').replace(",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",'');assert.notEqual(priorSpeciesSource,source);
  const referenceSource=priorSpeciesSource.replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
  assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b','only the edge coefficient and the exact added species registry may differ from 0.23');
  const reference=await import('data:text/javascript;base64,'+Buffer.from(referenceSource).toString('base64'));

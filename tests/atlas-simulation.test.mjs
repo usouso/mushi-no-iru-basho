@@ -33,8 +33,8 @@ test('warning/retreat/ordinary poses freeze under capture and release continuous
  const fresh=setup();fresh.setCompanions([{id:i.id,species:'atlas'}]);assert.equal(fresh.items[0].caught,true);fresh.setCompanions([]);assert.equal(fresh.items[0].caught,false);assert.equal(fresh.items[0].companion,false);const before=pose(fresh.items[0]);step(fresh,.5);assert.ok(fresh.items[0].z<before.z);assert.equal(fresh.items.length,1);
 });
 
-test('support schema rejects unsafe/mismatched routes and fixed Atlas metadata does not claim a real or measured game size',()=>{
+test('support schema rejects unsafe/mismatched routes and fixed Atlas stays unmeasured while metadata distinguishes display indices from natural length',()=>{
  const p=support();for(const bad of[[],[p,p],[{...p,home:{...p.home,y:NaN}}],[{...p,home:{...p.home,z:7}}],[{...p,heading:Infinity}],[Object.create(p)],[{...p,get heading(){throw Error('must not execute');}}]])assert.throws(()=>setup({atlasSupports:bad}),/Invalid atlas supports/);
  const edge={home:{x:0,y:1.175,z:-74.9},heading:0};assert.throws(()=>createInsects(()=>0,{homes:[['atlas',0,-74.9,1.175]],atlasSupports:[edge]}),/Invalid atlas supports/);
- const s=setup(),before=structuredClone(s.items);for(const d of[0,-1,NaN,Infinity])s.update(d,far);assert.deepEqual(s.items,before);assert.equal(Object.keys(SPECIES).length,25);assert.match(SPECIES.atlas.size,/実物の寸法ではありません.*未対応/);assert.match(SPECIES.atlas.observation,/ゲーム上の近似/);
+ const s=setup(),before=structuredClone(s.items);for(const d of[0,-1,NaN,Infinity])s.update(d,far);assert.deepEqual(s.items,before);assert.equal(Object.keys(SPECIES).length,29);assert.match(SPECIES.atlas.size,/実物の寸法ではありません.*以前の固定個体の大きさは作り直しません/);assert.match(SPECIES.atlas.observation,/ゲーム上の近似/);
 });

@@ -24,12 +24,12 @@ test('visible preparation precedes a short accelerated retreat away from either 
 });
 
 test('turning the threat opens the other supported direction; removal permits a continuous return instead of permanent hiding',()=>{
- const s=make();step(s,7,front);near(s.state.position.x,-5.49);step(s,3,back);assert.ok(s.state.position.x<-5.52);let previous=s.state;for(let n=0;n<2500;n++){s.update(.01);assert.ok(Math.abs(s.state.position.x-previous.position.x)<.0013);previous=s.state;}assert.ok(s.state.position.x>=-5.87-1e-9&&s.state.position.x<=-5.75+1e-9);assert.ok(['resting','walking'].includes(s.state.phase));
+ const s=make();step(s,7,front);near(s.state.position.x,-5.49);step(s,3,back);assert.ok(s.state.position.x<-5.52);let previous=s.state;for(let n=0;n<2500;n++){s.update(.01);assert.ok(Math.abs(s.state.position.x-previous.position.x)<=M.retreatSpeed*.01+1e-9);previous=s.state;}assert.ok(s.state.position.x>=-5.87-1e-9&&s.state.position.x<=-5.75+1e-9);assert.ok(['resting','walking'].includes(s.state.phase));
 });
 
 test('moving reactions brake on a half-step, and capture/release preserves the exact warning, walk, retreat or corner pose',()=>{
  for(const phase of['walking','warning','retreating','cornered']){
-  const s=make();if(phase!=='walking')s.disturb(front);let n=0;while(s.state.phase!==phase&&n++<2500){if(phase==='cornered')s.disturb(front);s.update(.01);}assert.ok(n<2500);const old=s.state;assert.equal(s.capture(),true);const frozen=s.state;for(let k=0;k<100;k++){assert.equal(s.disturb(back),false);s.update(.1);}assert.deepEqual(s.state,frozen);assert.equal(s.release(),true);assert.deepEqual(s.state.position,old.position);assert.equal(s.state.phase,old.phase);near(s.state.jawOpen,old.jawOpen);s.update(.01);assert.ok(Math.abs(s.state.position.x-old.position.x)<.0013);
+  const s=make();if(phase!=='walking')s.disturb(front);let n=0;while(s.state.phase!==phase&&n++<2500){if(phase==='cornered')s.disturb(front);s.update(.01);}assert.ok(n<2500);const old=s.state;assert.equal(s.capture(),true);const frozen=s.state;for(let k=0;k<100;k++){assert.equal(s.disturb(back),false);s.update(.1);}assert.deepEqual(s.state,frozen);assert.equal(s.release(),true);assert.deepEqual(s.state.position,old.position);assert.equal(s.state.phase,old.phase);near(s.state.jawOpen,old.jawOpen);s.update(.01);assert.ok(Math.abs(s.state.position.x-old.position.x)<=M.retreatSpeed*.01+1e-9);
  }
  const s=make();while(s.state.phase!=='walking'||Math.abs(s.state.walkSpeed)<.019)s.update(.01);s.update(.07);const before=s.state;s.disturb(front);assert.deepEqual(s.state.position,before.position);near(s.state.walkSpeed,before.walkSpeed);let n=0;while(s.state.phase!=='warning'&&n++<150)s.update(.01);assert.ok(n<150);near(s.state.walkPhase/Math.PI,Math.round(s.state.walkPhase/Math.PI));near(s.state.walkSpeed,0);
 });

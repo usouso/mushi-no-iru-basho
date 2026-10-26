@@ -1,7 +1,7 @@
 /** Fixed-axis slope observation. Timing, speeds and retreat are game tuning,
  * not measured wild defence. Shared stepping runs in signed arc-distance. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.28.0&b=52b81ed2c56b';
-import {ELEPHANT_DIMENSIONS as D} from './elephant-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.37.0&b=4d59dc9955d7';
+import {ELEPHANT_DIMENSIONS as D} from './elephant-kinematics.js?v=0.37.0&b=4d59dc9955d7';
 export const ELEPHANT_MOTION=Object.freeze({warningSeconds:.35,retreatDistance:.24,retreatSpeed:.12,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1,maxSlopeDegrees:15});
 function point(v){return !!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===3&&['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k])&&Math.abs(v[k])<=1e4);}
 export function createElephantStudy({home,axis}={}){
@@ -9,7 +9,7 @@ export function createElephantStudy({home,axis}={}){
  const origin={...home},a={...axis[0]},b={...axis[1]},dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,horizontal=Math.hypot(dx,dz),length=Math.hypot(dx,dy,dz),angle=Math.atan2(dy,horizontal);
  if(length<.4||length>2.4||horizontal<.3||dy<0||angle>ELEPHANT_MOTION.maxSlopeDegrees*Math.PI/180||Math.hypot(origin.x-(a.x+b.x)/2,origin.y-(a.y+b.y)/2,origin.z-(a.z+b.z)/2)>1e-6)throw new TypeError('Invalid elephant slope support');
  const unit={x:dx/length,y:dy/length,z:dz/length},normal={x:-dx/horizontal*Math.sin(angle),y:Math.cos(angle),z:-dz/horizontal*Math.sin(angle)},heading=Math.atan2(dx,dz),pitch=-angle;
- const core=createBranchRetreatStudy({species:'elephant',position:{x:0,y:D.rootAboveSupport,z:0},heading:Math.PI/2,scale:1,motionSeed:null,retreatBounds:{min:-length/2,max:length/2},cycleDistance:D.cycleDistance,rootAboveSupport:D.rootAboveSupport,warningSeconds:ELEPHANT_MOTION.warningSeconds,retreatDistance:ELEPHANT_MOTION.retreatDistance,retreatSpeed:ELEPHANT_MOTION.retreatSpeed});
+ const core=createBranchRetreatStudy({boundedStepFinish:true,species:'elephant',position:{x:0,y:D.rootAboveSupport,z:0},heading:Math.PI/2,scale:1,motionSeed:null,retreatBounds:{min:-length/2,max:length/2},cycleDistance:D.cycleDistance,rootAboveSupport:D.rootAboveSupport,warningSeconds:ELEPHANT_MOTION.warningSeconds,retreatDistance:ELEPHANT_MOTION.retreatDistance,retreatSpeed:ELEPHANT_MOTION.retreatSpeed});
  function snapshot(){const s=core.state,d=s.position.x;return{...s,position:{x:origin.x+unit.x*d,y:origin.y+unit.y*d,z:origin.z+unit.z*d},heading,pitch,normal:{...normal},headLift:s.warningBlend};}
  return{update:dt=>core.update(dt),disturb(source){
   // Player eye height must not bias escape direction on a shallow slope. Project

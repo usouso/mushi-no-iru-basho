@@ -94,7 +94,7 @@ test('travel during capture delay returns old held insect without phantom inspec
  frame(40);assert.equal(g.state.mode,'playing');screen('start-screen',false);screen('inspect-screen',false);screen('look-resume-hint',true);
 });
 test('all five destinations can be revisited directly; each discarded scene releases resources, never passing through title',()=>{
- const types={tropical:11,understory:5,savanna:1,meadow:29,night:6};
+ const types={tropical:11,understory:6,savanna:1,meadow:30,night:6};
  for(const id of ['tropical','understory','savanna','meadow','night','meadow']){
   frame(1);const old=renderedScene,owned=resources(old),disposed=new Set();for(const value of [...owned.all,...owned.worldMaps])value.addEventListener('dispose',()=>disposed.add(value));
   const captures=g.state.captures,entries=g.journal.entries;g.pause({lock:false});const locks=lockRequests;selectDestination(id);travelButton().click();

@@ -97,5 +97,5 @@ test('explicit removal updates visibility; pause freezes exposure and ninety sec
 test('restart and title clear bait/visitors without clearing journal; changing back to meadow restores no interaction',()=>{
  near();pressE();watch();until(()=>!!g.simulation.bait.visitorId);g.restart();frame(1);assert.equal(g.simulation.bait,null);assert.equal(g.simulation.caught,null);assert.equal(fruit().visible,false);assert.ok(g.simulation.items.every(i=>!i.excursion));
  near();pressE();g.title();frame(1);assert.equal(g.simulation.bait,null);assert.equal(g.state.mode,'title');assert.equal(fruit().visible,false);assert.equal(g.journal.entries.find(e=>e.species==='morpho').note,'果実台に来た');
- elements.get('habitat-select').value='meadow';g.start();frame(1);pressE();assert.equal(g.simulation.items.length,29);assert.equal(g.simulation.bait,null);assert.equal(elements.get('interaction-hint').hidden,true);
+ elements.get('habitat-select').value='meadow';g.start();frame(1);pressE();assert.equal(g.simulation.items.length,30);assert.equal(g.simulation.bait,null);assert.equal(elements.get('interaction-hint').hidden,true);
 });

@@ -1,14 +1,14 @@
 /** Registered branch study: preserve the legacy short walk (also reused by
  * Metallifer), with opt-in supported threat response. Motion/jaw tuning is
  * illustrative, not measured wild behaviour. No combat or new flight. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.28.0&b=52b81ed2c56b';
-import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.37.0&b=4d59dc9955d7';
+import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.37.0&b=4d59dc9955d7';
 const TAU=2*Math.PI,rampTime=.5;
 const smooth=t=>t*t*(3-2*t);
 export function createStagStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null,retreatBounds=undefined}={}){
  if(!position||![Object.prototype,null].includes(Object.getPrototypeOf(position))||Reflect.ownKeys(position).length!==3||!['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(position,k)&&'value'in Object.getOwnPropertyDescriptor(position,k)&&Number.isFinite(position[k])&&Math.abs(position[k])<=1e4)||!Number.isFinite(heading)||Math.abs(heading)>1e4)throw new TypeError('Invalid stag support');
  if(!Number.isFinite(scale)||scale<1||scale>1.15||motionSeed!==null&&(!Number.isInteger(motionSeed)||motionSeed<0||motionSeed>0xffffffff))throw new TypeError('Invalid individual motion');
- if(retreatBounds!==undefined)return createBranchRetreatStudy({species:'stag',position,heading,scale,motionSeed,retreatBounds,cycleDistance:D.cycleDistance,rootAboveSupport:D.rootAboveSupport,warningSeconds:0.4,retreatDistance:0.48,retreatSpeed:0.18,jawRest:D.restJawOpen,jawWarning:.7});
+ if(retreatBounds!==undefined)return createBranchRetreatStudy({boundedStepFinish:true,species:'stag',position,heading,scale,motionSeed,retreatBounds,cycleDistance:D.cycleDistance,rootAboveSupport:D.rootAboveSupport,warningSeconds:0.4,retreatDistance:0.48,retreatSpeed:0.18,jawRest:D.restJawOpen,jawWarning:.7});
  const length=.12*scale,speed=.02*scale,cycleDistance=D.cycleDistance*scale,halfStep=cycleDistance/2;
  let restNumber=0;const rest=(initial=false)=>motionSeed===null?(initial?10:6):3+(((Math.imul(motionSeed^++restNumber,1664525)+1013904223)>>>0)%700)/100;
  const initialWait=rest(true);

@@ -1,7 +1,7 @@
 /** Supported individual variants. Scale is a game display index, not measured
  * wild length or a strength multiplier. No new geometry or frame-random draws. */
-const ROOT_HEIGHT=Object.freeze({hercules:.06,rhino:.05,stag:.045,metallifer:0,giantstag:.045});
-const SUPPORT=Object.freeze({hercules:'herculesSupports',rhino:'rhinoSupports',stag:'stagSupports',metallifer:'metalliferSupports',giantstag:'giantStagSupports'});
+const ROOT_HEIGHT=Object.freeze({hercules:.06,rhino:.05,stag:.045,metallifer:0,giantstag:.045,atlas:.055});
+const SUPPORT=Object.freeze({hercules:'herculesSupports',rhino:'rhinoSupports',stag:'stagSupports',metallifer:'metalliferSupports',giantstag:'giantStagSupports',atlas:'atlasSupports'});
 export function individualScale(value){const n=typeof value==='object'?value?.sizePermille:value;return Number.isInteger(n)&&n>=1000&&n<=1150?n/1000:1;}
 export function individualLabel(value){const n=typeof value==='object'?value?.sizePermille:value;return Number.isInteger(n)&&n>=1000&&n<=1150?`大きさ ${Math.round(n/10)}（同種の基準100）`:'大きさ 未計測';}
 const copy=value=>JSON.parse(JSON.stringify(value));
@@ -23,7 +23,7 @@ export function individualHabitatOptions(habitat,options,snapshot,heightAt){
   if(!row||row[0]!==e.species||!key||![0,1,2].includes(e.siteIndex)||factor===1&&e.sizePermille!==1000)throw new TypeError('Individual slot does not match supported habitat');
   const old={x:row[1],y:heightAt(row[1],row[2])+row[3],z:row[2]},support=out[key].find(g=>same(g.home,old));
   if(!support)throw new TypeError('Individual support not found');
-  const offset=(e.siteIndex-1)*(e.species==='hercules'?.22:e.species==='giantstag'?.04:.14),heading=e.species==='hercules'?Math.atan2(support.axis[1].x-support.axis[0].x,support.axis[1].z-support.axis[0].z):support.heading,dy=ROOT_HEIGHT[e.species]*(factor-1);
+  const offset=(e.siteIndex-1)*(e.species==='hercules'?.22:e.species==='giantstag'?.04:e.species==='atlas'?.05:.14),heading=e.species==='hercules'?Math.atan2(support.axis[1].x-support.axis[0].x,support.axis[1].z-support.axis[0].z):support.heading,dy=ROOT_HEIGHT[e.species]*(factor-1);
   support.home={x:old.x+Math.sin(heading)*offset,y:old.y+dy,z:old.z+Math.cos(heading)*offset};
   // Giant's bark shelter/lane is fixed in world space, not attached to the new home.
   if(e.species==='giantstag'){

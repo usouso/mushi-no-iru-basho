@@ -1,18 +1,23 @@
 /** Horizontal, supported lab motion only. Speeds, waits and retreat distance are
  * game choices, not measured C. atlas defensive behaviour. No flight/teleport. */
-import {ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-export const ATLAS_MOTION=Object.freeze({normalRange:.12,retreatRange:.70,normalSpeed:.04,retreatSpeed:.18,warningSeconds:.35,settleSeconds:1.2,normalRamp:.4,retreatRamp:.45,maxStepSeconds:.25});
+import {ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+export const ATLAS_MOTION=Object.freeze({normalRange:.12,retreatRange:.70,normalSpeed:.04,retreatSpeed:.36,warningSeconds:.18,settleSeconds:1.2,normalRamp:.4,retreatRamp:.45,maxStepSeconds:.25});
 const smooth=t=>t*t*(3-2*t),TAU=Math.PI*2;
-export function createAtlasStudy({position,heading=0,scale=1,motionSeed=null}={}){
+export function createAtlasStudy({position,heading=0,scale=1,motionSeed=null,fixedWorldBounds=false}={}){
  if(position===undefined)position={x:0,y:D.rootAboveSupport*scale,z:0};
  if(!position||![Object.prototype,null].includes(Object.getPrototypeOf(position))||Reflect.ownKeys(position).length!==3||!['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(position,k)&&'value'in Object.getOwnPropertyDescriptor(position,k)&&Number.isFinite(position[k])&&Math.abs(position[k])<=1e4)||!Number.isFinite(heading)||Math.abs(heading)>1e4)throw new TypeError('Invalid atlas support');
+ if(typeof fixedWorldBounds!=='boolean')throw new TypeError('Invalid Atlas fixed-world bounds flag');
  if(!Number.isFinite(scale)||scale<1||scale>1.15||motionSeed!==null&&(!Number.isInteger(motionSeed)||motionSeed<0||motionSeed>0xffffffff))throw new TypeError('Invalid atlas individual');
- const origin={...position},range=ATLAS_MOTION.normalRange*scale,retreat=ATLAS_MOTION.retreatRange*scale,cycle=D.cycleDistance*scale,halfStep=cycle/2;
+ const origin={...position},cycle=D.cycleDistance*scale,halfStep=cycle/2;
+ // Measured individuals keep the physical lane/speed, but stop on their own
+ // half-stride lattice. The legacy scale API retains its previous arithmetic.
+ const inward=limit=>Math.min(limit,Math.floor(limit/halfStep+1e-10)*halfStep);
+ const range=fixedWorldBounds?inward(ATLAS_MOTION.normalRange):ATLAS_MOTION.normalRange*scale,retreat=fixedWorldBounds?inward(ATLAS_MOTION.retreatRange):ATLAS_MOTION.retreatRange*scale;
  let restNumber=0;const rest=()=>motionSeed===null?5:3+(((Math.imul(motionSeed^++restNumber,1664525)+1013904223)>>>0)%251)/100;
  const initialWait=rest();let distance=0,time=0,phase='resting',wait=initialWait,phaseElapsed=0,move=null,caught=false,walkSpeed=0,headLift=0,warningStart=0;
  function beginMove(target,speed,reason='normal'){
   const length=Math.abs(target-distance);if(length<1e-12){arrive(reason);return;}
-  const maxSpeed=speed*scale,ramp=reason==='retreat'?ATLAS_MOTION.retreatRamp:ATLAS_MOTION.normalRamp,acceleration=maxSpeed/ramp,up=Math.min(ramp,Math.sqrt(length/acceleration)),peak=acceleration*up,cruise=Math.max(0,(length-acceleration*up*up)/peak);
+  const maxSpeed=fixedWorldBounds?speed:speed*scale,ramp=reason==='retreat'?ATLAS_MOTION.retreatRamp:ATLAS_MOTION.normalRamp,acceleration=maxSpeed/ramp,up=Math.min(ramp,Math.sqrt(length/acceleration)),peak=acceleration*up,cruise=Math.max(0,(length-acceleration*up*up)/peak);
   move={start:distance,target,length,direction:Math.sign(target-distance),reason,headStart:headLift,elapsed:0,up,cruise,peak,acceleration,duration:2*up+cruise};phase=reason==='retreat'?'retreating':'walking';phaseElapsed=0;walkSpeed=0;
  }
  function warn(){warningStart=headLift;move=null;phase='warning';phaseElapsed=0;wait=ATLAS_MOTION.warningSeconds;walkSpeed=0;}

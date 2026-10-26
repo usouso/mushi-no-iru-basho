@@ -20,23 +20,23 @@ const tick=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
 const raw=f=>f.values.get(EXPEDITION_KEY);
 async function ready(){const f=fixture(),e=make(f);assert.equal(await e.flush(),true);return {f,e};}
 
-test('v1 protected copy retains every old encounter, measurement and best; next explicit outing alone adds giant',async()=>{
+test('v1 protected copy retains every old encounter, measurement and best; next explicit outing alone adds giant and Atlas',async()=>{
  const old=legacy(),bytes=JSON.stringify(old,null,2),f=fixture(bytes),e=make(f);
  assert.equal(EXPEDITION_KEY,'mushi-expedition-v2');assert.equal(EXPEDITION_VERSION,2);
  assert.equal(e.snapshot.generatorVersion,1);assert.equal(e.snapshot.encounters.length,5);assert.deepEqual(e.snapshot.encounters,old.encounters);assert.equal(e.saved,false);
  assert.equal(await e.flush(),true);assert.deepEqual(f.requests,[LEGACY_EXPEDITION_KEY,EXPEDITION_KEY]);assert.equal(f.seeds,0);
  assert.deepEqual(e.snapshot,{...old,version:2,legacyImportDone:true});assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),bytes);
  const n=f.writes.length,reload=make(f);assert.equal(reload.saved,true);assert.equal(await reload.flush(),true);assert.equal(f.writes.length,n);
- assert.equal((await e.beginNextOuting(1)).ok,true);assert.equal(e.snapshot.generatorVersion,2);assert.equal(e.snapshot.encounters.length,6);assert.equal(e.snapshot.outingCounter,2);assert.deepEqual(e.snapshot.best,old.best);assert.deepEqual(e.snapshot.measuredEncounterIds,[]);
+ assert.equal((await e.beginNextOuting(1)).ok,true);assert.equal(e.snapshot.generatorVersion,3);assert.equal(e.snapshot.encounters.length,7);assert.equal(e.snapshot.outingCounter,2);assert.deepEqual(e.snapshot.best,old.best);assert.deepEqual(e.snapshot.measuredEncounterIds,[]);
  const g=e.snapshot.encounters[5];assert.equal(g.encounterId,'g2-0000007b-o2-night-giantstag');assert.equal(g.runtimeSlotId,'insect-6');assert.equal(e.measure(g.encounterId).ok,true);assert.equal(await e.flush(),true);assert.deepEqual(make(f).snapshot,e.snapshot);assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),bytes);
 });
 
-test('new users get six; original five g1 draws/IDs match frozen 0.25 output, with bounded giant-only g2 draws',async()=>{
+test('new users get seven; original five g1 draws/IDs match frozen 0.25 output, with bounded giant-only g2 draws',async()=>{
  // Frozen 0.25 8a51b5d source, seeds0..15, outings1..2, five encounters each.
  const rows=[];for(let seed=0;seed<16;seed++){
   const f=fixture();f.seedSource=()=>seed;const e=make(f);assert.equal(e.snapshot,null);assert.equal(await e.flush(),true);
   for(let outing=1;outing<=2;outing++){
-   const s=e.snapshot;rows.push(s.encounters.slice(0,5));assert.equal(s.generatorVersion,2);assert.equal(s.legacyImportDone,true);
+   const s=e.snapshot;rows.push(s.encounters.slice(0,5));assert.equal(s.generatorVersion,3);assert.equal(s.legacyImportDone,true);
    const g=s.encounters[5];assert.equal(g.species,'giantstag');assert.match(g.encounterId,/^g2-[0-9a-f]{8}-o[12]-night-giantstag$/);assert.ok(g.sizePermille>=1000&&g.sizePermille<=1150);assert.ok(Number.isInteger(g.motionSeed)&&g.motionSeed>=0&&g.motionSeed<=0xffffffff);assert.ok([0,1,2].includes(g.siteIndex));assert.equal(g.measureVersion,1);
    if(outing===1)assert.equal((await e.beginNextOuting()).ok,true);
   }
@@ -55,7 +55,7 @@ test('migration quota and unsaved measure flush failures retain the current five
  assert.equal((await e.beginNextOuting()).ok,false);assert.deepEqual(e.snapshot,before);assert.equal(raw(f),undefined);assert.equal(f.seeds,0);
  f.quota=false;assert.equal(await e.flush(),true);assert.deepEqual(e.snapshot,before);assert.equal(make(f).snapshot.measuredEncounterIds.length,2);
  f.quota=true;e.measure(e.snapshot.encounters[3].encounterId);const measured=e.snapshot;assert.equal((await e.beginNextOuting()).ok,false);assert.deepEqual(e.snapshot,measured);assert.equal(e.snapshot.generatorVersion,1);
- f.quota=false;assert.equal((await e.beginNextOuting()).ok,true);assert.deepEqual(e.snapshot.best,measured.best);assert.equal(e.snapshot.encounters.length,6);assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),bytes);
+ f.quota=false;assert.equal((await e.beginNextOuting()).ok,true);assert.deepEqual(e.snapshot.best,measured.best);assert.equal(e.snapshot.encounters.length,7);assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),bytes);
 });
 
 test('missing locks, invalid/future legacy and unknown initial reads never overwrite or guess empty',async()=>{
@@ -81,7 +81,7 @@ test('readback verifies throw-after-write, retries dropped writes, but protects 
 
 test('strict v2 generator, marker, g2 namespace, duplicate IDs and bounds remain protected',async()=>{
  const {e}=await ready(),good=e.snapshot;
- const variants=[{...good,version:3},{...good,generatorVersion:3},{...good,generatorVersion:1},{...good,legacyImportDone:false},{...good,extra:1},{...good,encounters:good.encounters.slice(0,5)}];
+ const variants=[{...good,version:3},{...good,generatorVersion:4},{...good,generatorVersion:2},{...good,generatorVersion:1},{...good,legacyImportDone:false},{...good,extra:1},{...good,encounters:good.encounters.slice(0,5)}];
  for(const patch of [{encounterId:good.encounters[5].encounterId.replace('g2-','g1-')},{sizePermille:1151},{siteIndex:3},{species:'__proto__'},{measureVersion:2}]){const x=copy(good);Object.assign(x.encounters[5],patch);variants.push(x);}
  const dup=copy(good);dup.measuredEncounterIds=[dup.encounters[0].encounterId,dup.encounters[0].encounterId];variants.push(dup);
  for(const x of variants){const bytes=JSON.stringify(x),f=fixture(JSON.stringify(legacy()),bytes),r=make(f);assert.equal(r.snapshot,null);assert.equal(await r.flush(),false);assert.equal(f.writes.length,0);assert.equal(raw(f),bytes);}
@@ -98,18 +98,18 @@ test('roster keeps legacy null; only giant g2 accepted; explicit replace is one 
  const saved=f.values.get(COMPANION_KEY);f.quota=true;assert.equal(r.replace(id,giantCapture('g2-0000007b-o3-night-giantstag')).ok,true);assert.equal(await r.flush(),false);assert.equal(f.values.get(COMPANION_KEY),saved);f.quota=false;assert.equal(await r.flush(),true);assert.equal(r.entries.length,2);
 });
 
-test('six current measurements persist five species maxima, duplicate capture is stable and snapshots stay detached',async()=>{
+test('seven current measurements persist six species maxima, duplicate capture is stable and snapshots stay detached',async()=>{
  const {f,e}=await ready(),s=e.snapshot;for(const entry of s.encounters)assert.equal(e.measure(entry.encounterId).ok,true);
- assert.equal(await e.flush(),true);assert.equal(e.snapshot.measuredEncounterIds.length,6);assert.equal(e.snapshot.best.length,5);assert.deepEqual(make(f).snapshot,e.snapshot);
+ assert.equal(await e.flush(),true);assert.equal(e.snapshot.measuredEncounterIds.length,7);assert.equal(e.snapshot.best.length,6);assert.deepEqual(make(f).snapshot,e.snapshot);
  const g=s.encounters[5],prior=e.snapshot.best.find(x=>x.species==='giantstag');assert.equal(e.measure(g.encounterId).alreadyMeasured,true);assert.equal(prior.encounterId,g.encounterId);assert.equal(prior.capturedAt,100);
  s.encounters[5].sizePermille=0;assert.notEqual(e.snapshot.encounters[5].sizePermille,0);const before=e.snapshot;assert.equal((await e.beginNextOuting()).ok,true);assert.deepEqual(e.snapshot.best,before.best);assert.equal(e.measure(g.encounterId).reason,'invalid-encounter');
 });
 
-test('failed or uncertain transition never exposes six; lost lock result and double-click preserve old scene',async()=>{
+test('failed or uncertain transition never exposes seven; lost lock result and double-click preserve old scene',async()=>{
  for(const mode of ['quota','failReadback','lostLock']){
   const bytes=JSON.stringify(legacy()),f=fixture(bytes),e=make(f);await e.flush();const before=e.snapshot;
   if(mode==='lostLock'){const request=f.locks.request;f.locks.request=async(...args)=>{await request(...args);throw Error('lost result');};}else {f[mode]=true;f.written=false;}
   const running=e.beginNextOuting(1);assert.equal(e.measure(before.encounters[0].encounterId).reason,'busy');assert.equal((await e.beginNextOuting(1)).reason,'busy');assert.equal((await running).ok,false);assert.deepEqual(e.snapshot,before);assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),bytes);
-  if(mode==='quota'){f.quota=false;assert.equal((await e.beginNextOuting()).ok,true);assert.equal(e.snapshot.encounters.length,6);}else{assert.equal(e.reason,'storage-uncertain');f.failReadback=false;const n=f.writes.length;assert.equal(await e.flush(),false);assert.equal(f.writes.length,n);assert.equal(JSON.parse(raw(f)).generatorVersion,2);}
+  if(mode==='quota'){f.quota=false;assert.equal((await e.beginNextOuting()).ok,true);assert.equal(e.snapshot.encounters.length,7);}else{assert.equal(e.reason,'storage-uncertain');f.failReadback=false;const n=f.writes.length;assert.equal(await e.flush(),false);assert.equal(f.writes.length,n);assert.equal(JSON.parse(raw(f)).generatorVersion,3);}
  }
 });

@@ -24,7 +24,8 @@ function update(model,state){updateInsectModel(model,{...state,x:state.position.
 
 test('old four layout/geometry/pose fixtures are exact, and new fixed species remain unmeasured scale one',()=>{
  const measured=priorFixture();console.log('old-four fixture SHA',measured);assert.equal(measured,'93bc14c5f669578dab0ed940bbab2b476368db49f50eccaaaf962bbc0484e3dc');
- for(const species of['atlas','elephant']){const m=createInsectModel(species,{sizePermille:1150});assert.equal(m.userData.individualScale,1);assert.equal(m.scale.x,1);dispose(m);}
+ for(const species of['elephant']){const m=createInsectModel(species,{sizePermille:1150});assert.equal(m.userData.individualScale,1);assert.equal(m.scale.x,1);dispose(m);}
+ const fixedAtlas=createInsectModel('atlas');assert.equal(fixedAtlas.userData.individualScale,1);assert.equal(fixedAtlas.scale.x,1);dispose(fixedAtlas);
 });
 
 test('only giant gets a sixth profile; site rebasing preserves the absolute lane and old five homes',()=>{
