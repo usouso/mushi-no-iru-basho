@@ -1,29 +1,30 @@
-import {createElephantStudy} from './elephant-study.js?v=0.26.0&b=b8d401c0400d';
-import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import {createGiantStagStudy} from './giant-stag-study.js?v=0.26.0&b=b8d401c0400d';
-import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.26.0&b=b8d401c0400d';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import { individualScale } from './individual-layout.js?v=0.26.0&b=b8d401c0400d';
+import {createElephantStudy} from './elephant-study.js?v=0.27.0&b=572abb81497f';
+import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.27.0&b=572abb81497f';
+import {createGiantStagStudy} from './giant-stag-study.js?v=0.27.0&b=572abb81497f';
+import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.27.0&b=572abb81497f';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.27.0&b=572abb81497f';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.27.0&b=572abb81497f';
+import { individualScale } from './individual-layout.js?v=0.27.0&b=572abb81497f';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.26.0&b=b8d401c0400d';
-import { createLonghornStudy } from './longhorn-study.js?v=0.26.0&b=b8d401c0400d';
-import { createJewelStudy } from './jewel-study.js?v=0.26.0&b=b8d401c0400d';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.26.0&b=b8d401c0400d';
-import { createBeeStudy } from './bee-study.js?v=0.26.0&b=b8d401c0400d';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.26.0&b=b8d401c0400d';
-import { createStagStudy } from './stag-study.js?v=0.26.0&b=b8d401c0400d';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import { createRhinoStudy } from './rhino-study.js?v=0.26.0&b=b8d401c0400d';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.26.0&b=b8d401c0400d';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import { createMantisStudy } from './mantis-study.js?v=0.26.0&b=b8d401c0400d';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import { createDivingStudy } from './diving-study.js?v=0.26.0&b=b8d401c0400d';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.26.0&b=b8d401c0400d';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.26.0&b=b8d401c0400d';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.27.0&b=572abb81497f';
+import { createLonghornStudy } from './longhorn-study.js?v=0.27.0&b=572abb81497f';
+import { createJewelStudy } from './jewel-study.js?v=0.27.0&b=572abb81497f';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.27.0&b=572abb81497f';
+import { createBeeStudy } from './bee-study.js?v=0.27.0&b=572abb81497f';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.27.0&b=572abb81497f';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.27.0&b=572abb81497f';
+import { createStagStudy } from './stag-study.js?v=0.27.0&b=572abb81497f';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.27.0&b=572abb81497f';
+import { createRhinoStudy } from './rhino-study.js?v=0.27.0&b=572abb81497f';
+import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.27.0&b=572abb81497f';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.27.0&b=572abb81497f';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.27.0&b=572abb81497f';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.27.0&b=572abb81497f';
+import { createMantisStudy } from './mantis-study.js?v=0.27.0&b=572abb81497f';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.27.0&b=572abb81497f';
+import { createDivingStudy } from './diving-study.js?v=0.27.0&b=572abb81497f';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.27.0&b=572abb81497f';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.27.0&b=572abb81497f';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
@@ -39,7 +40,7 @@ export const SPECIES = Object.freeze({
   divingbeetle: { name: 'ゲンゴロウ（雌）', label: 'ゲンゴロウ', scientificName: 'Cybister chinensis', size: '自然の体長の紹介目安は34〜42mm。試作の胴と頭の表示長は約14cm（脚・触角を除く表示補正であり、実寸ではありません）', observation: '池などで暮らす水生の甲虫です。腹端を水面に出して呼吸し、オール状の後脚を左右そろえて漕ぎます。この試作は雌の姿を題材とした浅い水中の動作見本で、潜水の秒数や楕円の経路は自然の行動を測定したものではありません。飛翔や捕食は再現していません。', hint: '池の浅い場所を、岸からそっと見下ろして。水面の呼吸姿勢と、水中で漕ぐ後脚を探してみよう。', color: '#51513a' },
   mantis: { name: 'オオカマキリ（雄）', label: 'オオカマキリ', scientificName: 'Tenodera sinensis', size: '自然の雄の体長は、およそ7〜9cmほどの資料例があります。全地域の最小最大値ではありません。試作の胴と頭の表示長は約26cm（脚・触角を除く表示補正であり、実寸ではありません）', observation: '草や枝で昆虫を待ち伏せするカマキリです。三角形の頭と細長い胸をもち、前脚は昆虫をつかまえるための脚です。この試作は飛ぶことのできる緑色の成虫雄を題材に、4本の歩脚で休む姿と、翅を開いて隣の葉へ短く飛ぶ見本を表現しています。休止の秒数や飛行経路はゲーム上の調整で、捕食や攻撃は再現していません。', hint: '草葉の緑にまぎれた三角形の頭を探して。静かに近づき、畳んだ前脚と4本の歩脚を見てみよう。', color: '#8d9e54' },
   ladybird: { name: 'ナナホシテントウ', label: 'ナナホシテントウ', scientificName: 'Coccinella septempunctata', size: '自然の体長の紹介目安は5〜8.6mm。試作の胴と頭の表示長は約8cm（脚・触角を除く表示補正であり、実寸ではありません）', observation: '赤い上翅に黒い斑点をもつテントウムシです。6本の脚と4枚の翅があり、成虫も幼虫もアブラムシを食べます。この試作は葉の上で短く歩き、上翅と後翅を広げて隣の葉へ飛ぶ動作見本です。着地後は上翅を閉じてから後翅を収納する順序を簡略化して示し、精密な折畳みや殻の外に長く残る後翅の引込み、捕食は再現していません。秒数や距離はゲーム上の調整です。', hint: '草葉の上の赤い丸い姿を探して。6本の脚と、上翅の下に収まる後翅を見てみよう。', color: '#bd4035' },
-  rhino: { name: 'カブトムシ（雄）', label: 'カブトムシ', scientificName: 'Trypoxylus dichotomus', size: '自然の体長の紹介目安は30〜55mm（角を除く種の資料値で、雄だけの最小最大値ではありません）。試作表示は胴と頭が約18cm、角込みの前後長が約30cm（実寸ではありません）', observation: '成虫はクヌギなどの樹液に集まる甲虫です。雄は頭と胸に角をもち、長い頭角の先は四叉、短い胸角の先は二叉になります。この試作は夜の区画の陸側にある水平な太枝で、短く前進・後退して休む動作見本です。6本の脚と、閉じた2枚の上翅の下に収納した2枚の後翅をもちます。飛行・摂食のアニメーションは再現していません。速度や接近への反応はゲーム上の調整です。', hint: '夜の木の低い太枝を探して。角の分かれ方と、枝をつかむ6本の脚を見てみよう。', color: '#593c2d' },
+  rhino: { name: 'カブトムシ（雄）', label: 'カブトムシ', scientificName: 'Trypoxylus dichotomus', size: '自然の体長の紹介目安は30〜55mm（角を除く種の資料値で、雄だけの最小最大値ではありません）。試作表示は胴と頭が約18cm、角込みの前後長が約30cm（実寸ではありません）', observation: '成虫はクヌギなどの樹液に集まる甲虫です。雄は頭と胸に角をもち、長い頭角の先は四叉、短い胸角の先は二叉になります。この試作では夜の低い太枝を歩き、近づき続けると角を構えてから上翅を開き、後翅で短く飛び立ちます。6本の脚と2枚ずつの上翅・後翅を見てみましょう。翅の折り畳みは簡略化した模型です。反応距離・飛行経路・同じ枝への帰還はゲーム上の調整で、摂食動作は再現していません。', hint: '夜の木の低い太枝を探して。角の分かれ方と、枝をつかむ6本の脚を見てみよう。', color: '#593c2d' },
   stag: { name: 'ノコギリクワガタ（雄）', label: 'ノコギリクワガタ', scientificName: 'Prosopocoilus inclinatus', size: '大きさや大顎の形には個体差があります。試作表示は大顎を除く胴と頭が約18cm、大顎を含む前後長が約30cm（実寸ではありません）', observation: '主に夜に活動し、木の樹液に集まるクワガタです。この試作は湾曲した左右の大顎をもつ大型の雄を題材にしています。大顎は角ではなく口器で、内側に鋸状の歯があります。模型の歯の数は自然の歯数を確定したものではありません。低い太枝は観察用の配置です。短い歩行と、接近すると大顎を控えめに開いて後ずさる動きはゲーム上の表現で、精密な威嚇や逃避の再現ではありません。飛行・摂食・戦闘は扱いません。', hint: '夜の木の枝分かれを見て。左右に湾曲する大顎と、その内側の歯を探してみよう。', color: '#74482e' },
   longhorn: { name: 'ゴマダラカミキリ（雌を参考にした姿）', label: 'ゴマダラカミキリ', scientificName: 'Anoplophora malasiaca（参照資料の表記）', size: '自然の成虫体長は24〜35mmまたは25〜35mmという機関資料があります（測定端点は未確認）。試作表示は胴と頭が約16cm、左右の触角は各約19cmの折線長（別々の表示補正であり、実寸ではありません）', observation: '黒い体に白い毛の斑紋があり、節の目立つ長い触角をもつカミキリムシです。成虫は緑枝の樹皮や葉を食べ、幼虫は樹皮の内側から材部を食べます。学名は参照した機関資料の表記で、分類上の扱いの違いはこの試作では確定していません。低い太幹の一面で6脚を添えて休み、短く前進・後退する観察見本です。太い古い樹皮での摂食、幹一周の登木、飛行・産卵は再現せず、姿勢や歩行速度はゲーム上の調整です。', hint: '昼の木の幹を横から見て。白い斑紋と長い触角、樹皮に添う6本の脚を探してみよう。', color: '#343c40' },
   jewel: { name: 'ヤマトタマムシ', label: 'ヤマトタマムシ', scientificName: 'Chrysochroa fulgidissima', size: '自然の体長の紹介目安は3〜4cm（測定端点・雌雄別の範囲は未確認）。試作表示は胴と頭が約16cm、胴幅約5cm（脚・触角を除く表示補正であり、実寸ではありません）', observation: '緑色の光沢と赤紫の縦縞をもつ、細長い甲虫です。成虫は日中に活動して生きた葉を食べ、幼虫は木材を食べます。光沢は光や見る角度で変わる構造色で、発光ではありません。この試作は6本の脚で低い生葉の上を短く前進・後退し、閉じた上翅と収納した後翅を観察する見本です。低い葉は観察用の配置で、自然の代表的な生息高度ではありません。飛行・摂食は再現せず、速度や接近反応はゲーム上の調整です。', hint: '昼の生木の低い葉を探して。細長い体の光沢と、葉につく6本の脚を見てみよう。', color: '#638d59' },
@@ -331,14 +332,16 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
     const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
     const groups=array(rhinoSupports).map(g=>{
-      record(g,Object.prototype.hasOwnProperty.call(g,'retreatLimits')?['home','heading','retreatLimits']:['home','heading']);record(g.home,['x','y','z']);const home={...g.home},heading=g.heading,{x,y,z}=home,ground=heightAt(x,z);
+      record(g,[...(Object.prototype.hasOwnProperty.call(g,'retreatLimits')?['home','heading','retreatLimits']:['home','heading']),...(Object.prototype.hasOwnProperty.call(g,'flightRoute')?['flightRoute']:[])]);record(g.home,['x','y','z']);const home={...g.home},heading=g.heading,{x,y,z}=home,ground=heightAt(x,z);
       if(![x,y,z,heading,ground].every(Number.isFinite)||Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||y<ground+RHINO.rootAboveSupport||y>ground+3||Math.abs(x+Math.sin(heading)*.12)>flightBounds||Math.abs(z+Math.cos(heading)*.12)>flightBounds)throw new Error();
       let retreatBounds=null;
       if(Object.prototype.hasOwnProperty.call(g,'retreatLimits')){record(g.retreatLimits,['min','max']);const{min,max}=g.retreatLimits,axis=x*Math.sin(heading)+z*Math.cos(heading);
         if(![min,max].every(Number.isFinite)||min>=max||max-min>2||min>axis||max<axis+.12||[min-axis,max-axis].some(d=>Math.abs(x+Math.sin(heading)*d)>flightBounds||Math.abs(z+Math.cos(heading)*d)>flightBounds))throw new Error();
         retreatBounds={min:min-axis,max:max-axis};
       }
-      createRhinoStudy({position:home,heading,...(retreatBounds?{retreatBounds}:{})});return{home,heading,retreatBounds};
+      const flightRoute=g.flightRoute??null;
+      if(flightRoute!==null&&(flightRoute!=='rhino-east-loop-v1'||!retreatBounds||Math.abs(heading-Math.PI/2)>1e-8||Math.abs(z-2)>1e-8||x< -4.10||x> -3.36||Math.abs(x+retreatBounds.min+4.10)>1e-8||Math.abs(x+retreatBounds.max+3.36)>1e-8))throw new Error();
+      createRhinoStudy({position:home,heading,...(retreatBounds?{retreatBounds}:{})});return{home,heading,retreatBounds,flightRoute};
     });
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='rhino');if(groups.length>1||rows.length!==groups.length)throw new Error();
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();rhinoGroups.set(index,g);}
@@ -484,7 +487,8 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       }
       if (species === 'rhino') {
         const item=items[items.length-1],support=rhinoGroups.get(index);
-        rhinos.set(item.id,{study:createRhinoStudy({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null,...(support.retreatBounds?{retreatBounds:support.retreatBounds}:{})}),near:false,reactive:!!support.retreatBounds});syncRhino(item);item.homeHeading=item.heading;
+        item.rhinoFlightEnabled=!!support.flightRoute;
+        rhinos.set(item.id,{study:(item.rhinoFlightEnabled?createRhinoFlightStudy:createRhinoStudy)({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null,...(support.retreatBounds?{retreatBounds:support.retreatBounds}:{})}),near:false,reactive:!!support.retreatBounds});syncRhino(item);item.homeHeading=item.heading;
       }
       if (species === 'stag') {
         const item=items[items.length-1],support=stagGroups.get(index);
@@ -567,7 +571,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const s=rhinos.get(item.id).study.state;
     item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.heading=s.heading;item.pitch=s.pitch;
     item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.warningBlend=s.warningBlend||0;item.rhinoPhase=s.phase;
-    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+    item.flightPose=s.flightPose;item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating','flying'].includes(s.phase);
   }
   // Branch reactions are enabled only by a measured support envelope. Their
   // warning radii/speeds are game tuning, not wild reaction-distance claims.

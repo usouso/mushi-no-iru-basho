@@ -1,6 +1,6 @@
 /* Small, self-contained tropical forest-edge study. All materials and meshes are
  * authored here; no imported assets, ecological simulation, or visual QA claim. */
-import {TROPICAL_HOMES,TROPICAL_BOUNDS,TROPICAL_SPAWN,TROPICAL_ROUTE,TROPICAL_BAIT,TROPICAL_LOGS} from './tropical-layout.js?v=0.26.0&b=b8d401c0400d';
+import {TROPICAL_HOMES,TROPICAL_BOUNDS,TROPICAL_SPAWN,TROPICAL_ROUTE,TROPICAL_BAIT,TROPICAL_LOGS} from './tropical-layout.js?v=0.27.0&b=572abb81497f';
 const THREE=window.THREE,TAU=Math.PI*2,EXTENT=35,STEP=.5;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function rng(seed){return()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^seed>>>15,seed|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
