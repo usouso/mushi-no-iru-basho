@@ -1,17 +1,18 @@
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.22.0&b=cb8cdca3a903';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.22.0&b=cb8cdca3a903';
-import {applyInsectReadability} from './insect-readability.js?v=0.22.0&b=cb8cdca3a903';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.23.0&b=6eab031e296e';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.23.0&b=6eab031e296e';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.23.0&b=6eab031e296e';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.23.0&b=6eab031e296e';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.23.0&b=6eab031e296e';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.23.0&b=6eab031e296e';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.23.0&b=6eab031e296e';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.23.0&b=6eab031e296e';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.23.0&b=6eab031e296e';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.23.0&b=6eab031e296e';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.23.0&b=6eab031e296e';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.23.0&b=6eab031e296e';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.23.0&b=6eab031e296e';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.23.0&b=6eab031e296e';
+import {applyInsectReadability} from './insect-readability.js?v=0.23.0&b=6eab031e296e';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -748,6 +749,7 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
 }
 
 function buildInsectModel(species, { inspection = false } = {}) {
+  if(species==='giantstag'){const root=createGiantStagModel({inspection});root.userData.species='giantstag';return root;}
   if(species==='atlas'){const root=createAtlasModel({inspection});root.userData.species='atlas';return root;}
   if(species==='metallifer'){
     const root=createMetalliferModel({inspection});root.userData.species='metallifer';return root;
@@ -801,6 +803,10 @@ function buildInsectModel(species, { inspection = false } = {}) {
 }
 
 export function updateInsectModel(group, item, time = 0, support = null) {
+  if(group.userData.species==='giantstag'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateGiantStagModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,warningBlend:item.warningBlend,phase:item.giantStagPhase,caught:item.caught});
+  }
   if(group.userData.species==='atlas'){
     if(!group.userData.inspection)group.visible=!item.caught;
     return updateAtlasModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,headLift:item.headLift,phase:item.atlasPhase,caught:item.caught});

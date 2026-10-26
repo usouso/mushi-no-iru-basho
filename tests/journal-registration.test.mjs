@@ -10,18 +10,18 @@ import {createJournal,JOURNAL_KEY,LEGACY_JOURNAL_KEY} from '../src/journal.js';
 import {createTestLocks} from './fixtures/journal-locks.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const ids=Object.keys(SPECIES);
-const expected=['butterfly','dragonfly','cicada','morpho','grasshopper','hercules','leafinsect','waterstrider','leafcutterant','firefly','dungbeetle','divingbeetle','mantis','ladybird','rhino','stag','bee','swallowtail','jewel','longhorn','metallifer','atlas'];
+const expected=['butterfly','dragonfly','cicada','morpho','grasshopper','hercules','leafinsect','waterstrider','leafcutterant','firefly','dungbeetle','divingbeetle','mantis','ladybird','rhino','stag','bee','swallowtail','jewel','longhorn','metallifer','atlas','giantstag'];
 function memory(){const values=new Map(),writes=[];return{values,writes,storage:{getItem:key=>values.get(key)??null,setItem(key,value){writes.push(key);values.set(key,value);}}};}
 
-test('all twenty-two candidate species register once, retain notes on recapture, and reload without touching legacy data',async()=>{
+test('all twenty-three candidate species register once, retain notes on recapture, and reload without touching legacy data',async()=>{
  assert.deepEqual([...ids].sort(),[...expected].sort());
  const f=memory(),legacy=JSON.stringify({version:1,entries:[]});f.values.set(LEGACY_JOURNAL_KEY,legacy);
  let now=100;const options={locks:createTestLocks(),now:()=>now++},j=createJournal(f.storage,options);
  for(const species of ids){assert.equal(j.setNote(species,'before capture'),null);assert.equal(j.record({species,location:'registered',x:1,z:2}).species,species);j.setNote(species,`note ${species}`);}
- assert.equal(j.entries.length,22);assert.equal(await j.flush(),true);
+ assert.equal(j.entries.length,23);assert.equal(await j.flush(),true);
  const first=j.entries.map(entry=>entry.firstSeen);
  for(const species of ids){const entry=j.record({species,location:'recaptured',x:3,z:4});assert.equal(entry.note,`note ${species}`);}
- assert.equal(j.entries.length,22);assert.deepEqual(j.entries.map(entry=>entry.firstSeen),first);
+ assert.equal(j.entries.length,23);assert.deepEqual(j.entries.map(entry=>entry.firstSeen),first);
  assert.equal(j.record({species:'unknown'}),null);assert.equal(await j.flush(),true);
  assert.deepEqual(createJournal(f.storage,options).entries,j.entries);
  assert.equal(f.values.get(LEGACY_JOURNAL_KEY),legacy);assert.ok(f.writes.every(key=>key===JOURNAL_KEY));
@@ -47,8 +47,8 @@ test('actual main registers only successful net results, immediately before insp
   assert.equal(g.journal.entries[index].note,'','no memo or release is required');
  }
  assert.equal(await g.journal.flush(),true);
- const reloaded=createJournal(localStorage,{locks:createTestLocks()});assert.equal(reloaded.entries.length,22);
- g.state.mode='paused';g.state.cooldown=0;g.swing();assert.equal(g.journal.entries.length,22,'paused action resumes without a new capture');
+ const reloaded=createJournal(localStorage,{locks:createTestLocks()});assert.equal(reloaded.entries.length,23);
+ g.state.mode='paused';g.state.cooldown=0;g.swing();assert.equal(g.journal.entries.length,23,'paused action resumes without a new capture');
 });
 
 test('a capture can be visible in the journal but not survive reload when storage locking is unavailable',async()=>{

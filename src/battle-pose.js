@@ -1,8 +1,8 @@
 /** Battle-only adapter over independently owned inspection geometry. Field and
  * journal models keep their ordinary rig. Feet stay world-planted while the
  * real torso/horns lean; only swing/recovery feet move to a new support point. */
-import {sampleRhinoPose} from './rhino-kinematics.js?v=0.22.0&b=cb8cdca3a903';
-import {sampleStagPose} from './stag-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import {sampleRhinoPose} from './rhino-kinematics.js?v=0.23.0&b=6eab031e296e';
+import {sampleStagPose} from './stag-kinematics.js?v=0.23.0&b=6eab031e296e';
 const T=window.THREE;
 const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const vec=p=>new T.Vector3(p.x,p.y,p.z);
@@ -23,7 +23,9 @@ export function createBattleRig(model,species){
   return{mesh:leg.mesh,index:i,side:info.side??leg.side??leg.mesh.userData.side,role:info.legRole||leg.mesh.userData.legRole||(info.role!=='leg'?info.role:null)||['front','middle','hind'][leg.index],points,frames,original,normals,bindings,upper:points[0].distanceTo(points[1]),lower:points[1].distanceTo(points[2]),toe:points.length===4?points[3].clone().sub(points[2]):null,foot:points.at(-1).clone(),worldFoot:new T.Vector3(),anchor:new T.Vector3(),swingStart:new T.Vector3(),target:new T.Vector3(),wasSwing:false,contact:true,reachError:0};
  });
  const jaws=(data.jaws||[]).map(j=>({pivot:j.pivot||j,side:j.side||Math.sign((j.pivot||j).position.x),base:(j.pivot||j).rotation.y}));
- const desired=species==='atlas'?new T.Vector3(0,.100,.280):species==='rhino'?new T.Vector3(-.014,.119,.21):species==='hercules'?new T.Vector3(0,.041,.265):species==='stag'?new T.Vector3(-.014,-.010,.210):new T.Vector3(-.026,.063,.177);
+ model.updateMatrixWorld(true);
+ const giantHint=species==='giantstag'?vec(data.weaponHint.localPoint).applyMatrix4(data.weaponHint.mesh.matrixWorld).applyMatrix4(model.matrixWorld.clone().invert()):null;
+ const desired=giantHint|| (species==='atlas'?new T.Vector3(0,.100,.280):species==='rhino'?new T.Vector3(-.014,.119,.21):species==='hercules'?new T.Vector3(0,.041,.265):species==='stag'?new T.Vector3(-.014,-.010,.210):new T.Vector3(-.026,.063,.177));
  const weaponMeshes=species==='atlas'?[data.horns.find(h=>h.role==='head-horn').mesh]:species==='rhino'?[data.hornMesh]:species==='hercules'?data.visual.children.filter(m=>m.isMesh&&m.userData.battleParts?.some(p=>p.role==='head-horn')):[jaws.find(j=>j.side<0).pivot];
  let weaponMesh=null,weaponIndex=0,best=Infinity;model.updateMatrixWorld(true);const inverse=model.matrixWorld.clone().invert();
  for(const group of weaponMeshes)group.traverse(m=>{if(!m.isMesh)return;const a=m.geometry.attributes.position;for(let i=0;i<a.count;i++){const p=new T.Vector3().fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld).applyMatrix4(inverse),d=p.distanceToSquared(desired);if(d<best){best=d;weaponMesh=m;weaponIndex=i;}}});

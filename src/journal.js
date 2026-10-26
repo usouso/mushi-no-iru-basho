@@ -7,7 +7,7 @@ export const JOURNAL_KEY = 'mushi-journal-v2';
 export const LEGACY_JOURNAL_KEY = 'mushi-journal-v1';
 export const JOURNAL_VERSION = 2;
 export const NOTE_LIMIT = 500;
-const speciesIds = new Set(['butterfly', 'dragonfly', 'cicada', 'morpho', 'grasshopper', 'hercules', 'leafinsect', 'waterstrider', 'leafcutterant', 'firefly', 'dungbeetle', 'divingbeetle', 'mantis', 'ladybird', 'rhino', 'stag', 'bee', 'swallowtail', 'jewel', 'longhorn', 'metallifer', 'atlas']);
+const speciesIds = new Set(['butterfly', 'dragonfly', 'cicada', 'morpho', 'grasshopper', 'hercules', 'leafinsect', 'waterstrider', 'leafcutterant', 'firefly', 'dungbeetle', 'divingbeetle', 'mantis', 'ladybird', 'rhino', 'stag', 'bee', 'swallowtail', 'jewel', 'longhorn', 'metallifer', 'atlas', 'giantstag']);
 const entryFields = ['species','firstSeen','lastSeen','location','x','z','note'];
 const text = (value, limit) => typeof value === 'string' ? value.slice(0, limit) : '';
 const timestamp = value => Number.isSafeInteger(value) && value >= 0;

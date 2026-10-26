@@ -1,4 +1,4 @@
-import {sampleAtlasPose,ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import {sampleAtlasPose,ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.23.0&b=6eab031e296e';
 /** Original provisional male C. atlas display. Three-horn arrangement follows
  * institutional text; fine species shape/colour still needs photo/render review.
  * No image texture/tracing, no flight, no full game registration in this lab. */
