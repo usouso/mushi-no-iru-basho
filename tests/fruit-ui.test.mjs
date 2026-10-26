@@ -8,7 +8,7 @@ test('fruit prompt is initially hidden in the existing stacked control group, wi
   assert.match(group,/<p id="interaction-hint" class="interaction-hint" role="status" hidden><\/p>/);
   assert.match(group,/id="controls-hint"/);assert.match(group,/id="look-resume-hint"/);
   assert.equal((html.match(/id="interaction-hint"/g)||[]).length,1);
-  assert.match(html,/E \/ X \/ □：熱帯の果実台で置く・片付ける/);
+  assert.match(html,/E \/ X \/ □：熱帯の果実台・倒木で置く・片付ける/);
   const css=await readFile(new URL('../style.css',import.meta.url),'utf8');
   assert.match(css,/\.hud-controls\{[^}]*display:flex;flex-direction:column;gap:6px/);
   assert.match(css,/\.look-resume-hint,\.interaction-hint\{font-size:12px/);
@@ -17,11 +17,11 @@ test('fruit prompt is initially hidden in the existing stacked control group, wi
   assert.doesNotMatch(css,/\.interaction-hint\{[^}]*(?:position:absolute|border:|background:)/);
 });
 
-test('index version labels agree at 0.4.0 and existing habitat, journal and quiet controls remain',async()=>{
+test('index version labels agree at 0.15.1 and existing habitat, journal and quiet controls remain',async()=>{
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
-  assert.match(html,/<meta name="application-version" content="0\.4\.0">/);
-  assert.equal((html.match(/data-build-version>0\.4\.0</g)||[]).length,2);
+  assert.match(html,/<meta name="application-version" content="0\.15\.1">/);
+  assert.equal((html.match(/data-build-version>0\.15\.1</g)||[]).length,2);
   assert.match(html,/<button[^>]*id="title-button"[^>]*>表紙・区画選びへ<\/button>/);
   for(const id of ['habitat-select','journal-button','pause-journal-button','inspect-journal-button','pause-button','quiet-label'])assert.ok(html.includes(`id="${id}"`),id);
-  for(const text of ['Shift 保持','右クリック保持','左クリック / Space','LB 保持','RB 保持','View 図鑑','Start ひと休み'])assert.ok(html.includes(text),text);
+  for(const text of ['Shift 保持','右クリック保持','Space</dt><dd>網をふる','左クリック：見回し中は網 · 停止中は見回し再開。','LB 保持','RB 保持','View 図鑑','Start ひと休み'])assert.ok(html.includes(text),text);
 });

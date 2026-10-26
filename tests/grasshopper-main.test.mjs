@@ -13,7 +13,7 @@ import vm from 'node:vm';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'..');
 const sandbox={console};vm.runInNewContext(fs.readFileSync(path.join(root,'assets/vendor/three.min.js'),'utf8'),sandbox);const THREE=sandbox.THREE;
-const ctx2d={};for(const key of ['fillRect','clearRect','beginPath','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','stroke','fill','save','restore','translate','rotate','ellipse','arc','drawImage','closePath'])ctx2d[key]=()=>{};ctx2d.createLinearGradient=()=>({addColorStop(){}});
+const ctx2d={};for(const key of ['fillRect','clearRect','beginPath','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','stroke','fill','save','restore','translate','rotate','ellipse','arc','drawImage','closePath','clip'])ctx2d[key]=()=>{};ctx2d.createLinearGradient=()=>({addColorStop(){}});
 let asynchronousLocks=false,lockRequests=0;const lockNotifications=[];
 const notifyLockChange=()=>{const fire=()=>document.dispatchEvent(new Event('pointerlockchange'));if(asynchronousLocks)lockNotifications.push(fire);else fire();};
 async function flushLockNotifications(){while(lockNotifications.length){const callbacks=lockNotifications.splice(0);await new Promise(resolve=>setImmediate(()=>{callbacks.forEach(fn=>fn());resolve();}));}}
@@ -77,7 +77,7 @@ function quietCapture(i){
  key('keydown','Space');key('keyup','Space');mouse('mouseup',2);assert.equal(g.simulation.caught,i);frame(22);assert.equal(g.state.mode,'inspect');return horizontal(g.state.player,start);
 }
 test('actual meadow has21 insects; walking from spawn triggers ground jump and quiet downward capture after natural landing',()=>{
- choose('meadow');assert.equal(g.simulation.items.length,22);assert.equal(g.simulation.items.filter(i=>i.species==='grasshopper').length,3);assert.equal(g.state.player.x,g.world.spawn.x);assert.equal(g.state.player.z,g.world.spawn.z);
+ choose('meadow');assert.equal(g.simulation.items.length,29);assert.equal(g.simulation.items.filter(i=>i.species==='grasshopper').length,3);assert.equal(g.state.player.x,g.world.spawn.x);assert.equal(g.state.player.z,g.world.spawn.z);
  const i=hopper(),spawn={x:g.state.player.x,z:g.state.player.z};assert.equal(i.airborne,false);assert.equal(i.resting,true);aimAt(i);key('keydown','KeyW');until(()=>i.airborne,8);key('keyup','KeyW');
  assert.ok(horizontal(g.state.player,spawn)>1,'normal key walking, not helper translation');assert.equal(g.simulation.caught,null);const jump=settleJump(i);const walked=quietCapture(i);assert.ok(walked>.1);
  assert.match(elements.get('insect-name').textContent,/ショウリョウバッタ/);assert.equal(g.journal.entries.find(e=>e.species==='grasshopper').species,'grasshopper');
@@ -91,9 +91,9 @@ test('inspection right menu, memo, release hop, natural landing and second quiet
 });
 test('five actual species records persist across both habitats and a new journal instance',async()=>{
  for(const species of ['butterfly','dragonfly','cicada']){g.restart();catchSpecies(species);g.journal.setNote(species,`note-${species}`);g.release({lock:false});}
- choose('tropical');assert.equal(g.simulation.items.length,6);assert.ok(g.simulation.items.filter(i=>i.species==='morpho').length===4&&g.simulation.items.filter(i=>i.species==='hercules').length===2);catchSpecies('morpho');g.journal.setNote('morpho','青い翅');g.release({lock:false});
+ choose('tropical');assert.equal(g.simulation.items.length,10);assert.ok(g.simulation.items.filter(i=>i.species==='morpho').length===4&&g.simulation.items.filter(i=>i.species==='hercules').length===2);catchSpecies('morpho');g.journal.setNote('morpho','青い翅');g.release({lock:false});
  assert.equal(g.journal.entries.length,5);const expected=g.journal.entries;await g.journal.flush();const {createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
- choose('meadow');assert.equal(g.simulation.items.length,22);assert.deepEqual(g.journal.entries,expected);g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,8);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
+ choose('meadow');assert.equal(g.simulation.items.length,29);assert.deepEqual(g.journal.entries,expected);g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,20);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
 });
 test('new meadow keeps J focus, Esc mute0, Shift dash, E no-op and stable pointer-lock hint behavior',async()=>{
  g.restart();g.pause();elements.get('volume').value='0';elements.get('volume').dispatchEvent(new Event('input'));key('keydown','Escape');key('keyup','Escape');await settle();frame(1);assert.equal(g.state.mode,'playing');assert.equal(g.state.volume,0);assert.equal(master().value,0);

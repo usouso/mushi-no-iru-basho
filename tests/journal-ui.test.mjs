@@ -76,7 +76,7 @@ test('save failure gives gentle status while retaining the note in this page', a
   await journal.flush();
   const status = find(ui.element, 'fj-status')[0];
   assert.equal(status.dataset.unsaved, 'true');
-  assert.match(status.textContent, /ページを開いている間/);
+  assert.match(status.textContent, /今回の未保存の変更は、このページを閉じると失われます/);
   assert.equal(journal.entries[0].note, '木肌に似ていた');
 });
 
@@ -176,7 +176,7 @@ test('async persistence changes only status; preserves composing editor and rele
   input.emit('input', { isComposing: true });
   await f.journal.flush();
   assert.equal(status.dataset.unsaved, 'true');
-  assert.match(status.textContent, /ページを開いている間/);
+  assert.match(status.textContent, /今回の未保存の変更は、このページを閉じると失われます/);
   assertEditorUnchanged();
   f.setBlocked(false);
   input.emit('input', { isComposing: true });
@@ -199,7 +199,7 @@ test('async persistence changes only status; preserves composing editor and rele
   f.ui.open();
   assert.equal(subscribers, 1);
   assert.equal(subscriptions, 2);
-  assert.match(status.textContent, /ページを開いている間/);
+  assert.match(status.textContent, /今回の未保存の変更は、このページを閉じると失われます/);
   f.ui.refresh(); f.ui.open();
   assert.equal(subscribers, 1);
   assert.equal(subscriptions, 2, 'refresh/repeated open do not add listeners');

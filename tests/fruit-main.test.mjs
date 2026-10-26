@@ -13,7 +13,7 @@ import vm from 'node:vm';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'..');
 const sandbox={console};vm.runInNewContext(fs.readFileSync(path.join(root,'assets/vendor/three.min.js'),'utf8'),sandbox);const THREE=sandbox.THREE;
-const ctx2d={};for(const key of ['fillRect','clearRect','beginPath','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','stroke','fill','save','restore','translate','rotate','ellipse','arc','drawImage','closePath'])ctx2d[key]=()=>{};ctx2d.createLinearGradient=()=>({addColorStop(){}});
+const ctx2d={};for(const key of ['fillRect','clearRect','beginPath','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','stroke','fill','save','restore','translate','rotate','ellipse','arc','drawImage','closePath','clip'])ctx2d[key]=()=>{};ctx2d.createLinearGradient=()=>({addColorStop(){}});
 let asynchronousLocks=false,lockRequests=0;const lockNotifications=[];
 const notifyLockChange=()=>{const fire=()=>document.dispatchEvent(new Event('pointerlockchange'));if(asynchronousLocks)lockNotifications.push(fire);else fire();};
 async function flushLockNotifications(){while(lockNotifications.length){const callbacks=lockNotifications.splice(0);await new Promise(resolve=>setImmediate(()=>{callbacks.forEach(fn=>fn());resolve();}));}}
@@ -97,5 +97,5 @@ test('explicit removal updates visibility; pause freezes exposure and ninety sec
 test('restart and title clear bait/visitors without clearing journal; changing back to meadow restores no interaction',()=>{
  near();pressE();watch();until(()=>!!g.simulation.bait.visitorId);g.restart();frame(1);assert.equal(g.simulation.bait,null);assert.equal(g.simulation.caught,null);assert.equal(fruit().visible,false);assert.ok(g.simulation.items.every(i=>!i.excursion));
  near();pressE();g.title();frame(1);assert.equal(g.simulation.bait,null);assert.equal(g.state.mode,'title');assert.equal(fruit().visible,false);assert.equal(g.journal.entries.find(e=>e.species==='morpho').note,'果実台に来た');
- elements.get('habitat-select').value='meadow';g.start();frame(1);pressE();assert.equal(g.simulation.items.length,22);assert.equal(g.simulation.bait,null);assert.equal(elements.get('interaction-hint').hidden,true);
+ elements.get('habitat-select').value='meadow';g.start();frame(1);pressE();assert.equal(g.simulation.items.length,29);assert.equal(g.simulation.bait,null);assert.equal(elements.get('interaction-hint').hidden,true);
 });

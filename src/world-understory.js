@@ -1,4 +1,4 @@
-import {LEAF_BOUNDS,LEAF_SPAWN,LEAF_HOMES,LEAF_ROUTE,LEAF_WALK_HALF_LENGTH} from './leaf-layout.js?v=0.4.0&b=1e91b06b740d';
+import {LEAF_BOUNDS,LEAF_SPAWN,LEAF_HOMES,LEAF_ROUTE,LEAF_WALK_HALF_LENGTH} from './leaf-layout.js?v=0.15.1&b=a70f15b11632';
 const THREE=window.THREE, EXTENT=26, STEP=.5, TAU=Math.PI*2;
 function rng(seed){return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
 const sample=(x,z)=>Math.fround(.13*Math.sin(x*.17)*Math.cos(z*.12)+.07*Math.sin(z*.24));

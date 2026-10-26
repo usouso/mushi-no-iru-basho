@@ -13,7 +13,7 @@ import vm from 'node:vm';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'..');
 const sandbox={console};vm.runInNewContext(fs.readFileSync(path.join(root,'assets/vendor/three.min.js'),'utf8'),sandbox);const THREE=sandbox.THREE;
-const ctx2d={};for(const key of ['fillRect','clearRect','beginPath','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','stroke','fill','save','restore','translate','rotate','ellipse','arc','drawImage','closePath'])ctx2d[key]=()=>{};ctx2d.createLinearGradient=()=>({addColorStop(){}});
+const ctx2d={};for(const key of ['fillRect','clearRect','beginPath','moveTo','lineTo','bezierCurveTo','quadraticCurveTo','stroke','fill','save','restore','translate','rotate','ellipse','arc','drawImage','closePath','clip'])ctx2d[key]=()=>{};ctx2d.createLinearGradient=()=>({addColorStop(){}});
 let asynchronousLocks=false,lockRequests=0;const lockNotifications=[];
 const notifyLockChange=()=>{const fire=()=>document.dispatchEvent(new Event('pointerlockchange'));if(asynchronousLocks)lockNotifications.push(fire);else fire();};
 async function flushLockNotifications(){while(lockNotifications.length){const callbacks=lockNotifications.splice(0);await new Promise(resolve=>setImmediate(()=>{callbacks.forEach(fn=>fn());resolve();}));}}
@@ -68,7 +68,7 @@ function catchBeetle(i){
  assert.ok(Math.hypot(i.x-x,i.y-y,i.z-z)<2.6);key('keydown','Space');key('keyup','Space');assert.equal(g.simulation.caught,i);return point(i);
 }
 test('tropical main adds two resting beetles without replacing morphos, then naturally walks and turns along each log',()=>{
- choose('tropical');assert.equal(g.simulation.items.length,6);assert.equal(g.simulation.items.filter(i=>i.species==='morpho').length,4);assert.equal(beetles().length,2);
+ choose('tropical');assert.equal(g.simulation.items.length,10);assert.equal(g.simulation.items.filter(i=>i.species==='morpho').length,4);assert.equal(beetles().length,2);
  const initial=beetles().map(point),homes=beetles().map(i=>({...i.home})),seen=beetles().map(()=>new Set()),maxStep=[0,0];let prior=beetles().map(point);
  assert.ok(beetles().every(i=>i.resting&&!i.caught));frame(15);assert.deepEqual(beetles().map(point),initial,'initial resting interval');
  for(let n=0;n<60*120;n++){frame(1);beetles().forEach((i,k)=>{seen[k].add(i.state);assert.ok([i.x,i.y,i.z,i.heading].every(Number.isFinite));assert.ok(Math.abs(i.x-i.home.x)<=.600001);assert.equal(i.y,i.home.y);assert.equal(i.z,i.home.z);maxStep[k]=Math.max(maxStep[k],Math.hypot(i.x-prior[k].x,i.y-prior[k].y,i.z-prior[k].z));});prior=beetles().map(point);}
@@ -77,7 +77,7 @@ test('tropical main adds two resting beetles without replacing morphos, then nat
 });
 test('walking capture freezes position, pending delay and inspection; journal note survives continuous release and recapture',()=>{
  const i=beetles()[0];until(()=>i.state==='walking');const at=catchBeetle(i);frame(10);assert.deepEqual(point(i),at);assert.equal(g.state.mode,'playing');frame(12);assert.equal(g.state.mode,'inspect');assert.match(elements.get('insect-name').textContent,/ヘラクレス/);
- const description=elements.get('insect-description').textContent;assert.ok(description.includes('この試作では低い倒木で日中の休止や歩行を観察でき、果実台には寄りません。'));
+ const description=elements.get('insect-description').textContent;assert.ok(description.includes('この試作では低い倒木で日中の休止や歩行を観察でき、モルフォ用の果実台には移動せず、倒木上の果実のそばへ歩いて休む見本を観察できます。食べる口の動きは再現していません。'));
  const menu=new Event('contextmenu',{cancelable:true});Object.defineProperties(menu,{target:{value:elements.get('game-canvas')},button:{value:2}});document.dispatchEvent(menu);assert.equal(menu.defaultPrevented,true);
  frame(60);assert.deepEqual(point(i),at);g.openJournal('hercules');assert.ok(descendants(modal()).some(n=>n.className==='fj-observation'&&n.textContent===description),'inspection and journal use identical Hercules observation');const note=find('fj-note');note.value='倒木を歩いた';note.dispatchEvent(new Event('input'));const time=g.simulation.time;frame(60);assert.equal(g.simulation.time,time);key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'inspect');
  g.release({lock:false});assert.equal(g.simulation.caught,null);assert.deepEqual(point(i),at);let prior=point(i),moved=false;
@@ -88,13 +88,13 @@ test('fruit remains morpho-only while existing beetles continue log walking',()=
  g.restart();const station=g.world.baitStation;g.setPose({x:station.x,y:g.world.heightAt(station.x,station.z+1.5)+1.65,z:station.z+1.5,yaw:0,pitch:-.2});frame(1);key('keydown','KeyE');key('keyup','KeyE');assert.equal(g.simulation.bait.active,true);
  g.setPose({x:station.x+2,y:g.world.heightAt(station.x+2,station.z+3)+1.65,z:station.z+3});const homes=beetles().map(i=>({...i.home})),visitors=new Set();
  for(let n=0;n<60*60;n++){frame(1);const id=g.simulation.bait?.visitorId;if(id){const i=g.simulation.items.find(i=>i.id===id);assert.equal(i.species,'morpho');visitors.add(id);}assert.ok(beetles().every(i=>i.state!=='feeding'&&i.state!=='bait-approach'));}
- assert.ok(visitors.size>=1);assert.equal(g.simulation.items.length,6);assert.deepEqual(beetles().map(i=>i.home),homes);g.title();assert.equal(g.simulation.bait,null);
+ assert.ok(visitors.size>=1);assert.equal(g.simulation.items.length,10);assert.deepEqual(beetles().map(i=>i.home),homes);g.title();assert.equal(g.simulation.bait,null);
 });
 test('six actual capture records and notes reload; old J/Esc mute0 and habitat reset controls remain usable',async()=>{
- choose('meadow');assert.equal(g.simulation.items.length,22);for(const species of ['butterfly','dragonfly','cicada','grasshopper']){g.restart();catchSpecies(species);g.journal.setNote(species,`memo-${species}`);g.release({lock:false});}
+ choose('meadow');assert.equal(g.simulation.items.length,29);for(const species of ['butterfly','dragonfly','cicada','grasshopper']){g.restart();catchSpecies(species);g.journal.setNote(species,`memo-${species}`);g.release({lock:false});}
  choose('tropical');catchSpecies('morpho');g.journal.setNote('morpho','青い翅');g.release({lock:false});assert.equal(g.journal.entries.length,6);
  await g.journal.flush();const expected=g.journal.entries,{createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,8);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,20);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
  g.pause();elements.get('volume').value='0';elements.get('volume').dispatchEvent(new Event('input'));key('keydown','Escape');key('keyup','Escape');await settle();frame(1);assert.equal(g.state.mode,'playing');assert.equal(master().value,0);assert.equal(g.state.volume,0);
- g.restart();assert.equal(g.simulation.caught,null);assert.equal(g.simulation.items.length,6);assert.deepEqual(g.journal.entries,expected);assert.equal(document.activeElement,elements.get('game-canvas'));
+ g.restart();assert.equal(g.simulation.caught,null);assert.equal(g.simulation.items.length,10);assert.deepEqual(g.journal.entries,expected);assert.equal(document.activeElement,elements.get('game-canvas'));
 });

@@ -14,7 +14,7 @@ const text=id=>html.match(new RegExp(`<[^>]+id="${id}"[^>]*>([\\s\\S]*?)<\\/p>`)
 function fixture(target=null){
  const nodes=new Map();for(const match of html.matchAll(/\bid="([^"]+)"/g))nodes.set(match[1],{textContent:text(match[1])||'',hidden:false,classList:{toggle(){}}});
  const canvas=nodes.get('game-canvas'),document={pointerLockElement:canvas},state={elapsed:1,player:{x:0,z:0,quiet:false,running:false}};
- const context={nearbyBaitStation:()=>null,document,canvas,state,$:id=>{assert.ok(nodes.has(id),id);return nodes.get(id);},simulation:{findTarget:()=>target},direction:()=>({}),journal:{entries:[]},locationLabel:()=> '野原'};
+ const context={world:{},logFruitHabitat:null,nearbyBaitStation:()=>null,document,canvas,state,$:id=>{assert.ok(nodes.has(id),id);return nodes.get(id);},simulation:{dungBall:null,findTarget:()=>target},direction:()=>({}),journal:{entries:[]},locationLabel:()=> '野原'};
  vm.createContext(context);vm.runInContext(hud+'\nthis.update=updateHUD;',context);
  return{nodes,state,document,canvas,update:context.update};
 }

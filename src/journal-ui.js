@@ -1,4 +1,4 @@
-import { NOTE_LIMIT } from './journal.js?v=0.4.0&b=1e91b06b740d';
+import { NOTE_LIMIT } from './journal.js?v=0.15.1&b=a70f15b11632';
 
 const LEGACY_SPECIES_IDS = ['butterfly', 'dragonfly', 'cicada'];
 let instance = 0;
@@ -90,7 +90,7 @@ function mountJournalUI({ journal, species, onClose }) {
   const headingBlock = make('div');
   const title = make('h2', '', '出会いの図鑑');
   title.id = `${prefix}-title`;
-  headingBlock.append(make('p', 'fj-eyebrow', 'FIELD NOTES / SUMMER 01'), title);
+  headingBlock.append(make('p', 'fj-eyebrow', 'FIELD NOTES / HABITAT STUDIES'), title);
   const closeButton = make('button', 'fj-close', '閉じる');
   closeButton.type = 'button';
   header.append(headingBlock, closeButton);
@@ -116,7 +116,7 @@ function mountJournalUI({ journal, species, onClose }) {
     const message = pending
       ? 'このブラウザに保存中です。ページを閉じると、未保存の記録が失われることがあります。'
       : unsaved
-        ? '今はこのブラウザに保存できません。記録はこのページを開いている間だけ残ります。'
+        ? '今はこのブラウザに保存できません。今回の未保存の変更は、このページを閉じると失われます。'
         : '記録は自動で保存されます。メモは空欄のままでも大丈夫です。';
     if (status.textContent !== message) status.textContent = message;
   }
@@ -133,7 +133,7 @@ function mountJournalUI({ journal, species, onClose }) {
       const card = make('article', entry ? 'fj-card' : 'fj-card fj-unseen');
       if (!entry) {
         // Do not disclose a name, image, location, checklist number, or target.
-        card.append(make('h3', '', 'まだ出会っていない虫'), make('p', '', 'いつか、どこかの草むらで。'));
+        card.append(make('h3', '', 'まだ出会っていない虫'), make('p', '', 'いつか、どこかで。'));
       } else {
         const name = typeof species[id]?.name === 'string' ? species[id].name : '野原で出会った虫';
         card.append(make('h3', '', name));
@@ -141,7 +141,7 @@ function mountJournalUI({ journal, species, onClose }) {
         if (typeof observation === 'string' && observation) {
           card.append(make('p', 'fj-observation', observation));
         }
-        card.append(make('p', 'fj-place-label', 'さいごに出会った場所'), make('p', 'fj-place', entry.location || '夏の野原'));
+        card.append(make('p', 'fj-place-label', 'さいごに出会った場所'), make('p', 'fj-place', entry.location || '出会った場所'));
         const label = make('label', 'fj-note-label', 'ひと言メモ（任意）');
         const input = make('textarea', 'fj-note');
         input.id = `${prefix}-${id}-note`;
@@ -151,7 +151,7 @@ function mountJournalUI({ journal, species, onClose }) {
         input.placeholder = '色や動き、気づいたことなど';
         input.setAttribute('aria-label', `${name}のひと言メモ（任意）`);
         label.htmlFor = input.id;
-        const help = make('p', 'fj-note-help', `${NOTE_LIMIT}文字まで・入力すると自動保存`);
+        const help = make('p', 'fj-note-help', `${NOTE_LIMIT}文字まで・自動保存（保存状況は下に表示）`);
         help.id = `${prefix}-${id}-help`;
         input.setAttribute('aria-describedby', help.id);
         input.addEventListener('input', () => {

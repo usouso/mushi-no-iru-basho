@@ -1,8 +1,18 @@
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.4.0&b=1e91b06b740d';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.15.1&b=a70f15b11632';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.15.1&b=a70f15b11632';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.15.1&b=a70f15b11632';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.15.1&b=a70f15b11632';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.15.1&b=a70f15b11632';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.15.1&b=a70f15b11632';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.15.1&b=a70f15b11632';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.15.1&b=a70f15b11632';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.15.1&b=a70f15b11632';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.15.1&b=a70f15b11632';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.15.1&b=a70f15b11632';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
-export const FIELD_VISUAL_SCALE = Object.freeze({ butterfly: 1, dragonfly: 1, cicada: 1, morpho: 1, grasshopper: 1, hercules: 1, leafinsect: 1, waterstrider: 1 });
+export const FIELD_VISUAL_SCALE = Object.freeze({ butterfly: 1, dragonfly: 1, cicada: 1, morpho: 1, grasshopper: 1, hercules: 1, leafinsect: 1, waterstrider: 1, leafcutterant: 1, firefly: 1 });
 const cache = {};
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .76, ...extra });
 
@@ -139,7 +149,15 @@ function dragonfly(root, field = false) {
     segment(pivot,[.17,.002,back?-.035:.034],[.182,.002,back?-.039:.033],.0022,dark,4);
     pivots.push(pivot);
   }
-  legs(root,dark,.85);root.userData.wings=pivots;
+  // Hind legs originate on the thorax, not beside the narrow abdomen.
+  const legScale=.85;
+  for(const side of [-1,1]) for(let n=0;n<3;n++) {
+    const z=(.035-n*.026)*legScale;
+    const hip=n===2?[side*.008,-.004,.004]:[side*.012*legScale,0,z];
+    segment(root,hip,[side*.032*legScale,-.02*legScale,z-.012*legScale],.0015*legScale,dark);
+    segment(root,[side*.032*legScale,-.02*legScale,z-.012*legScale],[side*.048*legScale,-.025*legScale,z+.006*legScale],.0011*legScale,dark);
+  }
+  root.userData.wings=pivots;
 }
 function cicada(root, field = false) {
   const brown=material(field?'#a07a42':'#8d683c'),dark=material(field?'#302113':'#30281b'),eyeMat=material(field?'#27170e':'#3d2516',{roughness:.25});
@@ -556,6 +574,131 @@ function updateWaterStrider(group,item,inspection){
   const data=group.userData.visual.userData.strider;sampleStriderPose(inspection?data.inspectionPose:item,data.pose);for(const leg of data.legs)updateStriderLeg(leg);
 }
 
+// Original Atta forager study. Display dimensions are not specimen dimensions.
+function antLeafTexture(){
+  if(cache.antLeaf)return cache.antLeaf;const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');c.fillStyle='#80964c';c.fillRect(0,0,128,128);c.strokeStyle='#536f39';c.lineWidth=2;c.beginPath();c.moveTo(64,128);c.lineTo(64,0);c.stroke();for(let i=1;i<7;i++){const y=i*18;for(const side of [-1,1]){c.beginPath();c.moveTo(64,y+18);c.lineTo(64+side*48,y-5);c.stroke();}}const map=new THREE.CanvasTexture(canvas);map.encoding=THREE.sRGBEncoding;map.name='ant-original-leaf-veins';cache.antLeaf=map;return map;
+}
+function antLimb(root,side,index,mat){
+  const hip=new THREE.Vector3(side*.008,.017,[.014,.003,-.009][index]),foot=new THREE.Vector3(side*.040,0,[.030,0,-.032][index]),geometry=new THREE.BufferGeometry(),indices=[];
+  for(let bone=0;bone<2;bone++)for(let j=0;j<6;j++){const b=bone*14,k=(j+1)%6;indices.push(b+j,b+k,b+6+k,b+j,b+6+k,b+6+j,b+12,b+k,b+j,b+13,b+6+j,b+6+k);}
+  geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(84),3));geometry.setIndex(indices);const mesh=new THREE.Mesh(geometry,mat);mesh.name=`ant-leg-${side}-${index}`;root.add(mesh);
+  return{side,index,hip,foot,knee:new THREE.Vector3(),axis:new THREE.Vector3(),u:new THREE.Vector3(),v:new THREE.Vector3(),normal:new THREE.Vector3(0,1,0),worldNormal:new THREE.Vector3(0,1,0),targetNormal:new THREE.Vector3(0,1,0),geometry,mesh,anchor:new THREE.Vector3(),worldFoot:new THREE.Vector3(),target:new THREE.Vector3(),swingStart:new THREE.Vector3(),baseZ:foot.z,wasSwing:false,offset:(side===-1&&index!==1)||(side===1&&index===1)?0:.5};
+}
+function updateAntLimb(leg){
+  const {hip,knee,foot,side,index,axis,u,v,normal,geometry}=leg;knee.set(hip.x+(foot.x-hip.x)*.55+side*.003,.013+Math.max(0,foot.y)*.3,(hip.z+foot.z)*.5+(index===0?.005:index===2?-.004:0));const p=geometry.attributes.position;
+  for(let bone=0;bone<2;bone++){
+    const a=bone?knee:hip,b=bone?foot:knee;axis.subVectors(b,a).normalize();u.set(1,0,0).addScaledVector(axis,-axis.x).normalize();v.crossVectors(axis,u);
+    for(let end=0;end<2;end++){
+      if(bone&&end){u.set(1,0,0).addScaledVector(normal,-normal.x).normalize();v.crossVectors(normal,u);}
+      for(let j=0;j<6;j++){const angle=j*Math.PI/3,r=(bone?.0011:.0015)*(end?.65:1),c=Math.cos(angle)*r,s=Math.sin(angle)*r,origin=end?b:a;p.setXYZ(bone*14+end*6+j,origin.x+u.x*c+v.x*s,origin.y+u.y*c+v.y*s,origin.z+u.z*c+v.z*s);}
+    }p.setXYZ(bone*14+12,a.x,a.y,a.z);p.setXYZ(bone*14+13,b.x,b.y,b.z);
+  }p.needsUpdate=true;geometry.computeVertexNormals();geometry.computeBoundingSphere();
+}
+function leafCutterAnt(root){
+  const rust=material('#86492d',{roughness:.62}),dark=material('#33251d',{roughness:.45}),green=material('#d1d9a0',{map:antLeafTexture(),roughness:.84,side:THREE.DoubleSide});
+  const body=new THREE.Group();body.name='ant-body';root.add(body);
+  ellipsoid(body,[0,.019,-.033],[.013,.012,.013],rust,12);
+  ellipsoid(body,[0,.021,.003],[.009,.009,.018],rust,12);
+  ellipsoid(body,[0,.022,.033],[.017,.013,.017],rust,12);
+  ellipsoid(body,[0,.017,-.018],[.004,.005,.005],rust,8);ellipsoid(body,[0,.016,-.025],[.005,.004,.004],rust,8);
+  for(const side of [-1,1]){
+    ellipsoid(body,[side*.014,.026,.037],[.0024,.0028,.003],dark,6);
+    // Three small mesosomal spine pairs; shape is schematic, not diagnostic tracing.
+    for(const z of [.014,.003,-.010]){const cone=new THREE.Mesh(new THREE.ConeGeometry(.0019,.008,4),rust);cone.position.set(side*.006,.030,z);cone.rotation.z=-side*.42;body.add(cone);}
+    // Bent antennae and triangular mandibles: a visible connection holds the leaf base.
+    thread(body,[[side*.009,.027,.042],[side*.025,.033,.055],[side*.023,.031,.072]],'#714126',1);
+    const jaw=new THREE.BufferGeometry();jaw.setAttribute('position',new THREE.Float32BufferAttribute([side*.010,.021,.044,side*.002,.022,.054,0,.022,.053,side*.006,.019,.045],3));jaw.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,1,0,1,1,0,1],2));jaw.setIndex([0,1,2,0,2,3,2,1,0,3,2,0]);jaw.computeVertexNormals();const m=new THREE.Mesh(jaw,dark);m.name=`ant-mandible-${side}`;body.add(m);
+  }batchBody(body);
+  const leaf=new THREE.Group();leaf.name='ant-carried-leaf';leaf.position.set(0,.022,.053);root.add(leaf);
+  const shape=new THREE.Shape(),outline=[[0,0],[-.022,.026],[-.045,.074],[-.037,.111],[-.017,.140],[.011,.130],[.040,.093],[.045,.056],[.018,.016]];shape.moveTo(...outline[0]);for(const p of outline.slice(1))shape.lineTo(...p);shape.closePath();
+  const g=new THREE.ExtrudeGeometry(shape,{depth:.0008,bevelEnabled:false,steps:1,curveSegments:1});const uv=g.attributes.uv,p=g.attributes.position;for(let i=0;i<p.count;i++)uv.setXY(i,(p.getX(i)+.045)/.09,1-p.getY(i)/.14);const blade=new THREE.Mesh(g,green);blade.name='ant-original-leaf-fragment';leaf.add(blade);
+  const rig=new THREE.Group();rig.name='ant-six-leg-rig';root.add(rig);const legs=[];for(const side of [-1,1])for(let i=0;i<3;i++){const l=antLimb(rig,side,i,rust);legs.push(l);updateAntLimb(l);}
+  root.userData.ant={legs,leaf,ready:false,position:new THREE.Vector3(),rotation:new THREE.Quaternion(),inverse:new THREE.Quaternion(),cycle:0,normal:new THREE.Vector3(0,1,0),forward:new THREE.Vector3(),right:new THREE.Vector3(),matrix:new THREE.Matrix4()};
+}
+function antGround(target,normal,support,root,up){
+  const hit=typeof support?.sampleAt==='function'?support.sampleAt(target.x,target.z):null;
+  if(hit?.point&&Number.isFinite(hit.point.y)&&hit.normal&&hit.normal.y>0){target.y=hit.point.y;normal.set(hit.normal.x,hit.normal.y,hit.normal.z).normalize();}
+  else{target.y=root.y-(up.x*(target.x-root.x)+up.z*(target.z-root.z))/Math.max(.1,up.y);normal.copy(up);}
+}
+function updateLeafCutterAnt(group,item,inspection,support){
+  const data=group.userData.visual.userData.ant,phase=inspection?0:(Number.isFinite(item.walkPhase)?item.walkPhase:0),turning=!inspection&&!item.caught&&item.state==='turning';
+  // Integer cycles preserve grounded endpoints; <=30 degrees per cycle keeps
+  // planted legs from crossing. This is display tuning, not a measured gait.
+  const turnAngle=Number.isFinite(item.turnAngle)?Math.min(Math.PI,Math.abs(item.turnAngle)):Math.PI,turnCycles=Math.max(1,Math.ceil(turnAngle/(Math.PI/6)-1e-9)),cycle=phase/(Math.PI*2)+(turning?turnCycles*Math.min(1,Math.max(0,item.turnProgress||0)):0);
+  data.leaf.visible=item.carryingLeaf!==false;
+  if(inspection){for(const l of data.legs){l.foot.set(l.side*.040,0,l.baseZ+.009-.030*l.offset);l.normal.set(0,1,0);updateAntLimb(l);}data.ready=false;return;}
+  if(!inspection){const n=support?.normal;data.normal.set(n?.x||0,n?.y>0?n.y:1,n?.z||0).normalize();const h=item.heading||0;data.forward.set(Math.sin(h),0,Math.cos(h)).addScaledVector(data.normal,-(Math.sin(h)*data.normal.x+Math.cos(h)*data.normal.z)).normalize();data.right.crossVectors(data.normal,data.forward).normalize();data.matrix.makeBasis(data.right,data.normal,data.forward);group.quaternion.setFromRotationMatrix(data.matrix);}
+  else data.normal.set(0,1,0);
+  const delta=cycle-data.cycle,reset=inspection||!data.ready||item.caught||data.position.distanceToSquared(group.position)>.0009||data.rotation.angleTo(group.quaternion)>.3||Math.abs(delta-Math.round(delta))>.4;data.inverse.copy(group.quaternion).invert();
+  for(const l of data.legs){
+    const q=leafCyclePhase(cycle+l.offset),swing=q>.6?(q-.6)/.4:0,isSwing=q>.6,bq=leafCyclePhase(phase/(Math.PI*2)+l.offset),bs=bq>.6?(bq-.6)/.4:0,stride=bq<=.6?.009-.030*bq:-.009+.018*bs*bs*(3-2*bs);
+    l.target.set(l.side*(turning?.037:.040),0,l.baseZ+(turning?stride:isSwing?.009:stride)).applyQuaternion(group.quaternion).add(group.position);antGround(l.target,l.targetNormal,inspection?null:support,group.position,data.normal);
+    if(reset){l.foot.set(l.side*.040,0,l.baseZ+stride);l.worldFoot.copy(l.foot).applyQuaternion(group.quaternion).add(group.position);antGround(l.worldFoot,l.worldNormal,inspection?null:support,group.position,data.normal);l.anchor.copy(l.worldFoot);l.swingStart.copy(l.anchor);l.worldFoot.addScaledVector(l.worldNormal,.006*Math.sin(Math.PI*swing)**2);}
+    else if(isSwing){if(!l.wasSwing)l.swingStart.copy(l.worldFoot);l.worldFoot.copy(l.swingStart).lerp(l.target,swing*swing*(3-2*swing));antGround(l.worldFoot,l.worldNormal,support,group.position,data.normal);l.worldFoot.addScaledVector(l.worldNormal,.006*Math.sin(Math.PI*swing)**2);}
+    else{if(l.wasSwing){l.anchor.copy(l.worldFoot);antGround(l.anchor,l.worldNormal,support,group.position,data.normal);}l.worldFoot.copy(l.anchor);}
+    l.foot.copy(l.worldFoot).sub(group.position).applyQuaternion(data.inverse);l.normal.copy(l.worldNormal).applyQuaternion(data.inverse);l.wasSwing=isSwing;updateAntLimb(l);
+  }data.ready=!inspection&&!item.caught;data.position.copy(group.position);data.rotation.copy(group.quaternion);data.cycle=cycle;
+}
+
+// Male Aquatica lateralis: original, display-scaled geometry. The two small
+// ventral organs emit a CONSTANT weak light; no timer, halo, light or bloom.
+function firefly(root) {
+  const dark=material('#252b28',{roughness:.6}),red=material('#b96654'),legMat=material('#6a6954');
+  const shell=material('#303a32',{roughness:.54}),membrane=material('#bac5af',{side:THREE.DoubleSide,transparent:true,opacity:.72,depthWrite:false,roughness:.64});
+  const abdomen=new THREE.Group();root.add(abdomen);abdomen.name='firefly-abdomen';
+  const rings=[[-.055,.003],[-.050,.011],[-.035,.015],[-.015,.014],[.006,.007]],verts=[],indices=[];
+  for(const[z,w]of rings)for(const[x,y]of [[-.8,.019],[.8,.019],[1,.025],[.8,.035],[0,.039],[-.8,.035],[-1,.025]])verts.push(x*w,y,z);
+  for(let r=0;r<4;r++)for(let j=0;j<7;j++){const k=(j+1)%7,a=r*7+j,b=r*7+k,c=(r+1)*7+k,d=(r+1)*7+j;indices.push(a,b,c,a,c,d);}
+  for(let j=1;j<6;j++){indices.push(0,j+1,j,28,28+j,28+j+1);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));g.setIndex(indices);g.computeVertexNormals();abdomen.add(new THREE.Mesh(g,dark));
+  ellipsoid(root,[0,.032,.019],[.018,.011,.013],red,8);
+  ellipsoid(root,[0,.030,.037],[.009,.007,.008],dark,8);
+  ellipsoid(root,[0,.041,.019],[.003,.002,.012],dark,6);
+  for(const side of [-1,1]){
+    segment(root,[side*.004,.033,.042],[side*.009,.037,.052],.0008,dark,4);
+    segment(root,[side*.009,.037,.052],[side*.013,.037,.064],.0006,dark,4);
+  }
+  const limbs=new THREE.Group();limbs.name='firefly-six-legs';root.add(limbs);const feet=[];
+  for(const side of [-1,1])for(const z of [-.025,0,.026]){
+    const hip=[side*.009,.024,z*.65],knee=[side*.022,.013,z],foot=[side*.027,0,z];
+    grasshopperLimb(limbs,hip,knee,.0013,legMat);grasshopperLimb(limbs,knee,foot,.001,legMat,true);feet.push(new THREE.Vector3(...foot));
+  }batchBody(limbs);
+  const elytra=[],hindwings=[];
+  for(const side of [-1,1]){
+    const cover=new THREE.Group();cover.name=`firefly-elytron-${side}`;cover.position.set(side*.0005,.041,.009);root.add(cover);
+    wing(cover,[[0,0],[side*.014,-.004],[side*.015,-.028],[side*.011,-.058],[side*.002,-.063],[0,-.057]],shell);elytra.push({pivot:cover,side});
+    const hind=new THREE.Group();hind.name=`firefly-hindwing-${side}`;hind.position.set(side*.003,.037,.005);hind.scale.x=.16;root.add(hind);
+    wing(hind,[[0,0],[side*.048,-.013],[side*.054,-.031],[side*.041,-.052],[side*.018,-.056],[0,-.035]],membrane);hindwings.push({pivot:hind,side});
+  }
+  const glowGeometry=new THREE.BufferGeometry(),positions=[],glowIndices=[];
+  for(const[z0,z1]of [[-.039,-.030],[-.052,-.043]]){
+    const i=positions.length/3,w=z0<-.04?.005:.008;positions.push(-w,.0188,z0,w,.0188,z0,w,.0188,z1,-w,.0188,z1);glowIndices.push(i,i+1,i+2,i,i+2,i+3);
+  }
+  glowGeometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));glowGeometry.setIndex(glowIndices);glowGeometry.computeVertexNormals();
+  const light=material('#b9c77d',{emissive:'#b9ce68',emissiveIntensity:.28,roughness:.84});
+  const lanterns=new THREE.Mesh(glowGeometry,light);lanterns.name='firefly-ventral-lanterns';root.add(lanterns);
+  root.userData.firefly={elytra,hindwings,limbs,feet,lanterns,normal:new THREE.Vector3(),forward:new THREE.Vector3(),right:new THREE.Vector3(),matrix:new THREE.Matrix4(),rest:new THREE.Quaternion(),upright:new THREE.Quaternion(),up:new THREE.Vector3(0,1,0)};
+}
+function updateFirefly(group,item,inspection,support){
+  const data=group.userData.visual.userData.firefly,clamp=x=>Math.min(1,Math.max(0,Number.isFinite(x)?x:0)),smooth=x=>x*x*(3-2*x),f=inspection?0:clamp(item.flightBlend);
+  const open=smooth(clamp(f/.35)),deploy=smooth(clamp((f-.2)/.45)),flap=smooth(clamp((f-.55)/.45)),phase=Number.isFinite(item.wingPhase)?item.wingPhase:0;
+  for(const{pivot,side}of data.elytra){pivot.rotation.y=side*open*.85;pivot.rotation.z=side*open*.3;}
+  for(const{pivot,side}of data.hindwings){pivot.scale.x=.16+.84*deploy;pivot.rotation.y=side*.75*deploy;pivot.rotation.z=side*(.1*deploy+.48*Math.sin(phase)*flap);}
+  // The simulation preserves this blend across mid-flight capture/release.
+  // Deriving it again from reset flightProgress would snap the resting basis.
+  const air=inspection?0:clamp(item.airBlend);
+  data.limbs.scale.y=1-.6*air;data.limbs.position.y=.014*air;
+  if(!inspection){
+    const heading=item.heading||0;data.upright.setFromAxisAngle(data.up,heading);data.rest.copy(data.upright);
+    const n=support?.normal,t=support?.forward;
+    if(n&&[n.x,n.y,n.z].every(Number.isFinite)){
+      data.normal.set(n.x,n.y,n.z).normalize();data.forward.set(t?.x??Math.sin(heading),t?.y??0,t?.z??Math.cos(heading));data.forward.addScaledVector(data.normal,-data.forward.dot(data.normal));
+      if(data.normal.lengthSq()>.5&&data.forward.lengthSq()>1e-10){data.forward.normalize();data.right.crossVectors(data.normal,data.forward).normalize();data.matrix.makeBasis(data.right,data.normal,data.forward);data.rest.setFromRotationMatrix(data.matrix);}
+    }
+    group.quaternion.copy(data.rest).slerp(data.upright,air);
+  }
+}
+
 // Batch rigid body parts by their shared material. Wing pivots remain independent.
 // This keeps all the leg/eye detail without a draw call for every tiny segment.
 function batchBody(root) {
@@ -590,9 +733,41 @@ function batchBody(root) {
 }
 
 export function createInsectModel(species, { inspection = false } = {}) {
+  if(species==='longhorn'){
+    const root=createLonghornModel({inspection});root.userData.species='longhorn';return root;
+  }
+  if(species==='jewel'){
+    const root=createJewelModel({inspection});root.userData.species='jewel';return root;
+  }
+  if(species==='swallowtail'){
+    const root=createSwallowtailModel({inspection});root.userData.species='swallowtail';return root;
+  }
+  if(species==='bee'){
+    const root=createBeeModel({inspection});root.userData.species='bee';return root;
+  }
+  if(species==='stag'){
+    const root=createStagModel({inspection});root.userData.species='stag';return root;
+  }
+  if(species==='rhino'){
+    const root=createRhinoModel({inspection});root.userData.species='rhino';return root;
+  }
+  if(species==='ladybird'){
+    const root=createLadybirdModel({inspection});root.userData.species='ladybird';return root;
+  }
+  if(species==='mantis'){
+    const root=createMantisModel({inspection});root.userData.species='mantis';return root;
+  }
+  if(species==='divingbeetle'){
+    const model=createDivingModel({inspection});model.userData.species=species;
+    // This model owns its texture, unlike the cached maps of the old species.
+    const materials=new Set();model.traverse(node=>{if(node.material?.map)materials.add(node.material);});
+    for(const material of materials){const texture=material.map;let disposed=false;material.addEventListener('dispose',()=>{if(!disposed){disposed=true;texture.dispose();}});}
+    return model;
+  }
+  if(species==='dungbeetle')return createDungBeetleModel({inspection});
   const group=new THREE.Group();group.name=`${species}-${inspection?'inspection':'field'}`;
   const visual=new THREE.Group();group.add(visual);
-  (species==='waterstrider'?waterStrider:species==='leafinsect'?leafInsect:species==='hercules'?hercules:species==='grasshopper'?grasshopper:species==='morpho'?morpho:species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual,!inspection);
+  (species==='firefly'?firefly:species==='leafcutterant'?leafCutterAnt:species==='waterstrider'?waterStrider:species==='leafinsect'?leafInsect:species==='hercules'?hercules:species==='grasshopper'?grasshopper:species==='morpho'?morpho:species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual,!inspection);
   batchBody(visual);
   // Field readability only: inspection framing and the simulation capture centre stay unchanged.
   if (!inspection) visual.scale.setScalar(FIELD_VISUAL_SCALE[species] ?? 1);
@@ -607,6 +782,43 @@ export function createInsectModel(species, { inspection = false } = {}) {
 }
 
 export function updateInsectModel(group, item, time = 0, support = null) {
+  if(group.userData.species==='longhorn'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateLonghornModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.longhornPhase,caught:item.caught});
+  }
+  if(group.userData.species==='jewel'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateJewelModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.jewelPhase,caught:item.caught});
+  }
+  if(group.userData.species==='swallowtail'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateSwallowtailModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,wingOpen:item.wingOpen,wingPhase:item.wingPhase,flapBlend:item.flapBlend,legTuck:item.legTuck,phase:item.swallowtailPhase,caught:item.caught});
+  }
+  if(group.userData.species==='bee'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateBeeModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,wingOpen:item.wingOpen,wingPhase:item.wingPhase,legTuck:item.legTuck,phase:item.beePhase,caught:item.caught});
+  }
+  if(group.userData.species==='stag'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateStagModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,phase:item.stagPhase,caught:item.caught});
+  }
+  if(group.userData.species==='rhino'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateRhinoModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.rhinoPhase,caught:item.caught});
+  }
+  if(group.userData.species==='ladybird'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateLadybirdModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,elytraOpen:item.elytraOpen,hindwingDeploy:item.hindwingDeploy,hindwingSweep:item.hindwingSweep,wingPhase:item.wingPhase,legTuck:item.legTuck});
+  }
+  if(group.userData.species==='mantis'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateMantisModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,wingOpen:item.wingOpen,wingPhase:item.wingPhase,legTuck:item.legTuck,headYaw:item.headYaw});
+  }
+  if(group.userData.species==='divingbeetle'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateDivingModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,strokePhase:item.strokePhase});
+  }
+  if(group.userData.species==='dungbeetle')return updateDungBeetleModel(group,item);
   const inspection=group.userData.inspection;
   const species=group.userData.species;
   if(!inspection) {
@@ -615,6 +827,8 @@ export function updateInsectModel(group, item, time = 0, support = null) {
     group.rotation.y=item.heading||0;
   }
   const visual=group.userData.visual;
+  if(species==='firefly'){updateFirefly(group,item,inspection,support);return;}
+  if(species==='leafcutterant'){updateLeafCutterAnt(group,item,inspection,support);return;}
   if(species==='waterstrider'){updateWaterStrider(group,item,inspection);return;}
   if(species==='leafinsect'){updateLeafInsect(group,item,inspection);return;}
   if(species==='hercules') {

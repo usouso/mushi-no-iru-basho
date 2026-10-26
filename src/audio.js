@@ -1,7 +1,7 @@
 /** Brief-1 trial samples with the original wind/footstep/action fallbacks.
  * Gains/radii are game tuning, not a claim of measured listening comfort.
  */
-import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.4.0&b=1e91b06b740d';
+import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.15.1&b=a70f15b11632';
 export function createAudio({assetBaseURL}={}){
  const MAX_SHOTS=6,LOAD_PARALLELISM=3;
  let ctx,master,windGain,lastStep=0,level=.25,active=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;

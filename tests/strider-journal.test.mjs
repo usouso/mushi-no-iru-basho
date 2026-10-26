@@ -7,10 +7,12 @@ import {createTestLocks} from './fixtures/journal-locks.mjs';
 const ids=['butterfly','dragonfly','cicada','morpho','grasshopper','hercules','leafinsect'];
 const seven=ids.map((species,i)=>({species,firstSeen:10+i,lastSeen:20+i,location:'以前の場所',x:i,z:-i-1,note:`memo-${species}`}));
 const source=await readFile(new URL('../src/journal.js',import.meta.url),'utf8');
-const list="'leafinsect', 'waterstrider'";assert.equal(source.split(list).length,2);
-// Only the allowlist changes in this feature; reconstruct the prior seven-species
-// client with the same unchanged v2 algorithm, without a private git dependency.
-const {createJournal:createOld}=await import('data:text/javascript;base64,'+Buffer.from(source.replace(list,"'leafinsect'")).toString('base64'));
+const allowlist=/const speciesIds = new Set\(\[[^\n]*\]\);/;
+assert.equal(source.match(new RegExp(allowlist.source,'g'))?.length,1);
+// Freeze exactly the prior seven IDs, so later species cannot leak into this
+// emulated old client. The persistence algorithm itself is shared unchanged.
+const oldSource=source.replace(allowlist,`const speciesIds = new Set(${JSON.stringify(ids)});`);
+const {createJournal:createOld}=await import('data:text/javascript;base64,'+Buffer.from(oldSource).toString('base64'));
 test('eighth encounter persists with prior seven intact; old open/reloaded clients cannot overwrite it',async()=>{
  const legacy=JSON.stringify({version:1,entries:seven});
  const data=new Map([[JOURNAL_KEY,JSON.stringify({version:2,legacyImportDone:true,entries:seven})],['mushi-journal-v1',legacy]]);
