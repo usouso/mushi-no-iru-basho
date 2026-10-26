@@ -33,8 +33,9 @@ test('flying, landing, caught, inspection, missing/invalid blend and other aware
  }
 });
 
-test('the same warning fields do not change any other existing species',()=>{
- for(const species of['butterfly','morpho','grasshopper','hercules','leafinsect','waterstrider','leafcutterant','firefly','dungbeetle','divingbeetle','mantis','ladybird','rhino','stag','metallifer','bee','swallowtail','jewel','longhorn']){
+test('wing-warning fields do not change species outside the explicit butterfly/dragonfly/cicada set',()=>{
+ // Butterfly warning is an intentional 0.21 addition, covered by capture-core tests.
+ for(const species of['morpho','grasshopper','hercules','leafinsect','waterstrider','leafcutterant','firefly','dungbeetle','divingbeetle','mantis','ladybird','rhino','stag','metallifer','bee','swallowtail','jewel','longhorn']){
   const a=createInsectModel(species),b=createInsectModel(species);updateInsectModel(a,state(),1);updateInsectModel(b,state({awarenessStage:'warning',alertBlend:1}),1);assert.deepEqual(vertices(a),vertices(b),species+' body');assert.deepEqual(vertices(a,true),vertices(b,true),species+' wings');dispose(a);dispose(b);
  }
 });

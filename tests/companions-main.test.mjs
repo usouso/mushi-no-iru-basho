@@ -43,8 +43,12 @@ async function app(t,{entries=[],battleSeed=0,locks=testLocks(),blockWrite=()=>f
 function finishWatching(h){
  const frozenTime=h.g.simulation.time;let frames=0;
  assert.equal(h.g.battle.phase,'watching');
- while(h.g.battle.phase==='watching'&&frames<30*60){h.frame(1);frames++;assert.equal(h.g.simulation.time,frozenTime,'field time is frozen throughout the match');}
- assert.equal(h.g.battle.phase,'finished');assert.ok(h.g.battle.elapsed>=15&&h.g.battle.elapsed<=30,'a short visible match ends without action input');return h.g.battle;
+ while(h.g.battle.phase==='watching'&&frames<65*60){h.frame(1);frames++;assert.equal(h.g.simulation.time,frozenTime,'field time is frozen throughout the match');}
+ assert.equal(h.g.battle.phase,'finished');assert.ok(h.g.battle.elapsed>=15&&h.g.battle.elapsed<=59.6,'ring-out or the explicit one-minute draw ends without action input');
+ // The rule clock is finished first; let the final visible move land before
+ // asserting terminal UI. This does not advance rules or field simulation.
+ for(let i=0;h.elements.get('battle-finish-button').hidden&&i<150;i++)h.frame(1);
+ assert.equal(h.elements.get('battle-finish-button').hidden,false,'result waits for grounded presentation');return h.g.battle;
 }
 const legacy=JSON.stringify({version:1,entries:[]});
 const journalRecord={species:'rhino',firstSeen:1,lastSeen:2,location:'previous visit',x:1,z:2,note:'既存の角のメモ'};
@@ -72,9 +76,9 @@ test('actual captures become three companions, survive resets/travel/reload, fig
  // exercised below as a separate independent scenario, not a hidden fake save.
  const store=await import(h.moduleURL('individual-roster.js'));assert.deepEqual(store.createCompanionRoster(localStorage,{locks:testLocks()}).entries,g.roster.entries);
  h.travel('tropical');hasOrigin(h,first);h.travel('night');
- click(h,'companions-button');assert.equal(g.state.mode,'companions');assert.equal(elements.get('companions-screen').hidden,false);await h.settle();assert.equal(h.master().value,0);assert.equal(elements.get('companion-select').children.length,3);select(h,'companion-select',first.id);select(h,'battle-opponent-select','rhino');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');assert.equal(elements.get('battle-screen').hidden,false);assert.match(elements.get('battle-cue').textContent,/操作は不要/);assert.equal(g.battle.opponentSpecies,'rhino');
+ click(h,'companions-button');assert.equal(g.state.mode,'companions');assert.equal(elements.get('companions-screen').hidden,false);await h.settle();assert.equal(h.master().value,0);assert.equal(elements.get('companion-select').children.length,3);select(h,'companion-select',first.id);select(h,'battle-opponent-select','rhino');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');assert.equal(elements.get('battle-screen').hidden,false);assert.match(elements.get('battle-cue').textContent,/見守ろう/);assert.equal(g.battle.opponentSpecies,'rhino');
  const oldRoster=g.roster.entries;finishWatching(h);
- assert.equal(g.battle.phase,'finished');assert.equal(g.battle.winner,'opponent');assert.match(elements.get('battle-cue').textContent,/相手の勝ち/);assert.equal(elements.get('battle-finish-button').hidden,false);assert.deepEqual(g.roster.entries,oldRoster);assert.equal(h.savedSettings.get(ROSTER_KEY),rosterRaw);assert.equal(h.savedSettings.get(JOURNAL_KEY),journalRaw);click(h,'battle-finish-button');assert.equal(g.state.mode,'playing');
+ assert.equal(g.battle.phase,'finished');assert.equal(g.battle.winner,'opponent');assert.match(elements.get('battle-cue').textContent,/COMの勝ち/);assert.equal(elements.get('battle-finish-button').hidden,false);assert.deepEqual(g.roster.entries,oldRoster);assert.equal(h.savedSettings.get(ROSTER_KEY),rosterRaw);assert.equal(h.savedSettings.get(JOURNAL_KEY),journalRaw);click(h,'battle-finish-button');assert.equal(g.state.mode,'playing');
  // Paused-origin cancellation returns through the list, not a hidden resume.
  g.pause({lock:false});click(h,'pause-companions-button');assert.equal(g.state.mode,'companions');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');h.key('keydown','Escape');h.key('keyup','Escape');assert.equal(g.state.mode,'companions');assert.equal(g.battle.phase,'cancelled');h.key('keydown','Escape');h.key('keyup','Escape');assert.equal(g.state.mode,'paused');assert.deepEqual(g.roster.entries,oldRoster);assert.equal(h.savedSettings.get(ROSTER_KEY),rosterRaw);g.resume({lock:false});
  // First release click only arms confirmation. Leaving the list cancels it.

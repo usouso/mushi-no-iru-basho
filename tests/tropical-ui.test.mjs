@@ -39,8 +39,8 @@ test('native title selector is meadow-first, labelled and start-gated without ne
   assert.match(html, /id="look-resume-hint"/);
   assert.match(html, /右クリック保持/);
   const css=await readFile(new URL('../style.css',import.meta.url),'utf8');
-  assert.match(css,/\.habitat-choice select:focus-visible/);
-  assert.match(css,/\.habitat-choice select\{font-size:16px\}/);
+  assert.match(css,/select:focus-visible[^}]*\{outline:3px/);
+  assert.match(css,/\.habitat-choice select\{[^}]*font-size:18px;line-height:1\.5/);
 });
 
 test('four supplied species create four cards without revealing an undiscovered morpho',()=>{

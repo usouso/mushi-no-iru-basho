@@ -1,16 +1,17 @@
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.19.0&b=2b3a7a48ca63';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
-import {applyInsectReadability} from './insect-readability.js?v=0.19.0&b=2b3a7a48ca63';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.21.0&b=80addd8ed820';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.21.0&b=80addd8ed820';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.21.0&b=80addd8ed820';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.21.0&b=80addd8ed820';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.21.0&b=80addd8ed820';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.21.0&b=80addd8ed820';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.21.0&b=80addd8ed820';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.21.0&b=80addd8ed820';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.21.0&b=80addd8ed820';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.21.0&b=80addd8ed820';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.21.0&b=80addd8ed820';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.21.0&b=80addd8ed820';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.21.0&b=80addd8ed820';
+import {applyInsectReadability} from './insect-readability.js?v=0.21.0&b=80addd8ed820';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -392,7 +393,7 @@ function herculesHorn(root, points, radius, mat) {
     const centre=curve.getPointAt(ring/10),taper=Math.pow(1-ring/10,.7);
     for(let side=0;side<=6;side++){const i=ring*7+side;p.setXYZ(i,centre.x+(p.getX(i)-centre.x)*taper,centre.y+(p.getY(i)-centre.y)*taper,centre.z+(p.getZ(i)-centre.z)*taper);}
   }
-  geometry.computeVertexNormals();const horn=new THREE.Mesh(geometry,mat);root.add(horn);
+  geometry.computeVertexNormals();const horn=new THREE.Mesh(geometry,mat);root.add(horn);return horn;
 }
 function herculesLeg(root,side,index,mat) {
   const hip=new THREE.Vector3(side*(index===2?.035:.040),-.005,[.055,-.005,-.060][index]),foot=new THREE.Vector3(side*.105,-.060,[.075,-.005,-.085][index]);
@@ -431,8 +432,9 @@ function hercules(root) {
   }
   root.updateMatrixWorld(true);const bodyBounds=new THREE.Box3();
   root.traverse(o=>{if(o.isMesh)bodyBounds.union(new THREE.Box3().setFromObject(o));});root.userData.bodyBounds=bodyBounds;
-  herculesHorn(root,[[0,.055,.030],[0,.080,.135],[0,.063,.237],[0,.035,.310]],.013,black);
-  herculesHorn(root,[[0,.016,.095],[0,.015,.160],[0,.027,.223],[0,.041,.265]],.009,black);
+  for(const part of root.children)if(part.isMesh)part.userData.battleRole='torso';
+  const thoraxHorn=herculesHorn(root,[[0,.055,.030],[0,.080,.135],[0,.063,.237],[0,.035,.310]],.013,black);thoraxHorn.userData.battleRole='thorax-horn';
+  const headHorn=herculesHorn(root,[[0,.016,.095],[0,.015,.160],[0,.027,.223],[0,.041,.265]],.009,black);headHorn.userData.battleRole='head-horn';
   const legs=[];
   // A group keeps each deformable leg out of the rigid-body material batching.
   const rig=new THREE.Group();root.add(rig);
@@ -712,11 +714,12 @@ function batchBody(root) {
   }
   for (const [mat, parts] of buckets) {
     if (parts.length < 2) continue;
-    const arrays = { position: [], normal: [], uv: [] };
+    const arrays = { position: [], normal: [], uv: [] },battleParts=[];let battleVertex=0;
     for (const part of parts) {
       part.updateMatrix();
       const geom = part.geometry.index ? part.geometry.toNonIndexed() : part.geometry.clone();
       geom.applyMatrix4(part.matrix);
+      if(part.userData.battleRole)battleParts.push({role:part.userData.battleRole,start:battleVertex,count:geom.attributes.position.count});battleVertex+=geom.attributes.position.count;
       for (const name of Object.keys(arrays)) {
         const attr = geom.getAttribute(name);
         if (attr) arrays[name].push(attr.array);
@@ -730,7 +733,7 @@ function batchBody(root) {
       merged.setAttribute(name, new THREE.BufferAttribute(values, name === 'uv' ? 2 : 3));
     }
     merged.computeBoundingSphere();
-    root.add(new THREE.Mesh(merged, mat));
+    const mesh=new THREE.Mesh(merged,mat);if(battleParts.length)mesh.userData.battleParts=battleParts;root.add(mesh);
   }
 }
 
@@ -745,6 +748,7 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
 }
 
 function buildInsectModel(species, { inspection = false } = {}) {
+  if(species==='atlas'){const root=createAtlasModel({inspection});root.userData.species='atlas';return root;}
   if(species==='metallifer'){
     const root=createMetalliferModel({inspection});root.userData.species='metallifer';return root;
   }
@@ -797,6 +801,10 @@ function buildInsectModel(species, { inspection = false } = {}) {
 }
 
 export function updateInsectModel(group, item, time = 0, support = null) {
+  if(group.userData.species==='atlas'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateAtlasModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,headLift:item.headLift,phase:item.atlasPhase,caught:item.caught});
+  }
   if(group.userData.species==='metallifer'){
     if(!group.userData.inspection)group.visible=!item.caught;
     return updateMetalliferModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,phase:item.metalliferPhase,caught:item.caught});
@@ -823,7 +831,7 @@ export function updateInsectModel(group, item, time = 0, support = null) {
   }
   if(group.userData.species==='rhino'){
     if(!group.userData.inspection)group.visible=!item.caught;
-    return updateRhinoModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.rhinoPhase,caught:item.caught});
+    return updateRhinoModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.rhinoPhase,warningBlend:item.warningBlend,caught:item.caught});
   }
   if(group.userData.species==='ladybird'){
     if(!group.userData.inspection)group.visible=!item.caught;
@@ -950,7 +958,9 @@ export function updateInsectModel(group, item, time = 0, support = null) {
     } else if(species==='butterfly') {
       const restAngle=.60+Math.sin(time*2+(item.phase||0))*.18;
       const flightAngle=.2+Math.sin(phase)*.82;
-      const angle=inspection?.12+Math.sin(time*1.4)*.06:restAngle*(1-flight)+flightAngle*flight;
+      // Small faster hinge preparation distinguishes a wary perch from rest;
+      // it never changes the feet, inspection pose or an existing flight.
+      const angle=inspection?.12+Math.sin(time*1.4)*.06:restAngle*(1-flight)+flightAngle*flight+warning*(.28+.07*Math.sin(time*14));
       pivot.rotation.z=side*angle;
     } else if(species==='dragonfly') {
       const restAngle=.16+Math.sin(time*2.2+(item.phase||0)+(pivot.userData.back?.5:0))*.035;

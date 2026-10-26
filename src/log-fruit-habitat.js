@@ -1,5 +1,5 @@
 /** Additive log-fruit adapter. No bait logic, old-world edits or random draws. */
-import {LOG_FRUIT_LAYOUT as L} from './log-fruit-layout.js?v=0.19.0&b=2b3a7a48ca63';
+import {LOG_FRUIT_LAYOUT as L} from './log-fruit-layout.js?v=0.21.0&b=80addd8ed820';
 const THREE=window.THREE;
 export function createLogFruitHabitat(world,scene){
  const logs=scene?.getObjectByName('tropical-beetle-logs');

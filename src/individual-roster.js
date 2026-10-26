@@ -3,12 +3,12 @@
  * not imported again. Unknown data/conflicts stay read-only, with session edits
  * still available. Persistence needs Web Locks, not a promise of browser support.
  */
-import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.19.0&b=2b3a7a48ca63';
+import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.21.0&b=80addd8ed820';
 export const COMPANION_KEY = 'mushi-companions-v2';
 export const COMPANION_VERSION = 2;
 export const LEGACY_COMPANION_KEY = V1_KEY;
-export const COMPANION_SPECIES = V1_SPECIES;
-const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory'});
+export const COMPANION_SPECIES = Object.freeze([...V1_SPECIES,'atlas']);
+const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory',atlas:'understory'});
 const legacyFields = ['id','species','originHabitat','originIndividualId','capturedAt'];
 const entryFields = [...legacyFields,'originKind','originEncounterId','sizePermille','measureVersion'];
 const copy = entries => entries.map(entry => ({...entry}));
@@ -16,8 +16,8 @@ const timestamp = value => Number.isSafeInteger(value) && value >= 0;
 const own = (object,key) => Object.prototype.hasOwnProperty.call(object,key);
 export function isCompanionSpecies(species){return typeof species === 'string' && own(origins,species);}
 function fields(value,names){return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === names.length && Object.keys(value).every(key=>names.includes(key));}
-function originValid(entry){return isCompanionSpecies(entry?.species) && entry.originHabitat === origins[entry.species] && typeof entry.originIndividualId === 'string' && /^insect-[1-9]\d{0,5}$/.test(entry.originIndividualId);}
-function legacyValid(entry){return fields(entry,legacyFields) && originValid(entry) && entry.id === `${entry.originHabitat}/${entry.originIndividualId}` && timestamp(entry.capturedAt);}
+function originValid(entry){return isCompanionSpecies(entry?.species) && entry.originHabitat === origins[entry.species] && typeof entry.originIndividualId === 'string' && /^insect-[1-9]\d{0,5}$/.test(entry.originIndividualId) && (entry.species!=='atlas'||entry.originIndividualId==='insect-5');}
+function legacyValid(entry){return fields(entry,legacyFields) && V1_SPECIES.includes(entry.species) && originValid(entry) && entry.id === `${entry.originHabitat}/${entry.originIndividualId}` && timestamp(entry.capturedAt);}
 function encounterValid(entry){
  if(typeof entry.originEncounterId!=='string')return false;
  const match=/^g1-([0-9a-f]{8})-o([1-9][0-9]{0,15})-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.exec(entry.originEncounterId);
@@ -32,8 +32,8 @@ function entryValid(entry){
  return entry.originKind==='expedition' && measurementValid(entry) && entry.id===entry.originEncounterId;
 }
 const legacyEntry = entry => ({...entry,originKind:'legacy',originEncounterId:null,sizePermille:null,measureVersion:null});
-function entriesValid(entries,valid){
- if(!Array.isArray(entries)||entries.length>COMPANION_SPECIES.length)return false;
+function entriesValid(entries,valid,max=COMPANION_SPECIES.length){
+ if(!Array.isArray(entries)||entries.length>max)return false;
  const ids=new Set(),species=new Set();
  return entries.every(entry=>{if(!valid(entry)||ids.has(entry.id)||species.has(entry.species))return false;ids.add(entry.id);species.add(entry.species);return true;});
 }
@@ -45,7 +45,7 @@ function preview(entries,legacy){
   const item=Object.fromEntries(names.map(key=>[key,entry[key]]));
   if(!valid(item)||ids.has(item.id)||species.has(item.species))continue;
   accepted.push(legacy?legacyEntry(item):item);ids.add(item.id);species.add(item.species);
-  if(accepted.length===COMPANION_SPECIES.length)break;
+  if(accepted.length===(legacy?V1_SPECIES.length:COMPANION_SPECIES.length))break;
  }
  return accepted;
 }
@@ -55,7 +55,7 @@ function parse(raw,legacy=false){
   const value=JSON.parse(raw);
   if(value?.version!==(legacy?1:2)||!Array.isArray(value.entries))return {valid:false,entries:[]};
   const names=legacy?['version','entries']:['version','legacyImportDone','entries'];
-  return {valid:fields(value,names)&&(legacy||value.legacyImportDone===true)&&entriesValid(value.entries,legacy?legacyValid:entryValid),entries:preview(value.entries,legacy)};
+  return {valid:fields(value,names)&&(legacy||value.legacyImportDone===true)&&entriesValid(value.entries,legacy?legacyValid:entryValid,legacy?V1_SPECIES.length:COMPANION_SPECIES.length),entries:preview(value.entries,legacy)};
  }catch{return {valid:false,entries:[]};}
 }
 function browserStorage(){try{return globalThis.localStorage??null;}catch{return null;}}

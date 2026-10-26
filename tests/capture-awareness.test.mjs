@@ -57,12 +57,12 @@ test('stopping at a warning lets it visibly decay without flight or a one-frame 
 });
 
 test('actual off-axis miss startles only the nearest eligible visible insect, then waits before takeoff',()=>{
- const homes=[['butterfly',0,.1,1.3],['dragonfly',0,0,1.3],['cicada',.1,-.2,1.3],['cicada',0,5,1.3],['dragonfly',0,-3,1.3]];
+ const homes=[['morpho',0,.1,1.3],['dragonfly',0,0,1.3],['cicada',.1,-.2,1.3],['cicada',0,5,1.3],['dragonfly',0,-3,1.3]];
  const sim=createInsects(()=>0,{homes}),p={x:0,y:1.3,z:2.3,speed:0},direction={x:.8,y:0,z:-.6};
  assert.equal(sim.swing(p,direction).ok,false);const item=sim.startleFromNet(p,direction);
  assert.equal(item.id,'insect-2');assert.equal(item.awarenessStage,'warning');assert.equal(item.departures,0);
  assert.equal(sim.items.filter(i=>i.awarenessStage==='warning').length,1);
- assert.equal(sim.items[0].alert,0,'butterfly stays unchanged');
+ assert.equal(sim.items[0].alert,0,'morpho stays unchanged');
  for(let n=0;n<18;n++)sim.update(dt,p);assert.equal(item.departures,0);
  for(let n=0;n<12;n++)sim.update(dt,p);assert.equal(item.departures,1);
  assert.equal(sim.items[2].departures,0);assert.equal(sim.items[3].departures,0);assert.equal(sim.items[4].departures,0);
@@ -108,11 +108,11 @@ test('zero-time updates freeze warning and flight; no RNG or repeated impulse is
   for(let n=0;n<40;n++)sim.update(dt,p);assert.ok(item.excursion);const flying=structuredClone(item),time=sim.time;
   for(let n=0;n<20;n++)sim.update(0,p);assert.deepEqual(item,flying);assert.equal(sim.time,time);
  }
- assert.deepEqual(Object.keys(CAPTURE_AWARENESS),species);
+ assert.deepEqual(Object.keys(CAPTURE_AWARENESS).sort(),['butterfly',...species].sort());
 });
 
-test('butterfly/morpho keep their old calm capture and non-reacting net miss, without the new awareness fields',()=>{
- for(const kind of ['butterfly','morpho']){
+test('morpho keeps its old calm capture and non-reacting net miss, without the new awareness fields',()=>{
+ for(const kind of ['morpho']){
   const sim=make(kind),item=sim.items[0],p=player(2.3,0),offAxis={x:.8,y:0,z:-.6};
   assert.equal(sim.swing(p,offAxis).ok,false);assert.equal(sim.startleFromNet(p,offAxis),null);
   for(let n=0;n<60;n++)sim.update(dt,p);assert.equal(item.departures,0);assert.equal(item.alert,0);assert.equal(item.awarenessStage,undefined);

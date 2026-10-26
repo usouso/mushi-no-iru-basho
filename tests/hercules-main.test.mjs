@@ -94,7 +94,7 @@ test('six actual capture records and notes reload; old J/Esc mute0 and habitat r
  choose('meadow');assert.equal(g.simulation.items.length,29);for(const species of ['butterfly','dragonfly','cicada','grasshopper']){g.restart();catchSpecies(species);g.journal.setNote(species,`memo-${species}`);g.release({lock:false});}
  choose('tropical');catchSpecies('morpho');g.journal.setNote('morpho','青い翅');g.release({lock:false});assert.equal(g.journal.entries.length,6);
  await g.journal.flush();const expected=g.journal.entries,{createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,21);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,22);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
  g.pause();elements.get('volume').value='0';elements.get('volume').dispatchEvent(new Event('input'));key('keydown','Escape');key('keyup','Escape');await settle();frame(1);assert.equal(g.state.mode,'playing');assert.equal(master().value,0);assert.equal(g.state.volume,0);
  g.restart();assert.equal(g.simulation.caught,null);assert.equal(g.simulation.items.length,10);assert.deepEqual(g.journal.entries,expected);assert.equal(document.activeElement,elements.get('game-canvas'));
 });

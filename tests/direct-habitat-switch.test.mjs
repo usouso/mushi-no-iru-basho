@@ -69,7 +69,7 @@ test('pause offers the same five destinations; selection alone and Escape cancel
  assert.deepEqual(options.map(o=>o.value),['meadow','tropical','understory','night','savanna']);
  const titleOptions=[...html.matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)];
  assert.deepEqual(options.map(o=>[o.value,o.textContent]),titleOptions.map(m=>[m[1],m[2]]));
- assert.match(html,/移動先は入り口から。置いた餌は片付きます。図鑑と設定は残ります。/);
+ assert.match(html,/入口へ移動します。置いた餌は片付きます。/);
  const station=g.world.baitStation;assert.ok(g.simulation.placeBait({type:station.type,...station.target}));
  g.setPose({x:3,y:2,z:9});g.pause({lock:false});const original=g.simulation,world=g.world,pose={...g.state.player},bait=g.simulation.bait;
  assert.equal(document.activeElement,elements.get('resume-button'));assert.equal(select().value,'tropical');assert.equal(travelButton().disabled,true);
@@ -94,7 +94,7 @@ test('travel during capture delay returns old held insect without phantom inspec
  frame(40);assert.equal(g.state.mode,'playing');screen('start-screen',false);screen('inspect-screen',false);screen('look-resume-hint',true);
 });
 test('all five destinations can be revisited directly; each discarded scene releases resources, never passing through title',()=>{
- const types={tropical:10,understory:4,savanna:1,meadow:29,night:5};
+ const types={tropical:10,understory:5,savanna:1,meadow:29,night:5};
  for(const id of ['tropical','understory','savanna','meadow','night','meadow']){
   frame(1);const old=renderedScene,owned=resources(old),disposed=new Set();for(const value of [...owned.all,...owned.worldMaps])value.addEventListener('dispose',()=>disposed.add(value));
   const captures=g.state.captures,entries=g.journal.entries;g.pause({lock:false});const locks=lockRequests;selectDestination(id);travelButton().click();

@@ -10,9 +10,9 @@ function frozen(x){if(!x||typeof x!=='object')return;assert.ok(Object.isFrozen(x
 function play(p,o,seed){let s=fresh(p,o,seed);const history=[s];while(s.phase==='watching'){s=tick(s);history.push(s);}return history;}
 const audits=[];for(const p of species)for(const o of species)for(let seed=0;seed<128;seed++)audits.push({p,o,seed,history:play(p,o,seed)});
 
-test('only four eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
+test('only five eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
  assert.deepEqual(Object.keys(rules).sort(),['BATTLE_LIMITS','BATTLE_SPECIES','advanceBattle','cancelBattle','createBattle'].sort());
- assert.deepEqual(species,['hercules','rhino','stag','metallifer']);assert.equal(BATTLE_LIMITS.maxSeconds,21.2);
+ assert.deepEqual(species,['hercules','rhino','stag','metallifer','atlas']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
  for(const p of species)for(const o of species){const s=fresh(p,o,0xffffffff);assert.equal(s.phase,'watching');assert.equal(s.seed,0xffffffff);assert.equal(s.elapsed,0);assert.equal(s.turn,1);assert.equal(s.exchanges,0);assert.equal(s.position,0);assert.equal(s.lastExchange,null);assert.equal(s.winner,null);assert.ok(motions.includes(s.intent));frozen(s);}
  assert.equal(createBattle({playerSpecies:'stag',opponentSpecies:'rhino'}).seed,1);
  for(const v of ['butterfly','constructor','__proto__',null,undefined,0])assert.throws(()=>createBattle({playerSpecies:v,opponentSpecies:'rhino'}),TypeError);
@@ -30,15 +30,15 @@ test('intro and fixed exchanges advance only with simulation seconds, never with
  assert.equal(JSON.stringify(s),before);frozen(first);assert.throws(()=>{first.position=99;},TypeError);
 });
 
-test('all sixteen matchups finish automatically in 15–30 seconds, with finite bounded progress and both winners across fixed test seeds',()=>{
+test('all twenty-five matchups finish automatically within 59.6 seconds, with finite bounded progress and both winners across fixed test seeds',()=>{
  const pairs=new Map();let ringouts=0,timeouts=0;
  for(const {p,o,history} of audits){const key=p+'/'+o;if(!pairs.has(key))pairs.set(key,new Set());const end=history.at(-1);pairs.get(key).add(end.winner);
-  assert.equal(end.phase,'finished');assert.ok(end.elapsed>=15&&end.elapsed<=30);assert.ok(end.elapsed<=21.2);assert.ok(end.exchanges>=9&&end.exchanges<=12);
-  if(end.finishReason==='ring-out'){ringouts++;assert.equal(Math.abs(end.position),4);}else{timeouts++;assert.equal(end.finishReason,'turn-limit');assert.equal(end.exchanges,12);}
-  assert.equal(end.winner,end.position>0?'player':end.position<0?'opponent':'draw');
+  assert.equal(end.phase,'finished');assert.ok(end.elapsed>=16.4&&end.elapsed<=59.6);assert.ok(end.elapsed<=BATTLE_LIMITS.maxSeconds);assert.ok(end.exchanges>=9&&end.exchanges<=BATTLE_LIMITS.turns);
+  if(end.finishReason==='ring-out'){ringouts++;assert.equal(Math.abs(end.position),4);}else{timeouts++;assert.equal(end.finishReason,'time-limit');assert.equal(end.exchanges,BATTLE_LIMITS.turns);}
+  assert.equal(end.winner,end.finishReason==='ring-out'?(end.position>0?'player':'opponent'):'draw');
   for(const s of history){assert.ok(Number.isFinite(s.position)&&Math.abs(s.position)<=4);assert.ok(Number.isFinite(s.elapsed));for(const energy of [s.playerEnergy,s.opponentEnergy])assert.ok(Number.isInteger(energy)&&energy>=0&&energy<=4);if(s.lastExchange){assert.ok(Math.abs(s.lastExchange.delta)<=.450000001);assert.equal(s.lastExchange.positionAfter,s.position);assert.ok(Math.abs(s.lastExchange.positionBefore+s.lastExchange.delta-s.position)<1e-8);}}
  }
- assert.equal(pairs.size,16);for(const [key,winners] of pairs){assert.ok(winners.has('player'),key);assert.ok(winners.has('opponent'),key);}assert.ok(ringouts>0&&timeouts>0);
+ assert.equal(pairs.size,25);for(const [key,winners] of pairs){assert.ok(winners.has('player'),key);assert.ok(winners.has('opponent'),key);}assert.ok(ringouts>0&&timeouts>0);
  // Counts are test coverage, not an estimate of natural or game spawn rarity.
 });
 
@@ -47,7 +47,7 @@ test('seed repeatability and terminal results survive dt subdivision, huge steps
  for(const p of species)for(const o of species)for(const seed of [0,1,23,0xffffffff]){
   const s=fresh(p,o,seed),whole=advanceBattle(s,Number.MAX_VALUE);assert.deepEqual(whole,advanceBattle(fresh(p,o,seed),100));
   let split=s;while(split.phase==='watching')split=advanceBattle(split,.1);assert.deepEqual(split,whole);
-  let sixty=s;for(let i=0;sixty.phase==='watching'&&i<1400;i++)sixty=advanceBattle(sixty,1/60);assert.deepEqual(sixty,whole);
+  let sixty=s;for(let i=0;sixty.phase==='watching'&&i<3700;i++)sixty=advanceBattle(sixty,1/60);assert.deepEqual(sixty,whole);
   const midway=advanceBattle(s,7.25);assert.deepEqual(advanceBattle(JSON.parse(JSON.stringify(midway)),100),whole);
   assert.equal(advanceBattle(whole,999),whole);assert.equal(whole.intent,null);assert.equal(whole.cue,'');frozen(whole);sequences.add(JSON.stringify([whole.position,whole.exchanges,whole.lastExchange]));
  }
@@ -82,10 +82,10 @@ test('role differences are small and conditional; model dimensions and retained-
 
 test('invalid state cannot advance; negative/nonfinite time is a no-op and a giant finite dt is bounded',()=>{
  const s=fresh(),before=JSON.stringify(s);for(const dt of [-1,-Infinity,Infinity,NaN,null,undefined,'5',{},0])assert.equal(advanceBattle(s,dt),s);
- const bad=[null,{}, {...s,seed:-1},{...s,phase:'choosing'},{...s,playerSpecies:'constructor'},{...s,position:NaN},{...s,playerEnergy:.5},{...s,exchanges:13},{...s,elapsed:Infinity},{...s,winner:'player'},{...s,intent:'attack'}];
+ const bad=[null,{}, {...s,seed:-1},{...s,phase:'choosing'},{...s,playerSpecies:'constructor'},{...s,position:NaN},{...s,playerEnergy:.5},{...s,exchanges:BATTLE_LIMITS.turns+1},{...s,elapsed:Infinity},{...s,winner:'player'},{...s,intent:'attack'}];
  const one=tick(s);bad.push({...one,elapsed:0},{...one,lastExchange:{...one.lastExchange,delta:NaN}},{...one,lastExchange:{...one.lastExchange,playerAction:'unknown'}});
  for(const value of bad){assert.throws(()=>advanceBattle(value,1),TypeError);assert.throws(()=>cancelBattle(value),TypeError);}
- const huge=advanceBattle(s,Number.MAX_VALUE);assert.equal(huge.phase,'finished');assert.ok(huge.exchanges<=12&&huge.elapsed<=21.2);assert.equal(JSON.stringify(s),before);
+ const huge=advanceBattle(s,Number.MAX_VALUE);assert.equal(huge.phase,'finished');assert.ok(huge.exchanges<=BATTLE_LIMITS.turns&&huge.elapsed<=BATTLE_LIMITS.maxSeconds);assert.equal(JSON.stringify(s),before);
 });
 
 test('cancellation is immutable, terminal and idempotent; completed outcomes cannot be erased or replayed',()=>{

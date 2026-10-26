@@ -18,11 +18,12 @@ function fixture(target=null){
  vm.createContext(context);vm.runInContext(hud+'\nthis.update=updateHUD;',context);
  return{nodes,state,document,canvas,update:context.update};
 }
-test('walking, looking, net, dash and quiet guidance has one stable wording in both lock states',()=>{
+test('compact movement, net, dash and quiet guidance stays stable while full click/look instructions remain available',()=>{
  const f=fixture();f.update();const locked=f.nodes.get('controls-hint').textContent;
  f.document.pointerLockElement=null;f.update();assert.equal(f.nodes.get('controls-hint').textContent,locked);
  assert.equal(text('controls-hint'),locked,'initial HTML and runtime copy must agree');
- for(const phrase of ['WASD 歩く','Shift 走る','右クリック そっと','マウス 見回す','Space 網','見回し中は左クリックも'])assert.ok(locked.includes(phrase),phrase);
+ for(const phrase of ['WASD 移動','Shift 走る','右クリック そっと','Space 網'])assert.ok(locked.includes(phrase),phrase);
+ assert.match(html,/<dt>マウス<\/dt><dd>見回す<\/dd>/);assert.match(html,/左クリック：見回し中は網 · 停止中は見回し再開/);
 });
 test('separate look-resume notice appears only while unlocked, including after intro hint timeout',()=>{
  const f=fixture();for(const elapsed of [0,24,25,90]){
@@ -36,7 +37,7 @@ test('separate look-resume notice appears only while unlocked, including after i
 test('catchable-target action copy explains left-click net only while already looking',()=>{
  const f=fixture({catchable:true});f.update();assert.match(f.nodes.get('target-hint').textContent,/左クリック \/ Space/);
  f.document.pointerLockElement=null;f.update();assert.match(f.nodes.get('target-hint').textContent,/Space/);assert.doesNotMatch(f.nodes.get('target-hint').textContent,/左クリック/);
- assert.match(f.nodes.get('controls-hint').textContent,/見回し中は左クリックも/);
+ assert.match(f.nodes.get('controls-hint').textContent,/Space 網/);assert.equal(f.nodes.get('look-resume-hint').hidden,false);
 });
 test('target reasons, empty target and quiet/dash state remain independent of resume notice',()=>{
  const target={catchable:false,reason:'そっと近づいてみよう'},f=fixture(target);f.state.player.quiet=true;f.update();
@@ -44,14 +45,19 @@ test('target reasons, empty target and quiet/dash state remain independent of re
  f.state.player.quiet=false;f.state.player.running=true;f.document.pointerLockElement=null;f.update();assert.equal(f.nodes.get('quiet-label').textContent,'ダッシュ中');
  const empty=fixture();empty.update();assert.equal(empty.nodes.get('target-hint').textContent,'');assert.equal(empty.nodes.get('quiet-label').hidden,true);
 });
-test('declared stacked hint region reserves status width and retains text sizes without overlap assumptions',()=>{
+test('declared stacked hint region retains readable sizes and reserves horizontal status space at supported wider widths',()=>{
  assert.match(html,/<div class="hud-controls">[\s\S]*?id="controls-hint"[\s\S]*?id="look-resume-hint"[\s\S]*?<\/div>/);
- assert.match(css,/\.hud-controls\{[^}]*left:34px;[^}]*bottom:29px;[^}]*max-width:calc\(100vw - 240px\);[^}]*display:flex;[^}]*flex-direction:column;[^}]*gap:6px;/);
- assert.match(css,/\.hud-controls \.controls-hint\{position:static;left:auto;bottom:auto;max-width:none\}/);
- assert.match(css,/@media\(max-width:760px\)\{\.hud-controls\{left:18px;bottom:20px;max-width:calc\(100vw - 180px\)\}/);
- assert.match(css,/\.look-resume-hint(?:,\.interaction-hint)?\{font-size:12px;/);assert.match(css,/\.look-resume-hint(?:,\.interaction-hint)?\{font-size:11px\}/);
- for(const width of [320,400,600,760,761,800,1024,1280,1920]){
-  const mobile=width<=760,left=mobile?18:34,right=mobile?18:34,reserved=mobile?180:240,statusWidth=mobile?130:150;
-  assert.ok(width-reserved>0);assert.ok(width-right-statusWidth-(left+width-reserved)>=14,`${width}px declared horizontal gap`);
+ assert.match(css,/\.hud-controls\{[^}]*left:16px;[^}]*bottom:16px;[^}]*max-width:calc\(100% - 192px\);[^}]*display:flex;[^}]*flex-direction:column;[^}]*gap:6px;/);
+ assert.match(css,/\.controls-hint,\.look-resume-hint,\.interaction-hint\{font-size:16px;line-height:1\.5;[^}]*max-width:100%/);
+ assert.match(css,/\.hud-controls\{left:12px;bottom:12px;max-width:calc\(100% - 180px\)\}/);
+ assert.doesNotMatch(css,/(?:controls-hint|look-resume-hint|interaction-hint)[^{]*\{[^}]*font-size:1[0-5]px/);
+ for(const width of [600,760,761,800,1024,1280,1920]){
+  const mobile=width<=760,left=mobile?12:16,right=left,reserved=mobile?180:192,statusWidth=mobile?144:152;
+  assert.ok(width-reserved>0);assert.ok(width-right-statusWidth-(left+width-reserved)>=8,`${width}px declared horizontal gap`);
  }
+ // At <=440px the quiet label is another flex-flow child, not an absolute
+ // box at a guessed text height. This is a structure check, not browser pixels.
+ const group=html.match(/<div class="hud-controls">([\s\S]*?)<\/div>/)?.[1]||'';assert.match(group,/id="quiet-label"/);
+ const narrow=css.slice(css.indexOf('@media(max-width:440px)'));assert.match(narrow,/\.quiet-label\{position:static;align-self:flex-end;max-width:100%\}/);assert.doesNotMatch(narrow,/bottom:110px/);
+ assert.match(css,/\.hud-actions button\{padding:8px;font-size:16px\}/);
 });
