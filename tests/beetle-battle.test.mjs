@@ -3,16 +3,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as rules from '../src/beetle-battle.js';
 const {createBattle,advanceBattle,cancelBattle,BATTLE_SPECIES,BATTLE_LIMITS}=rules;
+// Keep the established 49-pair seed matrix; goliath has its own bounded audit.
+const priorSpecies=['hercules','rhino','stag','metallifer','atlas','giantstag','elephant'];
 const species=Object.keys(BATTLE_SPECIES),motions=['push','brace','evade'];
 const fresh=(playerSpecies='rhino',opponentSpecies='hercules',seed=1)=>createBattle({playerSpecies,opponentSpecies,seed});
 const tick=s=>advanceBattle(s,2+(s.exchanges+1)*1.6-s.elapsed);
 function frozen(x){if(!x||typeof x!=='object')return;assert.ok(Object.isFrozen(x));Object.values(x).forEach(frozen);}
 function play(p,o,seed){let s=fresh(p,o,seed);const history=[s];while(s.phase==='watching'){s=tick(s);history.push(s);}return history;}
-const audits=[];for(const p of species)for(const o of species)for(let seed=0;seed<128;seed++)audits.push({p,o,seed,history:play(p,o,seed)});
+const audits=[];for(const p of priorSpecies)for(const o of priorSpecies)for(let seed=0;seed<128;seed++)audits.push({p,o,seed,history:play(p,o,seed)});
 
-test('only seven eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
+test('eight eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
  assert.deepEqual(Object.keys(rules).sort(),['BATTLE_LIMITS','BATTLE_SPECIES','advanceBattle','cancelBattle','createBattle'].sort());
- assert.deepEqual(species,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
+ assert.deepEqual(species,[...priorSpecies,'goliath']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
  for(const p of species)for(const o of species){const s=fresh(p,o,0xffffffff);assert.equal(s.phase,'watching');assert.equal(s.seed,0xffffffff);assert.equal(s.elapsed,0);assert.equal(s.turn,1);assert.equal(s.exchanges,0);assert.equal(s.position,0);assert.equal(s.lastExchange,null);assert.equal(s.winner,null);assert.ok(motions.includes(s.intent));frozen(s);}
  assert.equal(createBattle({playerSpecies:'stag',opponentSpecies:'rhino'}).seed,1);
  for(const v of ['butterfly','constructor','__proto__',null,undefined,0])assert.throws(()=>createBattle({playerSpecies:v,opponentSpecies:'rhino'}),TypeError);
@@ -44,7 +46,7 @@ test('all forty-nine matchups finish automatically within 59.6 seconds, with fin
 
 test('seed repeatability and terminal results survive dt subdivision, huge steps and plain JSON roundtrips',()=>{
  const sequences=new Set();
- for(const p of species)for(const o of species)for(const seed of [0,1,23,0xffffffff]){
+ for(const p of priorSpecies)for(const o of priorSpecies)for(const seed of [0,1,23,0xffffffff]){
   const s=fresh(p,o,seed),whole=advanceBattle(s,Number.MAX_VALUE);assert.deepEqual(whole,advanceBattle(fresh(p,o,seed),100));
   let split=s;while(split.phase==='watching')split=advanceBattle(split,.1);assert.deepEqual(split,whole);
   let sixty=s;for(let i=0;sixty.phase==='watching'&&i<3700;i++)sixty=advanceBattle(sixty,1/60);assert.deepEqual(sixty,whole);

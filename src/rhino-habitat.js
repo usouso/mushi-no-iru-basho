@@ -1,6 +1,6 @@
 /** Additive, scene-owned living tree and one flat bark facet. No food mechanic/RNG. */
-import {RHINO_TREE as TREE,RHINO_BRANCH as BRANCH,RHINO_ORIGIN as ORIGIN, RHINO_RETREAT_LIMITS as RETREAT} from './rhino-layout.js?v=0.27.0&b=572abb81497f';
-import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.27.0&b=572abb81497f';
+import {RHINO_TREE as TREE,RHINO_BRANCH as BRANCH,RHINO_ORIGIN as ORIGIN, RHINO_RETREAT_LIMITS as RETREAT} from './rhino-layout.js?v=0.28.0&b=52b81ed2c56b';
+import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.28.0&b=52b81ed2c56b';
 const T=window.THREE;
 function collector(){const positions=[],colors=[];return{add(g,m,tint){const copy=g.index?g.toNonIndexed():g.clone();copy.applyMatrix4(m);positions.push(...copy.attributes.position.array);const c=new T.Color(tint);for(let i=0;i<copy.attributes.position.count;i++)colors.push(c.r,c.g,c.b);copy.dispose();},finish(){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
 function segment(batch,a,b,r0,r1,color,sides=8){const start=new T.Vector3(...a),delta=new T.Vector3(...b).sub(start),g=new T.CylinderGeometry(r1,r0,delta.length(),sides),m=new T.Matrix4().compose(start.addScaledVector(delta,.5),new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize()),new T.Vector3(1,1,1));batch.add(g,m,color);g.dispose();}
