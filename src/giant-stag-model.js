@@ -1,4 +1,4 @@
-import {sampleGiantStagPose,GIANT_STAG_DIMENSIONS as D} from './giant-stag-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {sampleGiantStagPose,GIANT_STAG_DIMENSIONS as D} from './giant-stag-kinematics.js?v=0.29.0&b=acf057363ca8';
 /** Original broad-headed male giant-stag display. No texture/image tracing;
  * closed elytra and finite stored hindwings only. Feeding/flight are not modeled. */
 const T=window.THREE;

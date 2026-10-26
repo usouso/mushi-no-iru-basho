@@ -1,7 +1,7 @@
 /** Isolated shallow-water pose study, not a registered game species.
  * Durations, speeds and the elliptical path are game tuning, not measured biology.
  */
-import {DIVING_DIMENSIONS as D} from './diving-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {DIVING_DIMENSIONS as D} from './diving-kinematics.js?v=0.29.0&b=acf057363ca8';
 const TAU=2*Math.PI,period=12,surfaceTime=4,travelTime=8,rampTime=.6;
 const smooth=u=>u*u*(3-2*u),mix=(a,b,u)=>a+(b-a)*smooth(u);
 export function createDivingStudy({center={x:0,z:0},waterY=0}={}) {

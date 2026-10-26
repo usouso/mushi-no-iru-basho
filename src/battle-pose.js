@@ -1,8 +1,8 @@
 /** Battle-only adapter over independently owned inspection geometry. Field and
  * journal models keep their ordinary rig. Feet stay world-planted while the
  * real torso/horns lean; only swing/recovery feet move to a new support point. */
-import {sampleRhinoPose} from './rhino-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import {sampleStagPose} from './stag-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {sampleRhinoPose} from './rhino-kinematics.js?v=0.29.0&b=acf057363ca8';
+import {sampleStagPose} from './stag-kinematics.js?v=0.29.0&b=acf057363ca8';
 const T=window.THREE;
 const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const vec=p=>new T.Vector3(p.x,p.y,p.z);

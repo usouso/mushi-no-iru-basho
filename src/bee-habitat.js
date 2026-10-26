@@ -1,6 +1,6 @@
 /** Two rooted flowers added without changing existing flower cards or seeded RNG. */
-import {BEE_FLOWER_SITES as SITES,BEE_FLOWER_SHAPE as SHAPE} from './bee-layout.js?v=0.28.0&b=52b81ed2c56b';
-import {BEE_DIMENSIONS as D} from './bee-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import {BEE_FLOWER_SITES as SITES,BEE_FLOWER_SHAPE as SHAPE} from './bee-layout.js?v=0.29.0&b=acf057363ca8';
+import {BEE_DIMENSIONS as D} from './bee-kinematics.js?v=0.29.0&b=acf057363ca8';
 const T=window.THREE;
 function batch(){const positions=[],colors=[];return{add(g,m,tint){const c=g.index?g.toNonIndexed():g.clone();c.applyMatrix4(m);positions.push(...c.attributes.position.array);const color=new T.Color(tint);for(let i=0;i<c.attributes.position.count;i++)colors.push(color.r,color.g,color.b);c.dispose();},finish(){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
 function stalk(batch,a,b,r0,r1){const start=new T.Vector3(...a),delta=new T.Vector3(...b).sub(start),g=new T.CylinderGeometry(r1,r0,delta.length(),5),m=new T.Matrix4().compose(start.addScaledVector(delta,.5),new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize()),new T.Vector3(1,1,1));batch.add(g,m,'#6b8050');g.dispose();}
