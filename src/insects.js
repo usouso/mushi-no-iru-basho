@@ -1,25 +1,25 @@
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.21.0&b=80addd8ed820';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.21.0&b=80addd8ed820';
-import { individualScale } from './individual-layout.js?v=0.21.0&b=80addd8ed820';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.22.0&b=cb8cdca3a903';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import { individualScale } from './individual-layout.js?v=0.22.0&b=cb8cdca3a903';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.21.0&b=80addd8ed820';
-import { createLonghornStudy } from './longhorn-study.js?v=0.21.0&b=80addd8ed820';
-import { createJewelStudy } from './jewel-study.js?v=0.21.0&b=80addd8ed820';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.21.0&b=80addd8ed820';
-import { createBeeStudy } from './bee-study.js?v=0.21.0&b=80addd8ed820';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.21.0&b=80addd8ed820';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.21.0&b=80addd8ed820';
-import { createStagStudy } from './stag-study.js?v=0.21.0&b=80addd8ed820';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.21.0&b=80addd8ed820';
-import { createRhinoStudy } from './rhino-study.js?v=0.21.0&b=80addd8ed820';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.21.0&b=80addd8ed820';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.21.0&b=80addd8ed820';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.21.0&b=80addd8ed820';
-import { createMantisStudy } from './mantis-study.js?v=0.21.0&b=80addd8ed820';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.21.0&b=80addd8ed820';
-import { createDivingStudy } from './diving-study.js?v=0.21.0&b=80addd8ed820';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.21.0&b=80addd8ed820';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.21.0&b=80addd8ed820';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.22.0&b=cb8cdca3a903';
+import { createLonghornStudy } from './longhorn-study.js?v=0.22.0&b=cb8cdca3a903';
+import { createJewelStudy } from './jewel-study.js?v=0.22.0&b=cb8cdca3a903';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.22.0&b=cb8cdca3a903';
+import { createBeeStudy } from './bee-study.js?v=0.22.0&b=cb8cdca3a903';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.22.0&b=cb8cdca3a903';
+import { createStagStudy } from './stag-study.js?v=0.22.0&b=cb8cdca3a903';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import { createRhinoStudy } from './rhino-study.js?v=0.22.0&b=cb8cdca3a903';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.22.0&b=cb8cdca3a903';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import { createMantisStudy } from './mantis-study.js?v=0.22.0&b=cb8cdca3a903';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.22.0&b=cb8cdca3a903';
+import { createDivingStudy } from './diving-study.js?v=0.22.0&b=cb8cdca3a903';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.22.0&b=cb8cdca3a903';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.22.0&b=cb8cdca3a903';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
@@ -1068,6 +1068,13 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     return (quiet ? 1.8 : speed > 4 ? 4 : 2.5) * (1+(radius-near)/radius);
   }
 
+  // Morpho flight/fruit visits use the same continuous route after a reaction.
+  // Do not restart an excursion or the ordinary airborne loop while following it.
+  const awarenessInFlight = item => !!item.excursion || (item.species === 'morpho' && !item.resting);
+  // A fruit visitor may react as soon as it is feeding. The ordinary home-landing
+  // recovery timer is not an extra three seconds of immunity on the fruit table.
+  const awarenessSettling = item => time < item.settleUntil && !(item.species === 'morpho' && item.state === 'feeding' && item.resting && bait?.visitorId === item.id);
+
   // Called by the input owner only AFTER an actual failed capture. One visible
   // nearby insect can react; held, occluded and already airborne ones cannot.
   function startleFromNet(origin, direction) {
@@ -1076,7 +1083,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         ![direction.x,direction.y,direction.z].every(Number.isFinite) ||
         Math.hypot(direction.x,direction.y,direction.z) < .001) return null;
     const list = candidates(p,direction).filter(({item,distance,dot}) =>
-      ((CAPTURE_AWARENESS[item.species] && !item.excursion && time >= item.settleUntil && time >= item.nextScareAt) || (item.species==='atlas'&&!['warning','retreating'].includes(item.atlasPhase)) || (item.species==='rhino'&&rhinos.get(item.id)?.reactive) || (item.species==='stag'&&stags.get(item.id)?.reactive)) && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
+      ((CAPTURE_AWARENESS[item.species] && !awarenessInFlight(item) && !awarenessSettling(item) && time >= item.nextScareAt) || (item.species==='atlas'&&!['warning','retreating'].includes(item.atlasPhase)) || (item.species==='rhino'&&rhinos.get(item.id)?.reactive) || (item.species==='stag'&&stags.get(item.id)?.reactive)) && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
     list.sort((a,b) => a.distance-b.distance);
     const item = list.find(candidate => hasLineOfSight(p,candidate.item) === true)?.item;
     if (!item) return null;
@@ -1239,8 +1246,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       item.wingPhase += dt * (item.species === 'morpho' ? 8.5 : item.species === 'butterfly' ? 12 : 70);
       if (item.caught) continue;
       if (CAPTURE_AWARENESS[item.species]) {
-        const rate = item.excursion || time < item.settleUntil ? 0 : encounterAlertRate(item,player,p,dt);
-        const shouldFlee = advanceAwareness(item,dt,rate,!!item.excursion,time < item.settleUntil);
+        const inFlight = awarenessInFlight(item), settling = awarenessSettling(item);
+        const rate = inFlight || settling ? 0 : encounterAlertRate(item,player,p,dt);
+        const shouldFlee = advanceAwareness(item,dt,rate,inFlight,settling);
         if (shouldFlee && time >= item.nextScareAt) depart(item,'startled',item.netStartleOrigin || player);
       } else {
         const rate = alertRate(item, player, p, dt);

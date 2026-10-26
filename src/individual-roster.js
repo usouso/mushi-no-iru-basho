@@ -3,7 +3,7 @@
  * not imported again. Unknown data/conflicts stay read-only, with session edits
  * still available. Persistence needs Web Locks, not a promise of browser support.
  */
-import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.21.0&b=80addd8ed820';
+import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.22.0&b=cb8cdca3a903';
 export const COMPANION_KEY = 'mushi-companions-v2';
 export const COMPANION_VERSION = 2;
 export const LEGACY_COMPANION_KEY = V1_KEY;

@@ -1,6 +1,6 @@
-import {createInsectModel} from './insect-models.js?v=0.21.0&b=80addd8ed820';
-import {createBattleRig} from './battle-pose.js?v=0.21.0&b=80addd8ed820';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.21.0&b=80addd8ed820';
+import {createInsectModel} from './insect-models.js?v=0.22.0&b=cb8cdca3a903';
+import {createBattleRig} from './battle-pose.js?v=0.22.0&b=cb8cdca3a903';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.22.0&b=cb8cdca3a903';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
 const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas']);
