@@ -59,7 +59,7 @@ test('savanna rolling, ball occlusion/reset sync, beetle-only inspection and sam
  item=g.simulation.items[0];assert.equal(item.state,'resting');assert.equal(item.dungDistance,1.8);const ended=g.simulation.dungBall;step(60);assert.deepEqual(g.simulation.dungBall,ended,'finite route stays at the end instead of looping or spawning another ball');
  g.title();g.start();assert.equal(g.simulation.items[0].dungDistance,0);assert.equal(ballMesh.position.z,ended.position.z);blockedPose();swing();assert.equal(g.simulation.caught,null);assert.equal(ballMesh.position.z,g.simulation.dungBall.position.z);
  let disposedBall=0,disposedMap=0;ballMesh.geometry.addEventListener('dispose',()=>disposedBall++);ballMesh.material.map.addEventListener('dispose',()=>disposedMap++);
- for(const[id,count]of[['meadow',29],['tropical',10],['understory',3],['night',5],['savanna',1]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='dungbeetle'),saved);assert.equal(g.simulation.dungBall!==null,id==='savanna');}
+ for(const[id,count]of[['meadow',29],['tropical',10],['understory',4],['night',5],['savanna',1]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='dungbeetle'),saved);assert.equal(g.simulation.dungBall!==null,id==='savanna');}
  assert.equal(disposedBall,1);assert.equal(disposedMap,1,'scene-owned ball texture is not an insect texture cache');
  const{createJournal}=await import(h.moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries.find(e=>e.species==='dungbeetle'),saved);
 });

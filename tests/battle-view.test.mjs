@@ -16,15 +16,15 @@ const {createBattleView}=await import('../src/battle-view.js');
 // An unversioned Node import would create a second, unrelated texture cache.
 const factorySpecifier=fs.readFileSync(path.join(root,'src/battle-view.js'),'utf8').match(/from ['"](\.\/insect-models\.js[^'"]+)['"]/)?.[1];assert.ok(factorySpecifier);
 const {createInsectModel}=await import(new URL(factorySpecifier,new URL('../src/battle-view.js',import.meta.url)));
-const ids=['rhino','stag','hercules'],anchor=(view,side)=>view.scene.getObjectByName('battle-'+side);
+const ids=['rhino','stag','hercules','metallifer'],anchor=(view,side)=>view.scene.getObjectByName('battle-'+side);
 const model=(view,side)=>anchor(view,side).children[0];
 function geometrySignature(node){const hash=createHash('sha256');node.traverse(n=>{n.updateMatrix();hash.update(JSON.stringify([n.type,n.name,Array.from(n.matrix.elements)]));if(n.geometry){for(const key of Object.keys(n.geometry.attributes).sort()){const a=n.geometry.attributes[key];hash.update(key+':'+a.itemSize+':');hash.update(Buffer.from(a.array.buffer,a.array.byteOffset,a.array.byteLength));}if(n.geometry.index){const a=n.geometry.index.array;hash.update(Buffer.from(a.buffer,a.byteOffset,a.byteLength));}}});return hash.digest('hex');}
 const materials=node=>{const result=new Set();node.traverse(n=>{if(n.material)for(const m of Array.isArray(n.material)?n.material:[n.material])result.add(m);});return result;};
 const pose=view=>['player','opponent'].map(side=>{const a=anchor(view,side);return [...a.position.toArray(),...a.quaternion.toArray()];});
-function snapshot(position=0,intent='push',extras={}){return{phase:'choosing',position,intent,turn:1,exchanges:0,lastExchange:null,...extras};}
+function snapshot(position=0,extras={}){return{phase:'watching',position,elapsed:0,exchanges:0,lastExchange:null,...extras};}
 function assertScene(view){view.scene.updateMatrixWorld(true);view.scene.traverse(n=>assert.ok(n.matrixWorld.elements.every(Number.isFinite),n.name));for(const side of ['player','opponent']){const b=new T.Box3().setFromObject(anchor(view,side));assert.ok(Math.abs(b.min.y)<1e-10,side+' lowest surface touches table');assert.ok(b.max.y>.05);}}
 
-test('only the three retained beetles are supported, and every pair faces inward at unchanged inspection scale',()=>{
+test('only the four retained beetles are supported, and every pair faces inward at unchanged inspection scale',()=>{
  assert.throws(()=>createBattleView({playerSpecies:'butterfly',opponentSpecies:'rhino'}),TypeError);
  assert.throws(()=>createBattleView({playerSpecies:'rhino',opponentSpecies:'unknown'}),TypeError);
  for(const playerSpecies of ids)for(const opponentSpecies of ids){
@@ -37,16 +37,16 @@ test('only the three retained beetles are supported, and every pair faces inward
  }
 });
 
-test('all cue and outcome positions remain finite, supported, separated and on the same table',()=>{
+test('watching, finished and cancelled positions remain finite, supported, separated and on the same table',()=>{
  for(const playerSpecies of ids)for(const opponentSpecies of ids){
   const view=createBattleView({playerSpecies,opponentSpecies}),radius=view.scene.getObjectByName('battle-stump').geometry.parameters.radiusTop;
-  for(const intent of ['push','evade','brace',null])for(const position of [-4,-2,0,2,4]){
-   view.update(snapshot(position,intent),1/60,{reducedMotion:true});assertScene(view);
+  for(const phase of ['watching','finished','cancelled'])for(const position of [-4,-2,0,2,4]){
+   view.update(snapshot(position,{phase}),1/60,{reducedMotion:true});assertScene(view);
    const a=new T.Box3().setFromObject(anchor(view,'player')),b=new T.Box3().setFromObject(anchor(view,'opponent'));
    assert.ok(a.max.x<b.min.x,'horn/jaw bounds do not cross');
    for(const box of [a,b])for(const x of[box.min.x,box.max.x])for(const z of[box.min.z,box.max.z])assert.ok(Math.hypot(x,z)<radius,'model remains on stump');
   }
-  view.update(snapshot(4,null,{phase:'finished',winner:'player'}),1/60,{reducedMotion:true});assertScene(view);view.dispose();
+  view.update(snapshot(4,{phase:'finished',winner:'player'}),1/60,{reducedMotion:true});assertScene(view);view.dispose();
  }
 });
 
@@ -55,7 +55,7 @@ test('portrait to wide projections keep complete table and beetles above the res
  for(const playerSpecies of ids)for(const opponentSpecies of ids){
   const view=createBattleView({playerSpecies,opponentSpecies});
   for(const aspect of [.25,.45,.75,1,16/9,3])for(const position of [-4,0,4]){
-   view.resize(aspect);view.update(snapshot(position,'push'),.02,{reducedMotion:true});view.scene.updateMatrixWorld(true);view.camera.updateMatrixWorld(true);
+   view.resize(aspect);view.update(snapshot(position),.02,{reducedMotion:true});view.scene.updateMatrixWorld(true);view.camera.updateMatrixWorld(true);
    view.scene.traverse(mesh=>{if(!mesh.isMesh)return;const box=new T.Box3().setFromObject(mesh);
     for(const x of[box.min.x,box.max.x])for(const y of[box.min.y,box.max.y])for(const z of[box.min.z,box.max.z]){
      point.set(x,y,z).project(view.camera);assert.ok(point.x>=-.901&&point.x<=.901,`${aspect} horizontal ${mesh.name}`);assert.ok(point.y>=-.081&&point.y<=.841,`${aspect} vertical ${mesh.name}: ${point.y}`);assert.ok(point.z>=-1&&point.z<=1);
@@ -68,36 +68,36 @@ test('portrait to wide projections keep complete table and beetles above the res
 
 test('snapshot transition animates a bounded push, while reduced motion and repeated steady states are static',()=>{
  const view=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'}),before=pose(view);
- const next=snapshot(2,'evade',{turn:2,exchanges:1,lastExchange:{delta:2,positionBefore:0,positionAfter:2}});
+ const next=snapshot(2,{elapsed:1.6,exchanges:1,lastExchange:{playerAction:'push',opponentAction:'brace',delta:2,positionBefore:0,positionAfter:2}});
  view.update(next,1/60);const first=pose(view);assert.ok(first[0][0]>before[0][0]);assert.ok(first[0][0]-before[0][0]<.05);
  for(let i=0;i<120;i++){view.update(next,1/60);assertScene(view);}
  view.update(next,1/60,{reducedMotion:true});const still=pose(view);
  for(let i=0;i<30;i++)view.update(next,1/60,{reducedMotion:true});assert.deepEqual(pose(view),still);
- view.update(snapshot(4,null,{phase:'finished'}),0,{reducedMotion:true});const end=pose(view);assert.ok(Math.abs(still[0][0]-before[0][0]-(end[0][0]-before[0][0])/2)<1e-12);
+ view.update(snapshot(4,{phase:'finished'}),0,{reducedMotion:true});const end=pose(view);assert.ok(Math.abs(still[0][0]-before[0][0]-(end[0][0]-before[0][0])/2)<1e-12);
  view.update(snapshot(NaN),NaN,{reducedMotion:true});assertScene(view);view.resize(NaN);assert.ok(view.camera.projectionMatrix.elements.every(Number.isFinite));view.dispose();
 });
 
-test('the resolve clip distinguishes both chosen actions and delays the next intent for .65 seconds',()=>{
+test('automatic .65 second resolve clips distinguish both beetles, then settle without future-action previews',()=>{
  const actions=['push','evade','brace'],playerPoses=new Set(),opponentPoses=new Set();
  for(const action of actions){
   const a=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'}),b=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'});
   const last={playerAction:action,opponentAction:'brace',positionBefore:0,positionAfter:1,delta:1};
-  a.update(snapshot(1,'push',{exchanges:1,lastExchange:last}),.1);b.update(snapshot(1,'evade',{exchanges:1,lastExchange:last}),.1);
-  assert.deepEqual(pose(a),pose(b),'next intent is not shown over last action');playerPoses.add(JSON.stringify(pose(a)[0]));
-  for(let i=0;i<6;i++){a.update(snapshot(1,'push',{exchanges:1,lastExchange:last}),.1);b.update(snapshot(1,'evade',{exchanges:1,lastExchange:last}),.1);}
-  assert.notDeepEqual(pose(a)[1],pose(b)[1],'next cue appears after clip');a.dispose();b.dispose();
-  const c=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'});c.update(snapshot(0,'push',{exchanges:1,lastExchange:{playerAction:'brace',opponentAction:action,positionBefore:0,positionAfter:0,delta:0}}),.1);opponentPoses.add(JSON.stringify(pose(c)[1]));c.dispose();
+  a.update(snapshot(1,{exchanges:1,lastExchange:last,intent:'push'}),.1);b.update(snapshot(1,{exchanges:1,lastExchange:last,intent:'evade'}),.1);
+  assert.deepEqual(pose(a),pose(b),'obsolete manual intent never affects a watching pose');playerPoses.add(JSON.stringify(pose(a)[0]));
+  for(let i=0;i<15;i++){a.update(snapshot(1,{exchanges:1,lastExchange:last,intent:'push'}),.1);b.update(snapshot(1,{exchanges:1,lastExchange:last,intent:'evade'}),.1);}
+  assert.deepEqual(pose(a),pose(b),'between automatic exchanges both settle without a future cue');const still=pose(a);a.update(snapshot(1,{exchanges:1,lastExchange:last}),.1);assert.deepEqual(pose(a),still);a.dispose();b.dispose();
+  const c=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'});c.update(snapshot(0,{exchanges:1,lastExchange:{playerAction:'brace',opponentAction:action,positionBefore:0,positionAfter:0,delta:0}}),.1);opponentPoses.add(JSON.stringify(pose(c)[1]));c.dispose();
  }
  assert.equal(playerPoses.size,3);assert.equal(opponentPoses.size,3);
- const reduced=createBattleView({playerSpecies:'rhino',opponentSpecies:'hercules'}),s=snapshot(1,'brace',{exchanges:1,lastExchange:{playerAction:'evade',opponentAction:'push',positionBefore:0,positionAfter:1,delta:1}});
- reduced.update(s,0,{reducedMotion:true});const fixed=pose(reduced);for(let i=0;i<10;i++)reduced.update(s,.02,{reducedMotion:true});assert.deepEqual(pose(reduced),fixed,'reduced action has a fixed, distinguishable pose');reduced.dispose();
+ const reduced=createBattleView({playerSpecies:'rhino',opponentSpecies:'hercules'}),s=snapshot(1,{exchanges:1,lastExchange:{playerAction:'evade',opponentAction:'push',positionBefore:0,positionAfter:1,delta:1}});
+ reduced.update(s,0,{reducedMotion:true});const fixed=pose(reduced);for(let i=0;i<10;i++)reduced.update(s,.02,{reducedMotion:true});assert.deepEqual(pose(reduced),fixed,'reduced action has a fixed pose');reduced.dispose();
 });
 
 test('every species pairing and action pairing keeps a 4mm actual-bounds gap throughout the resolve clip',()=>{
  const projected=new T.Vector3();
  for(const playerSpecies of ids)for(const opponentSpecies of ids)for(const playerAction of ['push','evade','brace'])for(const opponentAction of ['push','evade','brace']){
   const view=createBattleView({playerSpecies,opponentSpecies,aspect:.45}),position=playerAction==='push'?4:-4,radius=view.scene.getObjectByName('battle-stump').geometry.parameters.radiusTop;
-  const s=snapshot(position,'push',{phase:'finished',exchanges:1,lastExchange:{playerAction,opponentAction,positionBefore:0,positionAfter:position,delta:position}});
+  const s=snapshot(position,{phase:'finished',exchanges:1,lastExchange:{playerAction,opponentAction,positionBefore:0,positionAfter:position,delta:position}});
   for(let frame=0;frame<15;frame++){
    view.update(s,.05);assertScene(view);const a=new T.Box3().setFromObject(anchor(view,'player')),b=new T.Box3().setFromObject(anchor(view,'opponent'));
    assert.ok(b.min.x-a.max.x>=.004-1e-10,`${playerSpecies}/${opponentSpecies} ${playerAction}/${opponentAction} at ${frame}`);
@@ -113,12 +113,33 @@ test('every species pairing and action pairing keeps a 4mm actual-bounds gap thr
 test('finished endpoints place the losing body centre on the ring, without falling or changing models',()=>{
  const point=new T.Vector3();
  for(const playerSpecies of ids)for(const opponentSpecies of ids)for(const position of[-4,4]){
-  const view=createBattleView({playerSpecies,opponentSpecies});view.update(snapshot(position,null,{phase:'finished'}),0,{reducedMotion:true});
+  const view=createBattleView({playerSpecies,opponentSpecies});view.update(snapshot(position,{phase:'finished'}),0,{reducedMotion:true});
   const side=position>0?'opponent':'player',m=model(view,side),body=m.userData.visual?.userData.bodyBounds;
   if(body)body.getCenter(point).applyMatrix4(m.matrixWorld);else new T.Box3().setFromObject(m.userData.bodyMesh).getCenter(point);
   const ring=view.scene.getObjectByName('battle-ring').geometry.parameters.radius;
   assert.ok(Math.abs(point.x-Math.sign(position)*ring)<1e-10,'losing body centre reaches boundary');assertScene(view);view.dispose();
  }
+});
+
+test('successive automatic exchanges move continuously without clicks and retain a supported separated final pose',()=>{
+ const positions=[1,0,-1,-2,0,2,3,4];
+ for(const[playerSpecies,opponentSpecies]of[['hercules','metallifer'],['stag','rhino']]){
+  const view=createBattleView({playerSpecies,opponentSpecies});let before=pose(view),priorPosition=0;
+  for(let exchange=0;exchange<positions.length;exchange++){
+   const position=positions[exchange],lastExchange={playerAction:exchange%2?'evade':'push',opponentAction:exchange%2?'push':'brace',positionBefore:priorPosition,positionAfter:position,delta:position-priorPosition},phase=exchange===positions.length-1?'finished':'watching';
+   for(let frame=0;frame<96;frame++){
+    view.update(snapshot(position,{phase,elapsed:exchange*1.6+frame/60,exchanges:exchange+1,lastExchange}),1/60);const next=pose(view);assertScene(view);
+    for(let side=0;side<2;side++)assert.ok(Math.hypot(...next[side].slice(0,3).map((n,i)=>n-before[side][i]))<.04,'no per-frame whole-model position jump');
+    const a=new T.Box3().setFromObject(anchor(view,'player')),b=new T.Box3().setFromObject(anchor(view,'opponent'));assert.ok(b.min.x-a.max.x>=.004-1e-10);before=next;
+   }
+   priorPosition=position;
+  }
+  const final=pose(view);for(let i=0;i<30;i++)view.update(snapshot(4,{phase:'finished',exchanges:8}),1/60);assert.deepEqual(pose(view),final,'finished beetles stay on the table rather than falling');view.dispose();
+ }
+ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+ for(const id of['battle-push','battle-evade','battle-brace'])assert.ok(!html.includes('id="'+id+'"'),'manual action button removed');
+ assert.ok(!html.includes('スタミナ'));assert.match(html,/操作せず、虫たちの押し合いを見守ろう/);
+ for(const id of['battle-heading','battle-state','battle-position','battle-cue','battle-result','battle-save-status','battle-finish-button','battle-exit-button'])assert.ok(html.includes('id="'+id+'"'));
 });
 
 test('dispose releases each owned geometry/material once without touching shared insect texture caches',()=>{

@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {COMPANION_KEY,COMPANION_VERSION,COMPANION_SPECIES,createCompanionRoster,isCompanionSpecies} from '../src/companion-roster.js';
-const captures={hercules:{species:'hercules',originHabitat:'tropical',originIndividualId:'insect-5'},rhino:{species:'rhino',originHabitat:'night',originIndividualId:'insect-4'},stag:{species:'stag',originHabitat:'night',originIndividualId:'insect-5'}};
+const captures={hercules:{species:'hercules',originHabitat:'tropical',originIndividualId:'insect-5'},rhino:{species:'rhino',originHabitat:'night',originIndividualId:'insect-4'},stag:{species:'stag',originHabitat:'night',originIndividualId:'insect-5'},metallifer:{species:'metallifer',originHabitat:'understory',originIndividualId:'insect-4'}};
 const entry=(species='hercules')=>({id:`${captures[species].originHabitat}/${captures[species].originIndividualId}`,...captures[species],capturedAt:100});
 const payload=entries=>JSON.stringify({version:1,entries});
 const microtasks=async()=>{for(let i=0;i<14;i++)await Promise.resolve();};
@@ -16,14 +16,14 @@ function fixture(raw=null){
 const make=f=>createCompanionRoster(f.storage,f);
 function journalUnchanged(f){assert.equal(f.values.get('mushi-journal-v1'),'untouched legacy journal');assert.equal(f.values.get('mushi-journal-v2'),'untouched current journal');}
 
-test('three explicit captures persist, one specimen per species, detached values, and only explicit release removes ownership',async()=>{
- const f=fixture(),r=make(f);assert.equal(COMPANION_KEY,'mushi-companions-v1');assert.equal(COMPANION_VERSION,1);assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag']);assert.deepEqual(r.entries,[]);assert.equal(f.writes.length,0,'a journal does not invent companions');
+test('four explicit captures persist, one specimen per species, detached values, and only explicit release removes ownership',async()=>{
+ const f=fixture(),r=make(f);assert.equal(COMPANION_KEY,'mushi-companions-v1');assert.equal(COMPANION_VERSION,1);assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer']);assert.deepEqual(r.entries,[]);assert.equal(f.writes.length,0,'a journal does not invent companions');
  assert.equal(r.saved,true);
  for(const species of COMPANION_SPECIES){assert.equal(isCompanionSpecies(species),true);const result=r.add(captures[species]);assert.equal(result.ok,true);result.entry.species='altered externally';}
- assert.equal(r.pending,true);assert.equal(r.saved,false);assert.equal(r.entries.length,3);const copy=r.entries;copy[0].capturedAt=0;copy.pop();assert.equal(r.entries.length,3);assert.equal(r.entries[0].capturedAt,200);
+ assert.equal(r.pending,true);assert.equal(r.saved,false);assert.equal(r.entries.length,4);const copy=r.entries;copy[0].capturedAt=0;copy.pop();assert.equal(r.entries.length,4);assert.equal(r.entries[0].capturedAt,200);
  assert.equal(await r.flush(),true);const stored=f.values.get(COMPANION_KEY);assert.deepEqual(make(f).entries,r.entries);
  assert.deepEqual(r.add({...captures.hercules,originIndividualId:'insect-6'}),{ok:false,reason:'already-owned'});assert.equal(f.values.get(COMPANION_KEY),stored);
- const result=r.release('night/insect-4');assert.equal(result.ok,true);assert.equal(result.entry.species,'rhino');assert.equal(await r.flush(),true);assert.deepEqual(make(f).entries.map(e=>e.species),['hercules','stag']);
+ const result=r.release('night/insect-4');assert.equal(result.ok,true);assert.equal(result.entry.species,'rhino');assert.equal(await r.flush(),true);assert.deepEqual(make(f).entries.map(e=>e.species),['hercules','stag','metallifer']);
  assert.deepEqual(r.release('night/insect-4'),{ok:false,reason:'not-owned'});assert.equal('reset' in r,false);assert.equal('clear' in r,false);journalUnchanged(f);
 });
 

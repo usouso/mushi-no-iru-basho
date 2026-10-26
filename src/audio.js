@@ -1,11 +1,11 @@
 /** Brief-1 trial samples with the original wind/footstep/action fallbacks.
  * Gains/radii are game tuning, not a claim of measured listening comfort.
  */
-import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.16.0&b=ef7356bcd944';
+import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.18.0&b=f75693c4884e';
 export function createAudio({assetBaseURL}={}){
  const MAX_SHOTS=6,LOAD_PARALLELISM=3;
- let ctx,master,windGain,lastStep=0,level=.25,active=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;
- let habitat='meadow',fieldTime=0,nextCicada=12,cicada=null,bgm=null,bgmOffset=0,loading=false,loadAbort,pendingRelease=null,tail=null,tailTimer=null;
+ let ctx,master,windGain,lastStep=0,level=.25,active=false,observing=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;
+ let habitat='meadow',fieldTime=0,nextCicada=12,cicada=null,bgm=null,bgmOffset=0,loading=false,loadAbort,pendingRelease=null;
  const timers=new Set(),oneShots=new Set(),loops=new Set(),buffers=new Map(),previous=new Map(),walkers=new Map();
  const playable=()=>!!ctx&&active&&ready&&!disposed&&level>0;
  const choose=list=>list[Math.floor(Math.random()*list.length)];
@@ -13,13 +13,12 @@ export function createAudio({assetBaseURL}={}){
  function disconnect(nodes){for(const node of nodes){try{node.disconnect?.();}catch{}}}
  function stop(record){if(!record)return;try{record.source.stop();}catch{}record.finish();}
  function clearPendingRelease(){if(!pendingRelease)return;clearTimeout(pendingRelease.timer);timers.delete(pendingRelease.timer);pendingRelease=null;}
- function clearSounds(keep=null){soundEpoch++;clearPendingRelease();for(const timer of timers)clearTimeout(timer);timers.clear();for(const record of [...oneShots])if(record!==keep)stop(record);walkers.clear();cicada=null;}
+ function clearSounds(){soundEpoch++;clearPendingRelease();for(const timer of timers)clearTimeout(timer);timers.clear();for(const record of [...oneShots])stop(record);walkers.clear();cicada=null;}
  function later(fn,delay){if(!playable()||timers.size>=MAX_SHOTS)return;const epoch=soundEpoch;const timer=setTimeout(()=>{timers.delete(timer);if(playable()&&epoch===soundEpoch)fn();},delay);timers.add(timer);}
  function track(source,nodes,onFinish){
-  let finished=false;const record={source,nodes,finish(){if(finished)return;finished=true;oneShots.delete(record);source.onended=null;disconnect(nodes);onFinish?.(record);if(tail===record)finishTail();}};
+  let finished=false;const record={source,nodes,finish(){if(finished)return;finished=true;oneShots.delete(record);source.onended=null;disconnect(nodes);onFinish?.(record);}};
   oneShots.add(record);source.onended=record.finish;return record;
  }
- function finishTail(){tail=null;if(tailTimer!==null){clearTimeout(tailTimer);timers.delete(tailTimer);tailTimer=null;}gain(active&&ready?level:0);reconcileContext();}
  function stopBGM(){if(!bgm)return;const old=bgm;bgm=null;bgmOffset=(old.offset+Math.max(0,ctx.currentTime-old.started))%old.end;try{old.source.stop();}catch{}old.source.onended=null;disconnect(old.nodes);}
  function syncBGM(){
   if(!playable()||habitat!=='meadow'){stopBGM();return;}
@@ -37,10 +36,10 @@ export function createAudio({assetBaseURL}={}){
  function reconcileContext(){
   if(!ctx||disposed||contextBusy)return;
   if(typeof ctx.state==='string')contextRunning=ctx.state==='running';
-  const target=active||!!tail,version=lifecycle;
-  if(contextRunning===target){ready=target&&active;gain(ready||tail&&contextRunning?level:0);readySounds();return;}
+  const target=active,version=lifecycle;
+  if(contextRunning===target){ready=target;gain(ready?level:0);readySounds();return;}
   contextBusy=true;
-  const finish=ok=>{contextBusy=false;if(ok)contextRunning=target;if(disposed)return;ready=ok&&contextRunning&&active;gain(ready||tail&&contextRunning?level:0);if(!ok)clearPendingRelease();readySounds();if((active||!!tail)!==target||lifecycle!==version)reconcileContext();};
+  const finish=ok=>{contextBusy=false;if(ok)contextRunning=target;if(disposed)return;ready=ok&&contextRunning&&active;gain(ready?level:0);if(!ok)clearPendingRelease();readySounds();if(active!==target||lifecycle!==version)reconcileContext();};
   try{const operation=target?ctx.resume?.():ctx.suspend?.();if(operation?.then)operation.then(()=>finish(true),()=>finish(false));else finish(true);}catch{finish(false);}
  }
  const makeNoise=()=>{const b=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate),d=b.getChannelData(0);let v=0;for(let i=0;i<d.length;i++){v=(v+Math.random()*.16-.08)*.96;d[i]=v;}return b;};
@@ -79,7 +78,7 @@ export function createAudio({assetBaseURL}={}){
    ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0;contextRunning=ctx.state===undefined||ctx.state==='running';master.connect(ctx.destination);
    const noise=ctx.createBufferSource();noise.buffer=makeNoise();noise.loop=true;const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=700;windGain=ctx.createGain();windGain.gain.value=.08;noise.connect(filter);filter.connect(windGain);windGain.connect(master);noise.start();loops.add({source:noise,nodes:[noise,filter,windGain]});
   }
-  active=true;lifecycle++;if(tail)stop(tail);windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);reconcileContext();loadAssets();
+  observing=false;active=true;lifecycle++;windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);reconcileContext();loadAssets();
  }
  function tone(f,d=.14,vol=.06,type='sine',end=f*1.2){if(!playable()||oneShots.size>=MAX_SHOTS)return;const o=ctx.createOscillator(),g=ctx.createGain();const record=track(o,[o,g]);o.type=type;o.frequency.setValueAtTime(f,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(end,ctx.currentTime+d);g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(vol,ctx.currentTime+.015);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+d);o.connect(g);g.connect(master);try{o.start();o.stop(ctx.currentTime+d+.02);}catch{stop(record);}}
  function noiseBurst(duration,vol,freq){if(!playable()||oneShots.size>=MAX_SHOTS)return;const n=ctx.createBufferSource();n.buffer=makeNoise();const f=ctx.createBiquadFilter(),g=ctx.createGain(),record=track(n,[n,f,g]);f.type='lowpass';f.frequency.value=freq;g.gain.setValueAtTime(vol,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);n.connect(f);f.connect(g);g.connect(master);try{n.start();n.stop(ctx.currentTime+duration);}catch{stop(record);}}
@@ -101,7 +100,9 @@ export function createAudio({assetBaseURL}={}){
  function insectSounds(player,items,edges){
   for(const [id,record]of [...walkers]){const item=items.find(i=>i.id===id),where=item&&spatial(player,item,2.2);if(!item||item.caught||item.state!=='walking'||!(item.walkSpeed>0)||!where||record.ends<=fieldTime)stop(record);else position(record,where,.3);}
   if(cicada){const item=items.find(i=>i.id===cicada.id),where=item&&spatial(player,item,12);if(!item||item.caught||!item.resting||!where||cicada.record.ends<=fieldTime){stop(cicada.record);nextCicada=Math.max(nextCicada,fieldTime+25+Math.random()*15);}else position(cicada.record,where,.18);}
-  for(const {item,before}of edges){if(item.caught)continue;
+  // Observation freezes creature locomotion. Let an existing brief effect end,
+  // but never renew walking loops or infer new jumps from those frozen poses.
+  if(!observing)for(const {item,before}of edges){if(item.caught)continue;
    if(item.species==='grasshopper'&&before&&before.airborne!==!!item.airborne){const where=spatial(player,item,6);if(where)sample(choose(item.airborne?ASSETS.takeoff:ASSETS.landing),.45,{where});}
    if(item.species==='hercules'&&item.state==='walking'&&item.walkSpeed>0&&!walkers.has(item.id)){const where=spatial(player,item,2.2);if(where){const record=sample(choose(ASSETS.beetle),.3,{where,onFinish:r=>{if(walkers.get(item.id)===r)walkers.delete(item.id);}});if(record)walkers.set(item.id,record);}}
   }
@@ -113,24 +114,19 @@ export function createAudio({assetBaseURL}={}){
  function pause(){if(disposed)return;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();reconcileContext();}
  return {
   start,
-  resetField(next){if(disposed)return;clearSounds();stopBGM();bgmOffset=0;habitat=next==='meadow'?'meadow':null;fieldTime=0;nextCicada=12;lastStep=0;previous.clear();syncBGM();},
-  setVolume(v){if(disposed||!Number.isFinite(Number(v)))return;level=Math.max(0,Math.min(1,Number(v)));gain(active&&ready||tail&&contextRunning?level:0);if(level===0){clearSounds();stopBGM();}else syncBGM();},
+  resetField(next){if(disposed)return;observing=false;clearSounds();stopBGM();bgmOffset=0;habitat=next==='meadow'?'meadow':null;fieldTime=0;nextCicada=12;lastStep=0;previous.clear();syncBGM();},
+  setVolume(v){if(disposed||!Number.isFinite(Number(v)))return;level=Math.max(0,Math.min(1,Number(v)));gain(active&&ready?level:0);if(level===0){clearSounds();stopBGM();}else syncBGM();},
   pause,
   inspect(){
-   if(disposed)return;
-   const keep=playable()?[...oneShots].reverse().find(r=>r.name===ASSETS.capture&&r.endAt>ctx.currentTime):null;
-   if(!keep){pause();return;}
-   // Only an already-started successful-capture sample may finish in inspection.
-   // All other effects and both backgrounds stop/mute immediately; no late load
-   // or queued action can create a new sound while active is false.
-   active=false;ready=false;lifecycle++;tail=keep;clearSounds(keep);stopBGM();
-   windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(0,ctx.currentTime);
-   gain(contextRunning?level:0);const version=lifecycle;
-   tailTimer=setTimeout(()=>{if(tail===keep&&lifecycle===version)stop(keep);},Math.min(.85,Math.max(0,keep.endAt-ctx.currentTime))*1000);timers.add(tailTimer);reconcileContext();
+   if(disposed||!ctx)return;
+   // This is an explicit caller-owned transition, including return from a
+   // journal/pause. No DOM/visibility listener or automatic hidden-tab resume.
+   // Preserve the same BGM source/offset, wind graph and naturally ending SFX.
+   observing=true;active=true;lifecycle++;reconcileContext();
   },
   dispose(){if(disposed)return;disposed=true;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();loadAbort?.abort();buffers.clear();previous.clear();for(const record of loops){try{record.source.stop();}catch{}disconnect(record.nodes);}loops.clear();master?.disconnect?.();try{ctx?.close?.()?.catch?.(()=>{});}catch{}},
-  swing(){const name=choose(ASSETS.net);if(buffers.has(name))sample(name,.35);else noiseBurst(.28,.25,1800);},
-  capture(){if(buffers.has(ASSETS.capture))sample(ASSETS.capture,.35);else{tone(750,.13,.045,'sine',1100);later(()=>tone(1150,.19,.035,'sine',900),100);}},
+  swing(){if(observing)return;const name=choose(ASSETS.net);if(buffers.has(name))sample(name,.35);else noiseBurst(.28,.25,1800);},
+  capture(){if(observing)return;if(buffers.has(ASSETS.capture))sample(ASSETS.capture,.35);else{tone(750,.13,.045,'sine',1100);later(()=>tone(1150,.19,.035,'sine',900),100);}},
   release(){if(playable()){releaseTone();return;}if(!ctx||!active||disposed||level===0)return;clearPendingRelease();const pending={until:Date.now()+750,timer:null};pending.timer=setTimeout(()=>{timers.delete(pending.timer);if(pendingRelease===pending)pendingRelease=null;},750);pendingRelease=pending;timers.add(pending.timer);},
   update(dt,player,items,time){
    if(!ctx||!active||disposed)return;
@@ -138,7 +134,7 @@ export function createAudio({assetBaseURL}={}){
    const edges=[],present=new Set();for(const item of items){present.add(item.id);edges.push({item,before:previous.get(item.id)});previous.set(item.id,{airborne:!!item.airborne,caught:!!item.caught});}for(const id of previous.keys())if(!present.has(id))previous.delete(id);
    if(!ready)return;
    windGain.gain.setTargetAtTime(.08+Math.sin((Number.isFinite(time)?time:fieldTime)*.18)*.02,ctx.currentTime,.3);
-   lastStep-=step;if(player.speed>.1&&lastStep<0){lastStep=player.quiet?.7:player.running?.34:.48;noiseBurst(.12,player.quiet?.02:.055,500);}
+   if(!observing){lastStep-=step;if(player.speed>.1&&lastStep<0){lastStep=player.quiet?.7:player.running?.34:.48;noiseBurst(.12,player.quiet?.02:.055,500);}}
    if(playable())insectSounds(player,items,edges);
   }
  };

@@ -6,7 +6,8 @@ export function createInput(canvas, callbacks) {
   let mode = callbacks.mode();
   // Gameplay owns the secondary gesture, not just its current quiet state.
   // clear()/unlock/blur may happen before the browser emits its context menu.
-  let secondaryGesture = null;
+  // B has its own latch: clear() during a menu transition must not re-arm it.
+  let secondaryGesture = null, companionHeld = false;
   const blockedPadModifiers = new Set();
   const movement = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight']);
   const controls = new Set([...movement, 'Space']);
@@ -47,6 +48,12 @@ export function createInput(canvas, callbacks) {
       if (!e.repeat) callbacks.journal?.();
       return;
     }
+    if (e.code === 'KeyB') {
+      if (!['playing','paused','companions'].includes(mode) || editableMenuTarget(e.target) || e.isComposing || e.keyCode === 229 || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault();
+      if (!e.repeat && !companionHeld) { companionHeld = true; callbacks.companions?.(); }
+      return;
+    }
     if (e.code === 'KeyE') {
       // Fruit-table interaction is a gameplay edge, never a text/IME shortcut.
       if (elementIsControl(e) || editableMenuTarget(e.target) || e.isComposing || e.keyCode === 229 || e.ctrlKey || e.altKey || e.metaKey || syncMode() !== 'playing') return;
@@ -60,10 +67,10 @@ export function createInput(canvas, callbacks) {
     if (e.code === 'Space') callbacks.action();
     if (movement.has(e.code) && syncMode() === 'playing') keys.add(e.code);
   });
-  document.addEventListener('keyup', e => keys.delete(e.code));
-  window.addEventListener('blur', () => { clear(); callbacks.blur(); });
+  document.addEventListener('keyup', e => { keys.delete(e.code); if (e.code === 'KeyB') companionHeld = false; });
+  window.addEventListener('blur', () => { companionHeld = false; clear(); callbacks.blur(); });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { clear(); callbacks.blur(); }
+    if (document.hidden) { companionHeld = false; clear(); callbacks.blur(); }
   });
   const beginPointerGesture = e => {
     // A left capture click while right is held belongs to the existing gesture.

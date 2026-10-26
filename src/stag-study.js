@@ -1,6 +1,6 @@
 /** Unregistered branch study: short steps and a restrained jaw response are
  * game tuning, not measured threat/escape behaviour. No combat or flight. */
-import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.18.0&b=f75693c4884e';
 const TAU=2*Math.PI,length=.12,speed=.02,rampTime=.5,halfStep=D.cycleDistance/2;
 const smooth=t=>t*t*(3-2*t);
 export function createStagStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0}={}){

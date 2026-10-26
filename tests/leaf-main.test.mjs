@@ -26,7 +26,7 @@ test('third title choice enters only on start; capture, inspect, memo, walking r
  assert.equal(g.world,initial,'selection itself does not generate or travel');
  elements.get('start-button').click();frame(1);
  assert.equal(g.state.habitat,'understory');assert.equal(g.state.mode,'playing');
- assert.equal(g.simulation.items.length,3);assert.ok(g.simulation.items.every(i=>i.species==='leafinsect'));
+ assert.equal(g.simulation.items.length,4);assert.deepEqual(g.simulation.items.slice(0,3).map(i=>[i.id,i.species]),[['insect-1','leafinsect'],['insect-2','leafinsect'],['insect-3','leafinsect']]);assert.equal(g.simulation.items[3].species,'metallifer');
  assert.match(elements.get('toast').textContent,/葉の形.*ゆっくりした揺れ/);
  assert.equal(g.state.player.x,g.world.spawn.x);assert.equal(g.state.player.z,g.world.spawn.z);
  const i=g.simulation.items[0],y=g.world.heightAt(i.x,i.z+1.6)+1.65;
@@ -48,13 +48,13 @@ test('third title choice enters only on start; capture, inspect, memo, walking r
  let moved=false,previous=point(i);
  for(let n=0;n<180;n++){frame(1);const p=point(i);assert.ok(Math.hypot(p.x-previous.x,p.y-previous.y,p.z-previous.z)<.03,'continuous leaf walking');moved ||= Math.hypot(p.x-caughtAt.x,p.z-caughtAt.z)>.005;previous=p;}
  assert.ok(moved,'released insect resumes walking on the leaf');
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,20);
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,21);
  find('fj-close').click();assert.equal(g.state.mode,'playing');
  const before={...g.state.player};key('keydown','KeyW');frame(10);key('keyup','KeyW');
  assert.ok(Math.hypot(g.state.player.x-before.x,g.state.player.z-before.z)>.05,'walking still works after journal close');
  await g.journal.flush();
- for(const [id,count]of [['meadow',29],['tropical',10],['understory',3]]){choose(id);assert.equal(g.state.habitat,id);assert.equal(g.simulation.items.length,count);assert.equal(g.journal.entries.find(e=>e.species==='leafinsect').note,note);}
- g.restart();assert.equal(g.simulation.items.length,3);assert.equal(g.simulation.caught,null);
+ for(const [id,count]of [['meadow',29],['tropical',10],['understory',4]]){choose(id);assert.equal(g.state.habitat,id);assert.equal(g.simulation.items.length,count);assert.equal(g.journal.entries.find(e=>e.species==='leafinsect').note,note);}
+ g.restart();assert.equal(g.simulation.items.length,4);assert.equal(g.simulation.caught,null);
  const {createJournal}=await import(h.moduleURL('journal.js'));
  assert.equal(createJournal(localStorage).entries.find(e=>e.species==='leafinsect').note,note);
 });

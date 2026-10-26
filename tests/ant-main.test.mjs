@@ -73,6 +73,6 @@ test('stationary observation spans two circuits with fixed cargo, then both role
   step(1);assert.equal(g.models.get(i.id).getObjectByName('ant-carried-leaf').visible,i.carryingLeaf);assert.equal(i.carryingLeaf,cargo);
  }
  await g.journal.flush();const note=g.journal.entries.find(e=>e.species==='leafcutterant').note;
- for(const[id,count]of[['meadow',29],['understory',3],['tropical',10]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(!!g.antHabitat,id==='tropical');assert.equal(bgm().length,id==='meadow'?1:0);assert.equal(g.journal.entries.find(e=>e.species==='leafcutterant').note,note);}
+ for(const[id,count]of[['meadow',29],['understory',4],['tropical',10]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(!!g.antHabitat,id==='tropical');assert.equal(bgm().length,id==='meadow'?1:0);assert.equal(g.journal.entries.find(e=>e.species==='leafcutterant').note,note);}
  const{createJournal}=await import(h.moduleURL('journal.js'));assert.equal(createJournal(localStorage).entries.find(e=>e.species==='leafcutterant').note,note);
 });

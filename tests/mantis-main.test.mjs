@@ -56,6 +56,6 @@ test('mantis leaf and flight capture, rotatable notes, same-pose return and five
  }
  assert.ok(!a.requests.some(r=>/mantis/.test(r.file)));assert.ok(!a.assetSources().some(n=>/insect_beetle_walk/.test(n.buffer.file)),'mantis does not inherit walking beetle audio');
  await g.journal.flush();const saved=g.journal.entries.find(e=>e.species==='mantis');assert.equal(saved.note,'葉の上の四つの足 j');assert.ok(saved.location);
- for(const[id,count]of[['tropical',10],['understory',3],['night',5],['savanna',1],['meadow',29]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(!!g.mantisHabitat,id==='meadow');assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='mantis'),saved);}
+ for(const[id,count]of[['tropical',10],['understory',4],['night',5],['savanna',1],['meadow',29]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(!!g.mantisHabitat,id==='meadow');assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='mantis'),saved);}
  for(const count of disposed.values())assert.equal(count,1);assert.ok(solids.every(m=>m.parent===null));assert.notEqual(g.mantisHabitat.captureOccluders[0],solids[0]);const{createJournal}=await import(h.moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries.find(e=>e.species==='mantis'),saved);
 });

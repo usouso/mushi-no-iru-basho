@@ -49,11 +49,21 @@
 .battle-screen{pointer-events:none;display:block}.battle-top{position:absolute;top:20px;left:50%;transform:translateX(-50%);text-align:center;width:min(720px,94%);color:#f8f5e9;text-shadow:0 2px 5px #13261c}
 .battle-top h2{font-size:clamp(18px,2.4vw,27px);margin:0 0 7px}.battle-top p{margin:4px;font-size:14px}
 .battle-card{pointer-events:auto;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 24px));max-height:44dvh;overflow:auto;box-sizing:border-box;background:var(--paper);padding:18px 22px}
-#battle-cue{font-size:18px;margin:0 0 8px;font-weight:600}#battle-result{font-size:14px;line-height:1.6;margin:0 0 10px}.battle-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.battle-actions button{padding:12px 6px;border:1px solid #91a283;background:#edf0e0;color:var(--ink);font:18px var(--sans);cursor:pointer}.battle-actions small{display:block;font-size:11px;margin-top:6px}.battle-actions button:disabled{opacity:.45;cursor:default}
+#battle-cue{font-size:18px;margin:0 0 8px;font-weight:600}#battle-result{font-size:14px;line-height:1.6;margin:0 0 10px}
 .battle-rule{font-size:12px;line-height:1.6;margin:10px 0}.battle-card .text-button{font-size:13px;margin-top:7px}.battle-card .primary-button{width:100%;padding:10px}
 .companions-card button:focus-visible,.companions-card select:focus-visible,.battle-card button:focus-visible{outline:3px solid #a98e2e;outline-offset:3px}
-@media(max-width:600px){.companions-card{padding:20px}.battle-top{top:12px}.battle-card{padding:12px}#battle-cue{font-size:16px}.battle-actions small{font-size:10px}.battle-actions button{font-size:16px}.battle-rule{font-size:11px}}
+@media(max-width:600px){.companions-card{padding:20px}.battle-top{top:12px}.battle-card{padding:12px}#battle-cue{font-size:16px}.battle-rule{font-size:11px}}
 
 #companions-button{position:absolute;top:133px;right:33px;pointer-events:auto;padding:10px 15px;border:1px solid #f6f3e759;background:#1d301c66;color:var(--paper);font-size:13px}
 @media(max-width:760px){#companions-button{top:117px;right:18px;padding:9px 11px;font-size:12px}}
+
+/* Battle entry stays visible independently of the timed movement hints. */
+#companions-button{background:#203c2ee8;border-color:#f1dfa4b3;font-size:15px;text-align:left;line-height:1.5}
+.battle-entry-hint{display:block;font-size:11px;font-weight:normal;letter-spacing:0}
+#capture-battle-button{width:100%;margin-top:18px}#capture-battle-button:disabled{opacity:.55;cursor:default}
+.capture-battle-note{font-size:13px;line-height:1.6;margin:8px 0 12px}#keep-button{display:block;margin:8px 0 16px}
+#capture-battle-button:focus-visible,#companions-button:focus-visible{outline:3px solid #d6ba59;outline-offset:4px}
+#battle-position{font-weight:600}#battle-state{font-size:13px}
+@media(max-width:760px){#companions-button{font-size:13px}.battle-entry-hint{font-size:10px}.capture-battle-note{font-size:12px}}
+
+#battle-save-status{font-size:12px;line-height:1.5;background:#f4dfb9;color:#59401f;padding:6px 9px;margin:6px 0}

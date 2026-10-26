@@ -50,9 +50,9 @@ test('loaded sample path follows eight-species main across habitats, silence gat
  const shotStart=a.assetSources().length;catchSpecies('butterfly',{wait:false});
  assert.ok(a.assetSources().slice(shotStart).some(n=>/^sfx_net_swing_0[123]\.ogg$/.test(n.buffer.file)),'main swing uses a decoded net sample');
  assert.ok(a.assetSources().slice(shotStart).some(n=>n.buffer.file==='sfx_capture_01.ogg'),'main capture uses decoded success sample');
- step(22);await a.flush();assert.equal(g.state.mode,'inspect');assert.equal(bgm().length,0);
- assert.deepEqual(a.liveAssets().map(n=>n.buffer.file),['sfx_capture_01.ogg'],'only the already-started capture tail survives inspection');
- step(55);await a.flush();assertStoppedAssets();assert.equal(master(),0);assert.equal(a.ctx.state,'suspended');assert.equal(a.timers.size,0);
+ const observationBGM=bgm()[0];step(22);await a.flush();assert.equal(g.state.mode,'inspect');assert.equal(bgm().length,1);assert.equal(bgm()[0],observationBGM);
+ assert.ok(a.liveAssets().some(n=>n.buffer.file==='sfx_capture_01.ogg'),'capture tail continues alongside the existing background');assert.ok(a.liveAssets().every(n=>/^(bgm_temperate_preview_01|sfx_capture_01|sfx_net_swing_0[123])\.ogg$/.test(n.buffer.file)),'only background and already-started capture/net tails remain');
+ step(55);await a.flush();assert.deepEqual(a.liveAssets().map(n=>n.buffer.file),['bgm_temperate_preview_01.ogg']);assert.equal(bgm()[0],observationBGM);assert.equal(master(),.25);assert.equal(a.ctx.state,'running');assert.equal(a.timers.size,0);
  const releaseStart=a.ctx.sources.length;g.release({lock:false});await a.flush();assert.equal(g.state.mode,'playing');assert.equal(bgm().length,1);
  assert.ok(a.ctx.sources.slice(releaseStart).some(n=>n.kind==='oscillator'&&n.started),'existing synthesized release is preserved');step(30);await a.flush();
  for(const id of ['tropical','understory']){choose(id);await a.flush();assert.equal(bgm().length,0,`${id} has no meadow BGM`);assert.equal(a.liveAssets().length,0);}
