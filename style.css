@@ -29,3 +29,31 @@
 .habitat-choice select{display:block;width:100%;min-height:43px;padding:10px 34px 10px 12px;border:1px solid var(--line);border-radius:0;background:rgba(246,243,231,.78);color:var(--ink);font:13px/1.6 var(--sans);cursor:pointer}
 .habitat-choice select:focus-visible{outline:3px solid #bca64c;outline-offset:4px}
 @media(max-width:760px){.habitat-choice{max-width:350px}.habitat-choice select{font-size:16px}}
+
+/* Direct habitat travel stays inside the pause sheet, with no persistent HUD panel. */
+.pause-card{max-height:calc(100dvh - 48px);overflow:auto}
+.travel-choice{max-width:none;margin-top:23px;padding-top:19px;border-top:1px solid var(--line)}
+.travel-help{font-size:12px;line-height:1.8;color:var(--ink-soft);margin:10px 0 12px}
+.travel-button{width:100%;padding:11px 14px;border:1px solid var(--leaf);background:transparent;color:var(--ink);font:13px/1.6 var(--sans);cursor:pointer}
+.travel-button:hover:not(:disabled){background:#e7ebdc}.travel-button:disabled{opacity:.48;cursor:default}
+.travel-button:focus-visible{outline:3px solid #bca64c;outline-offset:4px}
+
+/* Companion/battle prototype: on-demand surfaces, no persistent full-field cards. */
+.companions-screen{display:grid;place-items:center;background:#263b30aa;padding:24px}
+.companions-card{width:min(580px,100%);max-height:calc(100dvh - 48px);overflow:auto;background:var(--paper);padding:26px 32px;box-sizing:border-box}
+.companions-card h2{font-size:27px;margin:6px 0 14px}.companions-card p{font-size:14px;line-height:1.7}.companions-card label{display:block;font-size:14px;margin-top:14px}
+.companions-card select{width:100%;padding:10px;background:#faf9f0;color:var(--ink);border:1px solid var(--line);font:16px var(--sans)}
+.companions-card .primary-button{width:100%;margin:20px 0 8px}.companions-card .text-button{display:block;margin:14px 0}
+#companion-save-status{background:#e3e9d7;padding:10px}#companion-save-status[data-unsaved="true"]{background:#f4dfb9;color:#59401f}
+#keep-button{margin-bottom:10px}#keep-button:disabled{opacity:.55}
+.battle-screen{pointer-events:none;display:block}.battle-top{position:absolute;top:20px;left:50%;transform:translateX(-50%);text-align:center;width:min(720px,94%);color:#f8f5e9;text-shadow:0 2px 5px #13261c}
+.battle-top h2{font-size:clamp(18px,2.4vw,27px);margin:0 0 7px}.battle-top p{margin:4px;font-size:14px}
+.battle-card{pointer-events:auto;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 24px));max-height:44dvh;overflow:auto;box-sizing:border-box;background:var(--paper);padding:18px 22px}
+#battle-cue{font-size:18px;margin:0 0 8px;font-weight:600}#battle-result{font-size:14px;line-height:1.6;margin:0 0 10px}.battle-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.battle-actions button{padding:12px 6px;border:1px solid #91a283;background:#edf0e0;color:var(--ink);font:18px var(--sans);cursor:pointer}.battle-actions small{display:block;font-size:11px;margin-top:6px}.battle-actions button:disabled{opacity:.45;cursor:default}
+.battle-rule{font-size:12px;line-height:1.6;margin:10px 0}.battle-card .text-button{font-size:13px;margin-top:7px}.battle-card .primary-button{width:100%;padding:10px}
+.companions-card button:focus-visible,.companions-card select:focus-visible,.battle-card button:focus-visible{outline:3px solid #a98e2e;outline-offset:3px}
+@media(max-width:600px){.companions-card{padding:20px}.battle-top{top:12px}.battle-card{padding:12px}#battle-cue{font-size:16px}.battle-actions small{font-size:10px}.battle-actions button{font-size:16px}.battle-rule{font-size:11px}}
+
+#companions-button{position:absolute;top:133px;right:33px;pointer-events:auto;padding:10px 15px;border:1px solid #f6f3e759;background:#1d301c66;color:var(--paper);font-size:13px}
+@media(max-width:760px){#companions-button{top:117px;right:18px;padding:9px 11px;font-size:12px}}

@@ -1,4 +1,4 @@
-import {sampleLadybirdPose,LADYBIRD_DIMENSIONS as D} from './ladybird-kinematics.js?v=0.15.1&b=a70f15b11632';
+import {sampleLadybirdPose,LADYBIRD_DIMENSIONS as D} from './ladybird-kinematics.js?v=0.16.0&b=ef7356bcd944';
 /** Original geometry-only ladybird lab, not precise anatomical folding.
  * The 51mm membrane already fits the shell footprint when aligned rearwards.
  * This simplified rig does NOT reproduce drawing a long exposed tip into the shell. */

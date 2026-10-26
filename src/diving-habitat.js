@@ -1,8 +1,8 @@
 /** Additive shallow-swimming habitat: no new geometry, collision or update loop.
  * Existing pond gets the separately owned depth-opacity study material only.
  */
-import {attachDivingWaterMaterial} from './diving-water-material.js?v=0.15.1&b=a70f15b11632';
-import {DIVING_CENTER,DIVING_WATER_Y,DIVING_HOME,DIVING_ENVELOPE} from './diving-layout.js?v=0.15.1&b=a70f15b11632';
+import {attachDivingWaterMaterial} from './diving-water-material.js?v=0.16.0&b=ef7356bcd944';
+import {DIVING_CENTER,DIVING_WATER_Y,DIVING_HOME,DIVING_ENVELOPE} from './diving-layout.js?v=0.16.0&b=ef7356bcd944';
 const THREE=window.THREE;
 export function createDivingHabitat(world,scene){
  if(typeof world?.heightAt!=='function'||!scene?.isScene)throw new TypeError('Diving habitat needs the existing meadow world and scene');

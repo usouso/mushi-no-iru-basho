@@ -1,20 +1,20 @@
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { createLonghornStudy } from './longhorn-study.js?v=0.15.1&b=a70f15b11632';
-import { createJewelStudy } from './jewel-study.js?v=0.15.1&b=a70f15b11632';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.15.1&b=a70f15b11632';
-import { createBeeStudy } from './bee-study.js?v=0.15.1&b=a70f15b11632';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.15.1&b=a70f15b11632';
-import { createStagStudy } from './stag-study.js?v=0.15.1&b=a70f15b11632';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.15.1&b=a70f15b11632';
-import { createRhinoStudy } from './rhino-study.js?v=0.15.1&b=a70f15b11632';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.15.1&b=a70f15b11632';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.15.1&b=a70f15b11632';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.15.1&b=a70f15b11632';
-import { createMantisStudy } from './mantis-study.js?v=0.15.1&b=a70f15b11632';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.15.1&b=a70f15b11632';
-import { createDivingStudy } from './diving-study.js?v=0.15.1&b=a70f15b11632';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.15.1&b=a70f15b11632';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.15.1&b=a70f15b11632';
+import { createLonghornStudy } from './longhorn-study.js?v=0.16.0&b=ef7356bcd944';
+import { createJewelStudy } from './jewel-study.js?v=0.16.0&b=ef7356bcd944';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.16.0&b=ef7356bcd944';
+import { createBeeStudy } from './bee-study.js?v=0.16.0&b=ef7356bcd944';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import { createStagStudy } from './stag-study.js?v=0.16.0&b=ef7356bcd944';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import { createRhinoStudy } from './rhino-study.js?v=0.16.0&b=ef7356bcd944';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.16.0&b=ef7356bcd944';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import { createMantisStudy } from './mantis-study.js?v=0.16.0&b=ef7356bcd944';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import { createDivingStudy } from './diving-study.js?v=0.16.0&b=ef7356bcd944';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.16.0&b=ef7356bcd944';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.16.0&b=ef7356bcd944';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
@@ -343,6 +343,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   const items = [];
   let time = 0;
   let held = null;
+  let companionOrigins = [];
   let catches = 0;
   let previousPlayer = null;
   let caughtFrom = null;
@@ -436,6 +437,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         striders.set(item.id,{support,move:null,nextMoveAt:5+2*(1+Math.sin(item.phase)),reactAfter:0,handledThreat:false});
       }
     });
+    setCompanions(companionOrigins);
   }
   reset();
 
@@ -1232,5 +1234,30 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     return item;
   }
 
-  return { items, update, findTarget, swing, release, reset, placeBait, removeBait, placeLogFruit, removeLogFruit, get logFruit() { return logFruit?{active:true,type:logFruit.type,remaining:Math.max(0,logFruit.expiresAt-time),visitorId:logFruit.visitorId,status:logFruit.status}:null; }, get dungBall() { return dungBall(); }, get bait() { return bait ? {active:true,type:bait.type,x:bait.x,y:bait.y,z:bait.z,remaining:Math.max(0,bait.expiresAt-time),visitorId:bait.visitorId,status:bait.status} : null; }, get caught() { return held; }, get time() { return time; }, get catches() { return catches; } };
+  // A retained insect is absent from the field, not the current inspection.
+  // Keep existing capture/update/audio checks on caught, with an explicit tag.
+  function markCompanion(item) {
+    if (item.companion) return;
+    item.companion=true;item.caught=true;item.state='caught';
+    if(item.species==='rhino')rhinos.get(item.id).study.capture();
+    if(item.species==='stag')stags.get(item.id).study.capture();
+    if(item.species==='hercules'){beetles.get(item.id).move=null;item.walkSpeed=0;}
+  }
+  function setCompanions(origins=[],player) {
+    if(!Array.isArray(origins))throw new TypeError('Invalid companion origins');
+    companionOrigins=origins.filter(o=>o&&['hercules','rhino','stag'].includes(o.species)&&typeof o.id==='string').map(o=>({id:o.id,species:o.species}));
+    for(const item of items){
+      const retained=companionOrigins.some(o=>o.id===item.id&&o.species===item.species);
+      if(retained&&item!==held)markCompanion(item);
+      else if(!retained&&item.companion){item.companion=false;item.caught=false;depart(item,'released',finitePlayer(player)||previousPlayer);}
+    }
+  }
+  function retain() {
+    if(!held||!['hercules','rhino','stag'].includes(held.species))return null;
+    const item=held;held=null;caughtFrom=null;markCompanion(item);
+    if(!companionOrigins.some(o=>o.id===item.id))companionOrigins.push({id:item.id,species:item.species});
+    return item;
+  }
+
+  return { items, update, findTarget, swing, release, retain, setCompanions, reset, placeBait, removeBait, placeLogFruit, removeLogFruit, get logFruit() { return logFruit?{active:true,type:logFruit.type,remaining:Math.max(0,logFruit.expiresAt-time),visitorId:logFruit.visitorId,status:logFruit.status}:null; }, get dungBall() { return dungBall(); }, get bait() { return bait ? {active:true,type:bait.type,x:bait.x,y:bait.y,z:bait.z,remaining:Math.max(0,bait.expiresAt-time),visitorId:bait.visitorId,status:bait.status} : null; }, get caught() { return held; }, get time() { return time; }, get catches() { return catches; } };
 }

@@ -30,13 +30,13 @@ test('five habitat choices and twenty cards retain names hidden without summer o
  assert.doesNotMatch(html,/夏の野原|夏の観察手帖|SUMMER 01/);assert.match(html,/aria-label="各生息地をマウスで見回し/);
  const {ui}=fixture(t),nodes=all(ui.element),text=nodes.filter(n=>n.tag!=='style').map(n=>n.textContent).join(' ');
  assert.equal(nodes.filter(n=>n.className?.split(' ').includes('fj-card')).length,20);
- assert.equal(nodes.filter(n=>n.textContent==='いつか、どこかで。').length,19);
- assert.doesNotMatch(text,/秘密の名前|秘密の場所|夏の野原|SUMMER 01/);assert.equal(find(ui.element,'fj-place').textContent,'出会った場所');ui.close();
+ assert.equal(nodes.filter(n=>n.textContent==='いつか、どこかで。').length,19);assert.equal(nodes.filter(n=>n.textContent==='まだ図鑑に記録されていない虫').length,19);
+ assert.doesNotMatch(text,/秘密の名前|秘密の場所|夏の野原|SUMMER 01/);assert.equal(find(ui.element,'fj-place').textContent,'出会った場所');assert.match(text,/目で見ただけでは登録されません/);assert.ok(find(ui.element,'fj-sheet').children.indexOf(find(ui.element,'fj-status'))<find(ui.element,'fj-sheet').children.indexOf(find(ui.element,'fj-cards')));ui.close();
 });
 test('memo still attempts saving; pending/failure/success copy distinguishes unsaved changes without replacing editor',t=>{
  const f=fixture(t),editor=find(f.ui.element,'fj-note'),status=find(f.ui.element,'fj-status');editor.setSelectionRange(1,3);
  assert.match(html,/図鑑を見る · メモを書く（任意）/);assert.doesNotMatch(html,/図鑑に記録済み/);
- assert.equal(find(f.ui.element,'fj-note-help').textContent,'500文字まで・自動保存（保存状況は下に表示）');
+ assert.equal(find(f.ui.element,'fj-note-help').textContent,'500文字まで・自動保存（保存状況は上に表示）');
  editor.value='変更したメモ';editor.listeners.input();assert.equal(f.saves,1);assert.equal(f.journal.entries[0].note,editor.value);
  f.journal.saved=false;f.journal.pending=true;f.notify();assert.match(status.textContent,/保存中/);
  f.journal.pending=false;f.notify();assert.equal(status.dataset.unsaved,'true');assert.match(status.textContent,/今回の未保存の変更は、このページを閉じると失われます/);assert.doesNotMatch(status.textContent,/記録はこのページを開いている間だけ/);

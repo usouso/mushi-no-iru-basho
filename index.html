@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20392b">
-  <meta name="application-version" content="0.15.1">
+  <meta name="application-version" content="0.16.0">
   <meta name="description" content="草木の揺れに目をこらし、小さな生きものに出会う。静かな一人称の虫とり体験。">
   <title>虫のいる場所 — 生きものの観察手帖</title>
-  <link rel="stylesheet" href="./style.css?v=0.15.1&b=a70f15b11632">
+  <link rel="stylesheet" href="./style.css?v=0.16.0&b=ef7356bcd944">
 </head>
 <body>
   <canvas id="game-canvas" aria-label="各生息地をマウスで見回し、移動して虫を探します。" tabindex="-1"></canvas>
@@ -18,7 +18,7 @@
         <p class="eyebrow"><span class="sun-mark" aria-hidden="true"></span> FIELD NOTES / HABITAT STUDIES</p>
         <p class="small-heading">生きものの観察手帖</p>
         <h1>虫のいる場所</h1>
-        <p class="title-version">試遊版 <span data-build-version>0.15.1</span></p>
+        <p class="title-version">試遊版 <span data-build-version>0.16.0</span></p>
         <p class="title-intro">草をかきわけると、<br>小さな世界が、動きだす。</p>
         <div class="habitat-choice">
           <label for="habitat-select">散策する再現区画</label>
@@ -31,7 +31,7 @@
           </select>
         </div>
         <button id="start-button" class="primary-button" type="button">野原へ <span aria-hidden="true">↗</span></button>
-        <p class="journey">そっと近づく <span aria-hidden="true">—</span> 網をふる <span aria-hidden="true">—</span> 野原へかえす</p>
+        <p class="journey">そっと近づく <span aria-hidden="true">—</span> 網をふる <span aria-hidden="true">—</span> 観察・仲間と虫相撲</p>
         <div class="start-controls" aria-label="操作方法">
           <p class="controls-heading">歩く、見つける、観察する。</p>
           <dl>
@@ -57,6 +57,7 @@
         <p id="count-label">出会った虫 0 匹</p>
       </div>
       <button id="pause-button" class="pause-button" type="button" aria-label="ひと休み・設定を開く"><span aria-hidden="true">Ⅱ</span><span>ひと休み</span></button>
+      <button id="companions-button" class="text-button" type="button">仲間・虫相撲</button>
       <button id="journal-button" class="journal-button" type="button">図鑑 <span>J</span></button>
       <div id="crosshair" aria-hidden="true"></div>
       <p id="target-hint" class="target-hint" role="status"></p>
@@ -75,18 +76,25 @@
         <h2>ひと休み</h2>
         <p class="pause-copy">野原は、そのまま待っています。</p>
         <button id="resume-button" class="primary-button" type="button">散策にもどる <span aria-hidden="true">↗</span></button>
+        <div class="habitat-choice travel-choice">
+          <label for="travel-habitat-select">ほかの生息地へ移動</label>
+          <select id="travel-habitat-select" aria-describedby="travel-help"></select>
+          <p id="travel-help" class="travel-help">移動先は入り口から。置いた餌は片付きます。図鑑と設定は残ります。</p>
+          <button id="travel-button" class="travel-button" type="button" disabled>選んだ生息地へ移動</button>
+        </div>
         <div class="settings">
           <label for="sensitivity"><span>見回す速さ</span><span class="setting-caption">ゆっくり — はやく</span></label>
           <input id="sensitivity" type="range" min="0.3" max="2" step="0.1" value="1">
           <label for="volume"><span>野原の音</span><span class="setting-caption">しずか — おおきく</span></label>
           <input id="volume" type="range" min="0" max="1" step="0.05" value="0.25">
         </div>
+        <button id="pause-companions-button" class="text-button" type="button">仲間・虫相撲</button>
         <button id="pause-journal-button" class="text-button pause-journal-button" type="button">出会いの図鑑を見る</button>
         <div class="secondary-actions">
           <button id="restart-button" class="text-button" type="button">はじめから歩く</button>
-          <button id="title-button" class="text-button" type="button">表紙・区画選びへ</button>
+          <button id="title-button" class="text-button" type="button">表紙へ</button>
         </div>
-        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.15.1</span></p>
+        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.16.0</span></p>
       </div>
     </section>
 
@@ -99,18 +107,45 @@
         <p id="insect-size" class="insect-size"></p>
         <p id="insect-description" class="insect-description"></p>
         <p id="insect-hint" class="insect-hint"></p>
+        <button id="keep-button" class="primary-button" type="button" hidden>仲間として連れていく</button>
         <button id="release-button" class="primary-button" type="button">野原へかえす <span aria-hidden="true">↗</span></button>
         <button id="inspect-journal-button" class="text-button inspect-journal-button" type="button">図鑑を見る · メモを書く（任意）</button>
-        <p class="release-note">記録を残しても、虫は野原へかえします。</p>
+        <p class="release-note">図鑑は捕獲時に記録。対応する甲虫は、仲間として連れていけます。</p>
       </div>
       <p class="observation-controls">ドラッグして、いろいろな角度から観察</p>
     </section>
 
+    <section id="companions-screen" class="screen companions-screen" role="dialog" aria-modal="true" aria-label="仲間と虫相撲" hidden>
+      <div class="companions-card">
+        <p class="eyebrow">BEETLE SUMO / LOCAL PROTOTYPE</p><h2>仲間と虫相撲</h2>
+        <p id="companion-save-status" role="status" aria-live="polite"></p>
+        <p id="companion-empty">カブトムシ・ノコギリクワガタ・ヘラクレスを捕まえ、観察画面で「連れていく」を選ぼう。</p>
+        <p class="companion-note">試作では3種類を1匹ずつ。相撲はけがや別れのない練習試合です。操作はマウスまたはTab＋Enter。図鑑の記録から仲間が増えることはありません。</p>
+        <label for="companion-select">連れている仲間</label><select id="companion-select"></select><p id="companion-role"></p>
+        <label for="battle-opponent-select">練習相手（COM）</label><select id="battle-opponent-select"></select>
+        <button id="battle-start-button" class="primary-button" type="button">この仲間で虫相撲</button>
+        <button id="companion-release-button" class="text-button" type="button">選んだ仲間を元の生息地へ返す</button>
+        <button id="companions-close-button" class="text-button" type="button">散策の画面へ戻る · Esc</button>
+      </div>
+    </section>
+    <section id="battle-screen" class="screen battle-screen" role="dialog" aria-modal="true" aria-label="COMとの虫相撲" hidden>
+      <header class="battle-top"><h2 id="battle-heading"></h2><p id="battle-state"></p><p id="battle-position"></p></header>
+      <div class="battle-card"><p id="battle-cue" role="status" aria-live="polite"></p><p id="battle-result"></p>
+        <div class="battle-actions">
+          <button id="battle-push" type="button">押す <small>体力2 · 構えを押し込む</small></button>
+          <button id="battle-evade" type="button">かわす <small>体力1 · 押しに切り返す</small></button>
+          <button id="battle-brace" type="button">構える <small>体力2回復 · 押しを軽減</small></button>
+        </div>
+        <p class="battle-rule">端へ4歩押すと勝ち。9手なら押した側の勝ち。かわしは押しに強く、構えには1歩譲ります。相手の構えは先に決まります。</p>
+        <button id="battle-finish-button" class="primary-button" type="button" hidden>散策の画面へ戻る</button>
+        <button id="battle-exit-button" class="text-button" type="button">対戦をやめて仲間へ</button>
+      </div>
+    </section>
     <section id="error-screen" class="screen error-screen" role="alert" hidden>
       <div class="error-card"><p class="eyebrow">FIELD NOTES</p><h2>野原を開けませんでした</h2><p id="error-message">このブラウザでは3D表示を開始できませんでした。WebGLに対応したブラウザで、もう一度お試しください。</p><p class="error-note">ページを再読み込みするか、別のブラウザでお試しください。</p></div>
     </section>
   </main>
-  <script src="./assets/vendor/three.min.js?v=0.15.1&b=a70f15b11632"></script>
-  <script type="module" src="./src/main.js?v=0.15.1&b=a70f15b11632"></script>
+  <script src="./assets/vendor/three.min.js?v=0.16.0&b=ef7356bcd944"></script>
+  <script type="module" src="./src/main.js?v=0.16.0&b=ef7356bcd944"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import {sampleDungPose} from './dung-kinematics.js?v=0.15.1&b=a70f15b11632';
+import {sampleDungPose} from './dung-kinematics.js?v=0.16.0&b=ef7356bcd944';
 /** Body-centred dung-beetle renderer and independently scene-owned ball.
  * Original provisional beetle/ball shapes. Pure poses are owned by dung-kinematics.
  * No timers, locomotion, random state updates, IK, physics, or imported art here.
