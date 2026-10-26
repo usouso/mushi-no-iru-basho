@@ -1,7 +1,8 @@
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.4.0&b=1e91b06b740d';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
-export const FIELD_VISUAL_SCALE = Object.freeze({ butterfly: 1, dragonfly: 1, cicada: 1, morpho: 1, grasshopper: 1, hercules: 1 });
+export const FIELD_VISUAL_SCALE = Object.freeze({ butterfly: 1, dragonfly: 1, cicada: 1, morpho: 1, grasshopper: 1, hercules: 1, leafinsect: 1, waterstrider: 1 });
 const cache = {};
 const material = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .76, ...extra });
 
@@ -420,6 +421,141 @@ function hercules(root) {
   root.userData.gait={ready:false,position:new THREE.Vector3(),rotation:new THREE.Quaternion(),inverse:new THREE.Quaternion(),cycle:0,legs};
 }
 
+// Original adult-female leaf-insect study. Display dimensions and gait timing
+// are prototype choices, not a measured specimen or traced reference image.
+function leafInsectTexture() {
+  if(cache.leafInsect)return cache.leafInsect;
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const c=canvas.getContext('2d');
+  c.fillStyle='#83944e';c.fillRect(0,0,256,256);
+  c.strokeStyle='#536c39';c.lineWidth=3;c.beginPath();c.moveTo(128,0);c.lineTo(128,256);c.stroke();
+  c.lineWidth=1.5;c.strokeStyle='rgba(62,88,41,.58)';
+  for(let n=0;n<9;n++)for(const side of [-1,1]){const y=20+n*25;c.beginPath();c.moveTo(128,y+22);c.quadraticCurveTo(128+side*44,y+2,128+side*123,y-16);c.stroke();}
+  let seed=803;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+  for(let n=0;n<300;n++){c.fillStyle=`rgba(196,202,126,${.04+random()*.10})`;c.fillRect(random()*256,random()*256,1+random()*3,1+random()*3);}
+  c.fillStyle='rgba(128,99,54,.64)';for(const[x,y,rx,ry]of [[15,61,19,9],[238,149,22,12],[37,222,13,8],[224,35,12,7]]){c.beginPath();c.ellipse(x,y,rx,ry,.3,0,Math.PI*2);c.fill();}
+  const map=new THREE.CanvasTexture(canvas);map.name='leaf-insect-original-veins';map.encoding=THREE.sRGBEncoding;cache.leafInsect=map;return map;
+}
+function leafInsectPlate(parent, outline, mat, y=0) {
+  let area=0;for(let i=0;i<outline.length;i++){const a=outline[i],b=outline[(i+1)%outline.length];area+=a[0]*b[1]-b[0]*a[1];}if(area<0)outline=[...outline].reverse();
+  const positions=[],uv=[],indices=[],count=outline.length,centreX=outline.reduce((sum,p)=>sum+p[0],0)/count,centreZ=outline.reduce((sum,p)=>sum+p[1],0)/count;
+  // A shallow, closed lens instead of a zero-thickness billboard.
+  for(const level of [1,-1])for(const[x,z]of outline){positions.push(x,y+level*.0015,z);uv.push((x+.09)/.18,(z+.15)/.30);}
+  positions.push(centreX,y+.010,centreZ,centreX,y-.006,centreZ);uv.push((centreX+.09)/.18,(centreZ+.15)/.30,(centreX+.09)/.18,(centreZ+.15)/.30);
+  for(let i=0;i<count;i++){const j=(i+1)%count;indices.push(count*2,j,i,count*2+1,count+i,count+j,i,j,count+j,i,count+j,count+i);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();
+  const mesh=new THREE.Mesh(g,mat);parent.add(mesh);return mesh;
+}
+function leafInsectLeg(parent,side,index,mat) {
+  const baseHip=new THREE.Vector3(side*.045,-.008,[.070,0,-.075][index]),foot=new THREE.Vector3(side*.12,0,[.075,0,-.075][index]);
+  const g=new THREE.BufferGeometry(),indices=[];g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(120),3));
+  for(let bone=0;bone<2;bone++){
+    const base=bone*20;for(let ring=0;ring<2;ring++)for(let j=0;j<6;j++){const k=(j+1)%6,a=base+ring*6;indices.push(a+j,a+k,a+6+k,a+j,a+6+k,a+6+j);}
+    for(let j=0;j<6;j++){const k=(j+1)%6;indices.push(base+18,base+k,base+j,base+19,base+12+j,base+12+k);}
+  }
+  g.setIndex(indices);const mesh=new THREE.Mesh(g,mat);mesh.name=`leaf-insect-leg-${side}-${index}`;parent.add(mesh);
+  return{side,index,baseHip,hip:new THREE.Vector3(),knee:new THREE.Vector3(),foot,baseZ:foot.z,mesh,geometry:g,axis:new THREE.Vector3(),u:new THREE.Vector3(),v:new THREE.Vector3(),anchor:new THREE.Vector3(),swingStart:new THREE.Vector3(),worldFoot:new THREE.Vector3(),target:new THREE.Vector3(),wasSwing:false,offset:(side===-1&&index!==1)||(side===1&&index===1)?0:.5};
+}
+function updateLeafInsectLeg(leg,body) {
+  const {baseHip,hip,knee,foot,side,index,geometry,axis,u,v}=leg;
+  hip.copy(baseHip).applyQuaternion(body.quaternion).add(body.position);
+  knee.set(hip.x+(foot.x-hip.x)*.55+side*.009,.023+foot.y*.15,(hip.z+foot.z)*.5+(index===0?.005:index===2?-.005:0));
+  const p=geometry.attributes.position;
+  for(let bone=0;bone<2;bone++){
+    const a=bone?knee:hip,b=bone?foot:knee;axis.subVectors(b,a).normalize();u.set(1,0,0).addScaledVector(axis,-axis.x).normalize();v.crossVectors(axis,u);
+    for(let ring=0;ring<3;ring++)for(let j=0;j<6;j++){
+      const t=ring/2,r=ring===1?(bone?.010:.013):(bone?.0017:.0025),angle=j*Math.PI/3,c=Math.cos(angle)*r,s=Math.sin(angle)*r*.25,i=bone*20+ring*6+j;
+      const x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t,z=a.z+(b.z-a.z)*t;
+      if(bone&&ring===2)p.setXYZ(i,x+c,y,z+Math.sin(angle)*r);
+      else p.setXYZ(i,x+u.x*c+v.x*s,y+u.y*c+v.y*s,z+u.z*c+v.z*s);
+    }
+    p.setXYZ(bone*20+18,a.x,a.y,a.z);p.setXYZ(bone*20+19,b.x,b.y,b.z);
+  }
+  p.needsUpdate=true;geometry.computeVertexNormals();geometry.computeBoundingSphere();
+}
+function leafInsect(root) {
+  const green=material('#7f9250',{roughness:.88}),leaf=material('#d0d4a0',{map:leafInsectTexture(),roughness:.9,side:THREE.DoubleSide}),dark=material('#39452a',{roughness:.55});
+  const body=new THREE.Group();body.name='leaf-insect-sway-body';body.position.y=.045;root.add(body);
+  const abdomen=[[-.020,.080],[-.053,.052],[-.079,.016],[-.074,-.003],[-.090,-.035],[-.082,-.078],[-.058,-.116],[0,-.150],[.053,-.121],[.079,-.083],[.090,-.035],[.081,-.008],[.074,.020],[.052,.056],[.018,.080]];
+  leafInsectPlate(body,abdomen,leaf);
+  ellipsoid(body,[0,-.002,-.028],[.033,.010,.102],green,10);
+  ellipsoid(body,[0,.002,.091],[.021,.013,.024],green,10);
+  ellipsoid(body,[0,.003,.131],[.018,.013,.019],green,12);
+  const fore=new THREE.Group();fore.name='leaf-insect-closed-forewings';body.add(fore);
+  for(const side of [-1,1]){
+    const outline=[[.002,.072],[.028,.061],[.057,.020],[.064,-.033],[.043,-.092],[.010,-.119]].map(([x,z])=>[x*side,z]);if(side===-1)outline.reverse();
+    leafInsectPlate(fore,outline,leaf,.009);
+    ellipsoid(body,[side*.014,.007,.137],[.0035,.004,.0045],dark,6);
+    thread(body,[[side*.006,.008,.144],[side*.014,.017,.164],[side*.017,.018,.173]],'#6d7941',1);
+  }
+  // Keep the two closed forewing components as a single rigid mesh, no flap API.
+  batchBody(fore);fore.children[0].name='leaf-insect-closed-forewing-pair';batchBody(body);
+  const rig=new THREE.Group();root.add(rig);const legs=[];
+  for(const side of [-1,1])for(let index=0;index<3;index++){const leg=leafInsectLeg(rig,side,index,green);legs.push(leg);updateLeafInsectLeg(leg,body);}
+  root.userData.leafBody=body;root.userData.legs=legs;
+  root.userData.gait={ready:false,position:new THREE.Vector3(),rotation:new THREE.Quaternion(),inverse:new THREE.Quaternion(),cycle:0,legs};
+}
+// Treat accumulated whole cycles as touchdown, not a rounding-error swing at q≈1.
+function leafCyclePhase(value) {const q=((value%1)+1)%1;return q<1e-9||q>1-1e-9?0:q;}
+function updateLeafInsect(group,item,inspection) {
+  const visual=group.userData.visual,body=visual.userData.leafBody,gait=group.userData.leafGait;
+  body.rotation.z=inspection||item.caught?0:Math.min(.045,Math.max(-.045,Number.isFinite(item.leafSway)?item.leafSway:0));
+  const phase=inspection?0:(Number.isFinite(item.walkPhase)?item.walkPhase:0),turning=!inspection&&!item.caught&&item.state==='turning',progress=turning?Math.min(1,Math.max(0,item.turnProgress||0)):0,cycle=phase/(Math.PI*2)+(turning?progress*6:0);
+  const delta=cycle-gait.cycle,reset=inspection||!gait.ready||item.caught||gait.position.distanceToSquared(group.position)>.0025||gait.rotation.angleTo(group.quaternion)>.25||Math.abs(delta-Math.round(delta))>.4;
+  gait.inverse.copy(group.quaternion).invert();
+  for(const leg of visual.userData.legs){
+    const q=leafCyclePhase(cycle+leg.offset),isSwing=q>.6,swing=isSwing?(q-.6)/.4:0,baseQ=leafCyclePhase(phase/(Math.PI*2)+leg.offset),baseSwing=baseQ>.6?(baseQ-.6)/.4:0;
+    const stride=baseQ<=.6?.012-.04*baseQ:-.012+.024*baseSwing*baseSwing*(3-2*baseSwing);
+    leg.target.set(leg.side*(turning?.114:.12),0,leg.baseZ+(turning?stride:isSwing?.012:stride)).applyQuaternion(group.quaternion).add(group.position);
+    if(reset){leg.foot.set(leg.side*.12,.008*Math.sin(Math.PI*swing)**2,leg.baseZ+stride);leg.worldFoot.copy(leg.foot).applyQuaternion(group.quaternion).add(group.position);leg.anchor.copy(leg.worldFoot);leg.anchor.y=group.position.y;leg.swingStart.copy(leg.anchor);}
+    else if(isSwing){if(!leg.wasSwing)leg.swingStart.copy(leg.worldFoot);leg.worldFoot.copy(leg.swingStart).lerp(leg.target,swing*swing*(3-2*swing));leg.worldFoot.y=group.position.y+.008*Math.sin(Math.PI*swing)**2;leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse);}
+    // Plant where the displayed swing ended; a moving turn target must not drag a grounded foot.
+    else {if(leg.wasSwing){leg.anchor.copy(leg.worldFoot);leg.anchor.y=group.position.y;}leg.worldFoot.copy(leg.anchor);leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse);}
+    leg.wasSwing=isSwing;updateLeafInsectLeg(leg,body);
+  }
+  gait.ready=!inspection&&!item.caught;gait.position.copy(group.position);gait.rotation.copy(group.quaternion);gait.cycle=cycle;
+}
+
+// Water support is not a ground stance: the feet intentionally slide laterally.
+function striderLeg(parent,pose,mat){
+  const mesh=grasshopperLimb(parent,[0,.02,0],[.1,0,0],.0015,mat,true);
+  const g=new THREE.BufferGeometry(),indices=[];
+  for(let bone=0;bone<2;bone++)for(const index of mesh.geometry.index.array)indices.push(index+bone*14);
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(84),3));g.setIndex(indices);mesh.geometry.dispose();mesh.geometry=g;mesh.name=`water-strider-${pose.role}-${pose.side}`;
+  return{mesh,geometry:g,pose,axis:new THREE.Vector3(),u:new THREE.Vector3(),v:new THREE.Vector3()};
+}
+function updateStriderLeg(leg){
+  const {pose,geometry,axis,u,v}=leg,p=geometry.attributes.position;
+  for(let bone=0;bone<2;bone++){
+    const a=bone?pose.knee:pose.hip,b=bone?pose.foot:pose.knee;
+    axis.set(b.x-a.x,b.y-a.y,b.z-a.z).normalize();u.set(1,0,0).addScaledVector(axis,-axis.x).normalize();v.crossVectors(axis,u);
+    for(let end=0;end<2;end++)for(let j=0;j<6;j++){
+      const base=end?b:a,angle=j*Math.PI/3,r=(bone?.0012:.00165)*(end?.65:1),c=Math.cos(angle)*r,s=Math.sin(angle)*r;
+      if(bone&&end)p.setXYZ(bone*14+end*6+j,base.x+c,base.y,base.z+s);
+      else p.setXYZ(bone*14+end*6+j,base.x+u.x*c+v.x*s,base.y+u.y*c+v.y*s,base.z+u.z*c+v.z*s);
+    }
+    p.setXYZ(bone*14+12,a.x,a.y,a.z);p.setXYZ(bone*14+13,b.x,b.y,b.z);
+  }p.needsUpdate=true;geometry.computeVertexNormals();geometry.computeBoundingSphere();
+}
+function waterStrider(root){
+  const dark=material('#262d29',{roughness:.5}),pale=material('#c3c4ab',{roughness:.77}),edge=material('#a39b58',{roughness:.75});
+  const body=new THREE.Group();body.name='water-strider-body';root.add(body);
+  ellipsoid(body,[0,.025,-.016],[.0085,.008,.034],dark,12);
+  ellipsoid(body,[0,.027,.021],[.012,.009,.015],dark,12);
+  ellipsoid(body,[0,.029,.041],[.008,.007,.009],dark,12);
+  ellipsoid(body,[0,.020,-.006],[.008,.0035,.037],pale,10);
+  for(const side of [-1,1]){
+    segment(body,[side*.010,.030,.009],[side*.009,.033,.031],.0011,edge,5);
+    ellipsoid(body,[side*.007,.032,.042],[.003,.0035,.0038],dark,6);
+    thread(body,[[side*.004,.031,.047],[side*.013,.036,.062],[side*.020,.035,.074]],'#6c7052',1);
+  }
+  batchBody(body);const rig=new THREE.Group();rig.name='water-strider-six-leg-rig';root.add(rig);
+  const pose=sampleStriderPose({state:'resting'},createStriderPose()),legs=pose.legs.map(p=>striderLeg(rig,p,dark));
+  root.userData.strider={pose,legs,inspectionPose:{state:'resting',strokePhase:0}};legs.forEach(updateStriderLeg);
+}
+function updateWaterStrider(group,item,inspection){
+  const data=group.userData.visual.userData.strider;sampleStriderPose(inspection?data.inspectionPose:item,data.pose);for(const leg of data.legs)updateStriderLeg(leg);
+}
+
 // Batch rigid body parts by their shared material. Wing pivots remain independent.
 // This keeps all the leg/eye detail without a draw call for every tiny segment.
 function batchBody(root) {
@@ -456,13 +592,14 @@ function batchBody(root) {
 export function createInsectModel(species, { inspection = false } = {}) {
   const group=new THREE.Group();group.name=`${species}-${inspection?'inspection':'field'}`;
   const visual=new THREE.Group();group.add(visual);
-  (species==='hercules'?hercules:species==='grasshopper'?grasshopper:species==='morpho'?morpho:species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual,!inspection);
+  (species==='waterstrider'?waterStrider:species==='leafinsect'?leafInsect:species==='hercules'?hercules:species==='grasshopper'?grasshopper:species==='morpho'?morpho:species==='dragonfly'?dragonfly:species==='cicada'?cicada:butterfly)(visual,!inspection);
   batchBody(visual);
   // Field readability only: inspection framing and the simulation capture centre stay unchanged.
   if (!inspection) visual.scale.setScalar(FIELD_VISUAL_SCALE[species] ?? 1);
   group.userData.species=species;group.userData.inspection=inspection;group.userData.visual=visual;
   group.userData.wings=visual.userData.wings;
   if(species==='hercules')group.userData.herculesGait=visual.userData.gait;
+  if(species==='leafinsect')group.userData.leafGait=visual.userData.gait;
   // Perched cicadas climb with the head upwards, dorsal wing surface facing out.
   if(species==='cicada'&&!inspection) visual.rotation.x=-Math.PI/2;
   group.traverse(child=>{if(child.isMesh){child.castShadow=false;child.receiveShadow=false;}});
@@ -478,6 +615,8 @@ export function updateInsectModel(group, item, time = 0, support = null) {
     group.rotation.y=item.heading||0;
   }
   const visual=group.userData.visual;
+  if(species==='waterstrider'){updateWaterStrider(group,item,inspection);return;}
+  if(species==='leafinsect'){updateLeafInsect(group,item,inspection);return;}
   if(species==='hercules') {
     const phase=inspection?0:(Number.isFinite(item.walkPhase)?item.walkPhase:0),turning=!inspection&&!item.caught&&item.state==='turning';
     const progress=turning?Math.min(1,Math.max(0,item.turnProgress||0)):0,cycle=phase/(Math.PI*2)+(turning?progress*6:0);

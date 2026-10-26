@@ -18,14 +18,16 @@ const read=name=>fs.readFileSync(path.join(dist,name));
 const walk=(dir,prefix='')=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name),prefix+e.name+'/'):[prefix+e.name]).sort();
 test('actual production graph has a closed exact token on every edge and matching content fingerprint, without source/build/package dependencies',()=>{
  // Public repository documents are not build inputs; all other unexpected files still fail.
- const reviewDocuments=new Set(['README.md','PLAYTEST-JA.md']);
+ const reviewDocuments=new Set(['README.md','PLAYTEST-JA.md','AUDIO-PLAYTEST-JA.md']);
  const files=walk(dist).filter(name=>!name.startsWith('tests/')&&!reviewDocuments.has(name)),html=read('index.html').toString();
- const version=html.match(/<meta name="application-version" content="([0-9.]+)">/)?.[1];assert.equal(version,'0.2.8');
+ const version=html.match(/<meta name="application-version" content="([0-9.]+)">/)?.[1];assert.equal(version,'0.4.0');
  assert.equal([...html.matchAll(/<span data-build-version>([^<]+)<\/span>/g)].filter(m=>m[1]===version).length,2);
  const refs=[...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m=>m[1]);
  assert.equal(refs.length,3);const token=new URL(refs[0],'https://local.invalid/nested/index.html').search;
  assert.match(token,new RegExp('^\\?v='+version.replaceAll('.','\\.')+'&b=[a-f0-9]{12}$'));
  const expected=new Set(['index.html','style.css','.nojekyll','assets/vendor/three.min.js','assets/vendor/THREE-LICENSE.txt']);
+ const audioFiles=['bgm_temperate_preview_01.ogg','insect_aburazemi_call_01.ogg','insect_beetle_walk_01.ogg','insect_beetle_walk_02.ogg','insect_beetle_walk_03.ogg','insect_grasshopper_landing_01.ogg','insect_grasshopper_landing_02.ogg','insect_grasshopper_takeoff_01.ogg','insect_grasshopper_takeoff_02.ogg','sfx_capture_01.ogg','sfx_net_swing_01.ogg','sfx_net_swing_02.ogg','sfx_net_swing_03.ogg','CREDITS.md','FluidR3-MIT-LICENSE.txt'];
+ for(const file of audioFiles){expected.add('assets/audio/'+file);if(file.endsWith('.ogg'))assert.equal(read('assets/audio/'+file).subarray(0,4).toString(),'OggS');}
  const originals=new Map(),queue=[],seen=new Set();let edgeCount=0;
  function edge(specifier,parent){
   assert.match(specifier,/^\.{1,2}\//);const url=new URL(specifier,'https://local.invalid/nested/'+parent);
@@ -42,7 +44,7 @@ test('actual production graph has a closed exact token on every edge and matchin
   for(const ref of dependencies.toReversed())source=source.slice(0,ref.start)+ref.specifier.slice(0,-token.length)+source.slice(ref.end);
   originals.set(file,Buffer.from(source));
  }
- assert.equal(seen.size,12);assert.ok(edgeCount>11);assert.deepEqual(files,[...expected].sort(),'runtime only; no maps, tests, helpers or package files');
+ assert.equal(seen.size,18);assert.ok(edgeCount>11);assert.deepEqual(files,[...expected].sort(),'runtime only; no maps, tests, helpers or package files');
  const originalHTML=html.split(token).join('');
  originals.set('index.html',Buffer.from(originalHTML));
  const hash=createHash('sha256');hash.update('bundle-v1\0'+version+'\0');

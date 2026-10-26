@@ -1,20 +1,28 @@
-import { createWorld } from './world.js?v=0.2.8&b=07cd86e22594';
-import { createTropicalWorld } from './world-tropical.js?v=0.2.8&b=07cd86e22594';
-import { createInsects, SPECIES } from './insects.js?v=0.2.8&b=07cd86e22594';
-import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.2.8&b=07cd86e22594';
-import { createInput } from './input.js?v=0.2.8&b=07cd86e22594';
-import { createAudio } from './audio.js?v=0.2.8&b=07cd86e22594';
-import { createNet } from './net.js?v=0.2.8&b=07cd86e22594';
-import { createJournal } from './journal.js?v=0.2.8&b=07cd86e22594';
-import { createJournalUI } from './journal-ui.js?v=0.2.8&b=07cd86e22594';
-import { createCaptureVisibility } from './capture-visibility.js?v=0.2.8&b=07cd86e22594';
+import { createWorld } from './world.js?v=0.4.0&b=1e91b06b740d';
+import { createTropicalWorld } from './world-tropical.js?v=0.4.0&b=1e91b06b740d';
+import { createUnderstoryWorld } from './world-understory.js?v=0.4.0&b=1e91b06b740d';
+import { createWaterHabitat } from './water-habitat.js?v=0.4.0&b=1e91b06b740d';
+import { createInsects, SPECIES } from './insects.js?v=0.4.0&b=1e91b06b740d';
+import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.4.0&b=1e91b06b740d';
+import { createInput } from './input.js?v=0.4.0&b=1e91b06b740d';
+import { createAudio } from './audio.js?v=0.4.0&b=1e91b06b740d';
+import { createNet } from './net.js?v=0.4.0&b=1e91b06b740d';
+import { createJournal } from './journal.js?v=0.4.0&b=1e91b06b740d';
+import { createJournalUI } from './journal-ui.js?v=0.4.0&b=1e91b06b740d';
+import { createCaptureVisibility } from './capture-visibility.js?v=0.4.0&b=1e91b06b740d';
 
+const HABITATS={
+ meadow:{create:createWorld,hint:'白い翅が、草花の上でひと休み。近づいてみよう。'},
+ tropical:{create:createTropicalWorld,hint:'木陰に青い翅。止まると、茶色の裏が見えます。'},
+ understory:{create:createUnderstoryWorld,hint:'葉の形と、ゆっくりした揺れに目をこらしてみよう。'}
+};
+function habitatId(id){return Object.prototype.hasOwnProperty.call(HABITATS,id)?id:'meadow';}
 const THREE=window.THREE;
 const $=id=>document.getElementById(id);
 const canvas=$('game-canvas');
 const state={mode:'title',habitat:'meadow',time:0,elapsed:0,captures:0,seen:[],sensitivity:1,volume:.25,player:{x:0,y:1.65,z:10,yaw:0,pitch:-.03,speed:0,quiet:false,running:false},swing:0,cooldown:0};
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let renderer,scene,camera,world,simulation,input,audio,net,models=new Map(),inspectScene,inspectCamera,inspectModel,inspectTurn=0,inspectTilt=.2;
+let renderer,scene,camera,world,waterHabitat,simulation,input,audio,net,models=new Map(),inspectScene,inspectCamera,inspectModel,inspectTurn=0,inspectTilt=.2;
 let toastTime=0,captureDelay=0,lastTime=0,accumulator=0,frames=0,disposed=false;
 const insectStates=new Map();
 // Own the lock transition explicitly; browsers may queue duplicate unlock events.
@@ -55,13 +63,16 @@ function disposeSceneRoot(root, textures=true){
  for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();for(const map of maps)map.dispose();root.parent?.remove(root);
 }
 function activateHabitat(id){
- const next=id==='tropical'?'tropical':'meadow';
+ const next=habitatId(id);
  if(scene){scene.remove(camera);for(const root of [...scene.children])disposeSceneRoot(root,!root.userData.species);}
  scene=new THREE.Scene();scene.add(camera);
- world=(next==='tropical'?createTropicalWorld:createWorld)(scene);
+ world=HABITATS[next].create(scene);
+ waterHabitat=next==='meadow'?createWaterHabitat(world,scene):null;
  const habitatOptions=world.insectHomes?{homes:world.insectHomes,bounds:world.bounds}:{};
  if(world.grasshopperHomes){habitatOptions.extraHomes=world.grasshopperHomes;habitatOptions.grasshopperSupports=world.grasshopperSupports;}
  if(world.herculesHomes){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...world.herculesHomes];habitatOptions.herculesSupports=world.herculesSupports;}
+ if(world.leafSupports)habitatOptions.leafSupports=world.leafSupports;
+ if(waterHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...waterHabitat.homes];habitatOptions.striderSupports=waterHabitat.supports;}
  habitatOptions.hasLineOfSight=createCaptureVisibility(world.captureOccluders);
  simulation=createInsects(world.heightAt,habitatOptions);
  models=new Map();for(const item of simulation.items){const model=createInsectModel(item.species);models.set(item.id,model);scene.add(model);}
@@ -72,8 +83,8 @@ function resetPlayer(){
 }
 function start(){
  if(state.mode==='error')return;
- if(state.mode==='title'){const selected=$('habitat-select')?.value==='tropical'?'tropical':'meadow';if(selected!==state.habitat)activateHabitat(selected);simulation.reset();state.captures=0;state.seen=[];state.elapsed=0;resetPlayer();}
- state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast(state.habitat==='tropical'?'木陰に青い翅。止まると、茶色の裏が見えます。':'白い翅が、草花の上でひと休み。近づいてみよう。',6);
+ if(state.mode==='title'){const selected=habitatId($('habitat-select')?.value);if(selected!==state.habitat)activateHabitat(selected);simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;resetPlayer();}
+ state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast(HABITATS[state.habitat].hint,6);
 }
 function pause({lock=true}={}){
  if(state.mode==='journal'){closeJournal({lock});return;}
@@ -87,13 +98,13 @@ function title(){
  state.mode='title';simulation.release();simulation.removeBait?.();captureDelay=0;state.swing=0;input.clear();unlock();audio.pause();resetPlayer();syncScreens();$('start-button').focus({preventScroll:true});
 }
 function restart(){
- simulation.reset();state.captures=0;state.seen=[];state.elapsed=0;state.cooldown=0;captureDelay=0;state.swing=0;resetPlayer();state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast('風の通る入り口から、もう一度。');
+ simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;state.cooldown=0;captureDelay=0;state.swing=0;resetPlayer();state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast('風の通る入り口から、もう一度。');
 }
 function showInspection(item){
- state.mode='inspect';state.player.speed=0;unlock();input.clear();audio.pause();
+ state.mode='inspect';state.player.speed=0;unlock();input.clear();audio.inspect();
  if(inspectModel){inspectScene.remove(inspectModel);inspectModel.traverse(o=>{o.geometry?.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});}
  inspectModel=createInsectModel(item.species,{inspection:true});
- const scales={butterfly:5.1,dragonfly:4.7,cicada:6.1,morpho:3.4,grasshopper:4.4,hercules:3.8};inspectModel.scale.setScalar(scales[item.species]||5);inspectScene.add(inspectModel);
+ const scales={butterfly:5.1,dragonfly:4.7,cicada:6.1,morpho:3.4,grasshopper:4.4,hercules:3.8,leafinsect:4,waterstrider:4};inspectModel.scale.setScalar(scales[item.species]||5);inspectScene.add(inspectModel);
  inspectTurn=-.45;inspectTilt=.3;positionInspector();
  const data=SPECIES[item.species];$('insect-name').textContent=data.name||data.label;$('insect-size').textContent=data.size||'';$('insect-description').textContent=data.observation||data.description||'';$('insect-hint').textContent=data.hint||'';
  syncScreens();$('release-button').focus({preventScroll:true});
@@ -124,7 +135,7 @@ function interact(){
 }
 function release({lock=true}={}){
  if(state.mode!=='inspect')return;
- const item=simulation.release(state.player);state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(item?.species==='grasshopper'?'ショウリョウバッタが、草むらへ跳んでいきました。':item?.species==='hercules'?'ヘラクレスオオカブトが、木陰へ歩いていきました。':`${SPECIES[item?.species]?.name||'虫'}が、野原へ飛び立ちました。`,3.8);
+ const item=simulation.release(state.player);state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(item?.species==='waterstrider'?`${SPECIES.waterstrider.name}を、水面へそっと返しました。`:item?.species==='leafinsect'?`${SPECIES.leafinsect.name}を、葉の上へそっと返しました。`:item?.species==='grasshopper'?'ショウリョウバッタが、草むらへ跳んでいきました。':item?.species==='hercules'?'ヘラクレスオオカブトが、木陰へ歩いていきました。':`${SPECIES[item?.species]?.name||'虫'}が、野原へ飛び立ちました。`,3.8);
 }
 function locationLabel(x,z){if(world.locationLabel)return world.locationLabel(x,z);return Math.hypot(x-24,z+20)<16?'水辺の草むら':Math.hypot(x+10,z+8)<10?'大きな木の下':z<-32?'森の入り口':'風の通る野原';}
 function openJournal(speciesId){
@@ -143,7 +154,11 @@ function closeJournal({lock=true}={}){
 function positionInspector(){
  if(!inspectCamera)return;
  inspectCamera.aspect=innerWidth/innerHeight;inspectCamera.updateProjectionMatrix();
- if(inspectModel){inspectModel.position.set(innerWidth<=760?0:-.7,innerWidth<=760?.5:0,0);}
+ if(inspectModel){
+  inspectModel.position.set(innerWidth<=760?0:-.7,innerWidth<=760?.5:0,0);
+  // Its wide legs must remain in-frame on tall, narrow observation screens.
+  if(inspectModel.userData.species==='waterstrider')inspectModel.scale.setScalar(Math.min(4,inspectCamera.aspect*7.3));
+ }
 }
 function resize(){if(!renderer)return;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();positionInspector();}
 function collides(x,z){for(const c of world.colliders||[])if(Math.hypot(x-c.x,z-c.z)<c.r+.28)return true;return false;}
@@ -180,9 +195,13 @@ function insectSupport(item){
  if(item.species==='cicada')return world.barkSupportAt(item.home);
  if(item.species==='grasshopper')return world.grasshopperSupportAt?.(item.airborne?(item.jumpProgress<.5?item.jumpStart:item.jumpEnd):item);
  if(item.species==='hercules')return world.herculesSupportAt?.(item);
+ if(item.species==='leafinsect')return world.leafSupportAt?.(item);
+ if(item.species==='waterstrider')return waterHabitat?.supportAt(item);
  return null;
 }
 function render(time,dt){
+ // Water cues use simulation time: pause/inspection/journal must not advance them.
+ waterHabitat?.update(simulation.items,simulation.time);
  world.setBaitActive?.(!!simulation.bait?.active);
  const p=state.player;camera.position.set(p.x,p.y,p.z);camera.rotation.set(p.pitch,p.yaw,0,'YXZ');
  for(const item of simulation.items){const group=models.get(item.id);if(group){group.visible=!item.caught;updateInsectModel(group,item,time,insectSupport(item));}}
@@ -219,7 +238,7 @@ try{
  inspectScene=new THREE.Scene();inspectScene.background=new THREE.Color(0x748678);inspectScene.add(new THREE.HemisphereLight(0xf8f4da,0x344635,1.05));
  const key=new THREE.DirectionalLight(0xffedcc,1.2);key.position.set(-3,5,4);inspectScene.add(key);const fill=new THREE.DirectionalLight(0xd2e7f2,.65);fill.position.set(3,1,-2);inspectScene.add(fill);
  inspectCamera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.05,20);inspectCamera.position.set(0,1.35,3.4);inspectCamera.lookAt(0,0,0);
- audio=createAudio();journal=createJournal();journalUI=createJournalUI({journal,species:SPECIES,onClose:()=>closeJournal()});
+ audio=createAudio();audio.resetField(state.habitat);journal=createJournal();journalUI=createJournalUI({journal,species:SPECIES,onClose:()=>closeJournal()});
  input=createInput(canvas,{action:swing,interact,pause,journal:()=>openJournal(),back:()=>{if(state.mode==='inspect')release();else pause();},blur:()=>{if(state.mode==='playing')pause();else audio.pause();},mode:()=>state.mode,lock:requestLock});
  try{const saved=JSON.parse(localStorage.getItem('mushi-settings-v1')||'null');if(saved){state.sensitivity=Math.max(.3,Math.min(2,Number(saved.sensitivity)||1));state.volume=Math.max(0,Math.min(1,Number(saved.volume)||0));}}catch{}
  $('sensitivity').value=state.sensitivity;$('volume').value=state.volume;audio.setVolume(state.volume);
@@ -230,7 +249,7 @@ try{
  document.addEventListener('pointerlockchange',()=>{const locked=document.pointerLockElement===canvas;const lost=pointerOwned&&!locked;pointerOwned=locked;if(lost&&state.mode==='playing'&&!simulation.caught)pause();});
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();fatal('3D表示が中断されました。ページを再読み込みすると、野原の入り口から再開できます。');disposed=true;});
  window.addEventListener('pagehide',()=>{if(state.mode==='playing')pause();else audio.pause();input.clear();audio.dispose?.();});
- window.addEventListener('pageshow',event=>{if(event.persisted){audio=createAudio();audio.setVolume(state.volume);}});
+ window.addEventListener('pageshow',event=>{if(event.persisted){audio=createAudio();audio.setVolume(state.volume);audio.resetField(state.habitat);}});
  window.addEventListener('resize',resize);resetPlayer();resize();syncScreens();requestAnimationFrame(frame);
  
 }catch(error){console.error(error);fatal('3D表示を開始できませんでした。Chrome / Edge のハードウェア アクセラレーションを有効にして、ページを再読み込みしてください。');}
