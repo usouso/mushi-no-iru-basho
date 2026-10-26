@@ -52,7 +52,8 @@ test('the first twelve exchange motions, energy, role effects and positions are 
  // Reference: 25 matchups × seeds 0/17/1234 from the pre-change rules.
  // Stops at an earlier ring-out; excludes only the deliberately changed end/turn metadata.
  const rows=[];
- for(const p of Object.keys(BATTLE_SPECIES))for(const o of Object.keys(BATTLE_SPECIES))for(const seed of [0,17,1234]){
+ const legacySpecies=['hercules','rhino','stag','metallifer','atlas'];
+ for(const p of legacySpecies)for(const o of legacySpecies)for(const seed of [0,17,1234]){
   let s=createBattle({playerSpecies:p,opponentSpecies:o,seed});
   for(let i=1;i<=12&&s.phase==='watching';i++){
    s=atExchange(s,i);rows.push([p,o,seed,s.exchanges,s.position,s.playerEnergy,s.opponentEnergy,s.lastExchange]);

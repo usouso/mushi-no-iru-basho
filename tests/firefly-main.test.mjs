@@ -27,7 +27,7 @@ test('night selection, leaf and flight encounters, journal return and four-habit
  t.after(()=>window.dispatchEvent(new Event('pagehide')));
  const initial=g.world;elements.get('habitat-select').value='night';elements.get('habitat-select').dispatchEvent(new Event('change'));
  assert.equal(g.world,initial,'selection alone must not instantiate or travel');assert.equal(g.state.mode,'title');
- elements.get('start-button').click();step(1);await a.flush();assert.equal(g.state.habitat,'night');assert.equal(g.simulation.items.length,5);assert.deepEqual(g.simulation.items.map(i=>i.species),['firefly','firefly','firefly','rhino','stag']);assert.deepEqual(g.simulation.items.slice(0,4).map(i=>i.id),['insect-1','insect-2','insect-3','insect-4']);assert.equal(bgm().length,0);assert.equal(a.requests.length,13);
+ elements.get('start-button').click();step(1);await a.flush();assert.equal(g.state.habitat,'night');assert.equal(g.simulation.items.length,6);assert.deepEqual(g.simulation.items.map(i=>i.species),['firefly','firefly','firefly','rhino','stag','giantstag']);assert.deepEqual(g.simulation.items.map(i=>i.id),['insect-1','insect-2','insect-3','insect-4','insect-5','insect-6']);assert.equal(bgm().length,0);assert.equal(a.requests.length,13);
  for(const phase of['resting','flying']){
   g.restart();const item=g.simulation.items[0];
   const beforeAudio=a.assetSources().length;
@@ -55,6 +55,6 @@ test('night selection, leaf and flight encounters, journal return and four-habit
  await g.journal.flush();const saved=g.journal.entries.find(e=>e.species==='firefly');assert.equal(saved.note,'湿地の小さな光 j');assert.ok(saved.location);
  key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'journal');key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'playing');
  g.pause();assert.equal(g.state.mode,'paused');const paused=g.simulation.time;step(15);assert.equal(g.simulation.time,paused);key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'playing');
- for(const[id,count]of[['tropical',10],['meadow',29],['understory',5],['night',5]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='firefly'),saved);}
+ for(const[id,count]of[['tropical',10],['meadow',29],['understory',5],['night',6]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='firefly'),saved);}
  const{createJournal}=await import(h.moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries.find(e=>e.species==='firefly'),saved);
 });

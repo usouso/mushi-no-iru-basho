@@ -18,10 +18,10 @@ test('fruit prompt is initially hidden in the existing stacked control group, wi
   const narrow=css.slice(css.indexOf('@media(max-width:440px)'));assert.match(narrow,/\.quiet-label\{position:static;align-self:flex-end;max-width:100%\}/);assert.doesNotMatch(narrow,/bottom:110px/,'wrapped prompts cannot intersect a fixed-height quiet label');
 });
 
-test('index version labels agree at 0.22.0 and existing habitat, journal and quiet controls remain',async()=>{
+test('index version labels agree with application metadata and existing habitat, journal and quiet controls remain',async()=>{
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
-  assert.match(html,/<meta name="application-version" content="0\.22\.0">/);
-  assert.equal((html.match(/data-build-version>0\.22\.0</g)||[]).length,2);
+  const version=html.match(/<meta name="application-version" content="([0-9]+\.[0-9]+\.[0-9]+)">/)?.[1];assert.ok(version);
+  assert.deepEqual([...html.matchAll(/data-build-version>([^<]+)</g)].map(m=>m[1]),[version,version]);
   assert.match(html,/<button[^>]*id="title-button"[^>]*>表紙へ<\/button>/);
   for(const id of ['habitat-select','travel-habitat-select','travel-button','journal-button','pause-journal-button','inspect-journal-button','pause-button','quiet-label'])assert.ok(html.includes(`id="${id}"`),id);
   for(const text of ['Shift 保持','右クリック保持','Space</dt><dd>網をふる','左クリック：見回し中は網 · 停止中は見回し再開。','LB 保持','RB 保持','View 図鑑','Start ひと休み'])assert.ok(html.includes(text),text);

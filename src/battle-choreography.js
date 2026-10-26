@@ -8,7 +8,7 @@ export function sampleBattleChoreography(last,age,{playerSpecies,opponentSpecies
  const timing=ringOut?RING_OUT_CHOREOGRAPHY:BATTLE_CHOREOGRAPHY,release=timing.releaseSeconds,recovery=timing.recoverySeconds,settled=timing.settledSeconds;
  const t=Number.isFinite(age)?Math.max(0,age):0,active=!!last&&t<settled;
  const winner=Number.isFinite(last?.delta)&&last.delta<0?'opponent':'player',actor=last?.delta===0&&last.number%2===0?'opponent':winner;
- const species=actor==='player'?playerSpecies:opponentSpecies,family=['stag','metallifer'].includes(species)?'jaw':'horn';
+ const species=actor==='player'?playerSpecies:opponentSpecies,family=['stag','metallifer','giantstag'].includes(species)?'jaw':'horn';
  const stage=!last||!active?'settled':t<.18?'prepare':t<.46?'approach':t<.54?'contact':t<release?'drive':t<recovery?'release':'recover';
  const contact=active&&!reducedMotion?ramp(t,.06,.46)*(1-ramp(t,release,recovery)):0;
  const drive=active&&!reducedMotion&&last.delta!==0?ramp(t,.54,.80)*(1-ramp(t,release,recovery)):0;

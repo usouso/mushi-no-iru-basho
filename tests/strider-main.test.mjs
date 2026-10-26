@@ -59,7 +59,7 @@ test('shore-height downward capture, inspection memo, water release and paused c
   }
   elements.get('inspect-journal-button').click();assert.equal(g.state.mode,'journal');
   const editor=find('fj-note');assert.equal(document.activeElement,editor);editor.value=note;editor.dispatchEvent(new Event('input'));
-  assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,22);
+  assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,23);
   const heldTime=g.simulation.time;frame(20);assert.equal(g.simulation.time,heldTime);assert.deepEqual(point(i),caughtAt);
   key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'inspect');
   g.release({lock:false});assert.equal(g.state.mode,'playing');assert.equal(g.simulation.caught,null);assert.deepEqual(point(i),caughtAt);
