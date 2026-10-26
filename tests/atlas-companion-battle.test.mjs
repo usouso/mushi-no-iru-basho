@@ -19,7 +19,7 @@ const end=(playerSpecies,opponentSpecies,seed)=>advanceBattle(createBattle({play
 
 test('v2 adds one fixed unmeasured Atlas beside the unchanged four measured companions; reload, cancellation and explicit release preserve all other data',async()=>{
  const f=fixture([[LEGACY_COMPANION_KEY,JSON.stringify({version:1,entries:[]})],['mushi-expedition-v1','unchanged five-slot manifest'],['mushi-journal-v2','unchanged journal']]),r=make(f);
- assert.deepEqual(COMPANION_SPECIES,[...oldSpecies,'atlas','giantstag']);assert.equal(isCompanionSpecies('atlas'),true);
+ assert.deepEqual(COMPANION_SPECIES,[...oldSpecies,'atlas','giantstag','elephant']);assert.equal(isCompanionSpecies('atlas'),true);
  for(const species of oldSpecies)assert.equal(r.add(capture(species)).ok,true);await r.flush();const previous=r.entries,legacyRaw=f.values.get(LEGACY_COMPANION_KEY);
  const result=r.add(atlas);assert.equal(result.ok,true);assert.equal(result.entry.id,'understory/insect-5');assert.equal(result.entry.originKind,'legacy');for(const key of['originEncounterId','sizePermille','measureVersion'])assert.equal(result.entry[key],null);assert.equal(await r.flush(),true);assert.equal(r.entries.length,5);assert.deepEqual(make(f).entries,r.entries);assert.deepEqual(r.entries.slice(0,4),previous);
  assert.deepEqual(r.add(atlas),{ok:false,reason:'already-owned'});assert.deepEqual(r.replace(result.entry.id,atlas),{ok:false,reason:'same-individual'});const before=JSON.stringify(r.entries),game=cancelBattle(advanceBattle(createBattle({playerSpecies:'atlas',opponentSpecies:'hercules',seed:0}),8));assert.equal(game.phase,'cancelled');assert.equal(game.winner,null);assert.equal(JSON.stringify(r.entries),before);
@@ -40,13 +40,15 @@ test('Atlas addition does not weaken v2 future/corrupt/conflict/quota safeguards
  f.values.set(LEGACY_COMPANION_KEY,JSON.stringify({version:1,entries:[oldEntry]}));const c=make(f);assert.deepEqual(c.entries.map(e=>e.species),['atlas']);f.failWrite=true;c.release('understory/insect-5');assert.equal(await c.flush(),false);assert.equal(c.reason,'storage-error');assert.equal(f.values.get(COMPANION_KEY),winning);assert.equal(make(f).entries[0].species,'atlas');f.failWrite=false;assert.equal(await c.flush(),true);assert.deepEqual(make(f).entries,[]);
 });
 
-test('all 36 ordered matchups use ring-out-only wins or explicit safety draws; both sides can win and sizes do not decide results',async()=>{
+test('all 49 ordered matchups use ring-out-only wins or explicit safety draws; both sides can win and sizes do not decide results',async()=>{
  const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
- const referenceSource=source.replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
- assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b','only the single edge coefficient may differ from 0.23');
+ // The new species registry line is isolated; all old rule bytes stay hash-pinned.
+ const priorSpeciesSource=source.replace(",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",'');assert.notEqual(priorSpeciesSource,source);
+ const referenceSource=priorSpeciesSource.replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
+ assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b','only the edge coefficient and the exact added species registry may differ from 0.23');
  const reference=await import('data:text/javascript;base64,'+Buffer.from(referenceSource).toString('base64'));
 
- const ids=Object.keys(BATTLE_SPECIES);assert.deepEqual(ids,[...oldSpecies,'atlas','giantstag']);assert.equal(BATTLE_SPECIES.atlas.label,'アトラスオオカブト');assert.equal(BATTLE_LIMITS.maxSeconds,59.6);assert.equal(BATTLE_LIMITS.turns,36);assert.equal(BATTLE_LIMITS.ring,4);assert.equal(BATTLE_LIMITS.maxStep,.45);
+ const ids=Object.keys(BATTLE_SPECIES);assert.deepEqual(ids,[...oldSpecies,'atlas','giantstag','elephant']);assert.equal(BATTLE_SPECIES.atlas.label,'アトラスオオカブト');assert.equal(BATTLE_LIMITS.maxSeconds,59.6);assert.equal(BATTLE_LIMITS.turns,36);assert.equal(BATTLE_LIMITS.ring,4);assert.equal(BATTLE_LIMITS.maxStep,.45);
  function result(s){
   assert.equal(s.phase,'finished');assert.ok(s.elapsed>=16.4&&s.elapsed<=59.6);assert.ok(s.exchanges>=9&&s.exchanges<=36);assert.ok(Number.isFinite(s.position)&&Math.abs(s.position)<=4);
   if(s.winner==='draw'){assert.equal(s.finishReason,'time-limit');assert.ok(Math.abs(s.position)<4);assert.equal(s.exchanges,36);assert.equal(s.elapsed,59.6);}
@@ -59,7 +61,7 @@ test('all 36 ordered matchups use ring-out-only wins or explicit safety draws; b
  const counts=[];for(const p of ids)for(const o of ids){const wins={player:0,opponent:0,draw:0};for(let seed=0;seed<128;seed++){const s=end(p,o,seed);result(s);wins[s.winner]++;}assert.ok(wins.player>0&&wins.opponent>0,`${p}/${o} permits both ring-out winners`);assert.ok(wins.draw>0,`${p}/${o} retains a real safety draw rather than forcing a winner`);counts.push({player:p,opponent:o,...wins});
   const options={playerSpecies:p,opponentSpecies:o,seed:17};assert.deepEqual(advanceBattle(createBattle({...options,playerSizePermille:1150,opponentSizePermille:1000,level:99}),100),end(p,o,17),'size and level are not strength inputs');
  }
- assert.equal(counts.length,36);
+ assert.equal(counts.length,49);
 });
 
 test('Atlas adds only a small conditional post-push brace bonus, with no change to controls, energy, model-size influence or cancellation',()=>{

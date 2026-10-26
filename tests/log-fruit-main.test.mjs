@@ -17,7 +17,7 @@ const press=()=>{key('keydown','KeyE');key('keyup','KeyE');};
 const pose=(x,z)=>g.setPose({x,z,y:g.world.heightAt(x,z)+1.65,speed:0});
 test('one nearest E/X action keeps both fruit slots independent through log visit, capture, expiry and teardown',async t=>{
  t.after(()=>window.dispatchEvent(new Event('pagehide')));
- choose('tropical');assert.equal(g.simulation.items.length,10);
+ choose('tropical');assert.equal(g.simulation.items.length,11);
  const table=g.world.baitStation,log=g.logFruitHabitat.station,fruit=h.renderedScene.getObjectByName('tropical-log-fermented-fruit');assert.ok(fruit);assert.equal(fruit.visible,false);
  const midpoint={x:(table.x+log.x)/2,z:(table.z+log.z)/2};pose(midpoint.x,midpoint.z);
  assert.equal(Math.hypot(midpoint.x-table.x,midpoint.z-table.z),Math.hypot(midpoint.x-log.x,midpoint.z-log.z),'test the exact tie, not a rounded near-tie');

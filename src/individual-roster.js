@@ -3,12 +3,12 @@
  * not imported again. Unknown data/conflicts stay read-only, with session edits
  * still available. Persistence needs Web Locks, not a promise of browser support.
  */
-import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.24.0&b=8d4c904e2377';
+import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.25.0&b=1bc3118dbd0d';
 export const COMPANION_KEY = 'mushi-companions-v2';
 export const COMPANION_VERSION = 2;
 export const LEGACY_COMPANION_KEY = V1_KEY;
-export const COMPANION_SPECIES = Object.freeze([...V1_SPECIES,'atlas','giantstag']);
-const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory',atlas:'understory',giantstag:'night'});
+export const COMPANION_SPECIES = Object.freeze([...V1_SPECIES,'atlas','giantstag','elephant']);
+const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory',atlas:'understory',giantstag:'night',elephant:'tropical'});
 const legacyFields = ['id','species','originHabitat','originIndividualId','capturedAt'];
 const entryFields = [...legacyFields,'originKind','originEncounterId','sizePermille','measureVersion'];
 const copy = entries => entries.map(entry => ({...entry}));
@@ -16,7 +16,7 @@ const timestamp = value => Number.isSafeInteger(value) && value >= 0;
 const own = (object,key) => Object.prototype.hasOwnProperty.call(object,key);
 export function isCompanionSpecies(species){return typeof species === 'string' && own(origins,species);}
 function fields(value,names){return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === names.length && Object.keys(value).every(key=>names.includes(key));}
-function originValid(entry){return isCompanionSpecies(entry?.species) && entry.originHabitat === origins[entry.species] && typeof entry.originIndividualId === 'string' && /^insect-[1-9]\d{0,5}$/.test(entry.originIndividualId) && (entry.species!=='atlas'||entry.originIndividualId==='insect-5') && (entry.species!=='giantstag'||entry.originIndividualId==='insect-6');}
+function originValid(entry){return isCompanionSpecies(entry?.species) && entry.originHabitat === origins[entry.species] && typeof entry.originIndividualId === 'string' && /^insect-[1-9]\d{0,5}$/.test(entry.originIndividualId) && (entry.species!=='atlas'||entry.originIndividualId==='insect-5') && (entry.species!=='giantstag'||entry.originIndividualId==='insect-6') && (entry.species!=='elephant'||entry.originIndividualId==='insect-11');}
 function legacyValid(entry){return fields(entry,legacyFields) && V1_SPECIES.includes(entry.species) && originValid(entry) && entry.id === `${entry.originHabitat}/${entry.originIndividualId}` && timestamp(entry.capturedAt);}
 function encounterValid(entry){
  if(typeof entry.originEncounterId!=='string')return false;

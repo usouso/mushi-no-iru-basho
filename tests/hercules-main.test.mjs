@@ -68,7 +68,7 @@ function catchBeetle(i){
  assert.ok(Math.hypot(i.x-x,i.y-y,i.z-z)<2.6);key('keydown','Space');key('keyup','Space');assert.equal(g.simulation.caught,i);return point(i);
 }
 test('tropical main adds two resting beetles without replacing morphos, then naturally walks and turns along each log',()=>{
- choose('tropical');assert.equal(g.simulation.items.length,10);assert.equal(g.simulation.items.filter(i=>i.species==='morpho').length,4);assert.equal(beetles().length,2);
+ choose('tropical');assert.equal(g.simulation.items.length,11);assert.equal(g.simulation.items.filter(i=>i.species==='morpho').length,4);assert.equal(beetles().length,2);
  const initial=beetles().map(point),homes=beetles().map(i=>({...i.home})),seen=beetles().map(()=>new Set()),maxStep=[0,0];let prior=beetles().map(point);
  assert.ok(beetles().every(i=>i.resting&&!i.caught));frame(15);assert.deepEqual(beetles().map(point),initial,'initial resting interval');
  for(let n=0;n<60*120;n++){frame(1);beetles().forEach((i,k)=>{seen[k].add(i.state);assert.ok([i.x,i.y,i.z,i.heading].every(Number.isFinite));assert.ok(Math.abs(i.x-i.home.x)<=.600001);assert.equal(i.y,i.home.y);assert.equal(i.z,i.home.z);maxStep[k]=Math.max(maxStep[k],Math.hypot(i.x-prior[k].x,i.y-prior[k].y,i.z-prior[k].z));});prior=beetles().map(point);}
@@ -88,13 +88,13 @@ test('fruit remains morpho-only while existing beetles continue log walking',()=
  g.restart();const station=g.world.baitStation;g.setPose({x:station.x,y:g.world.heightAt(station.x,station.z+1.5)+1.65,z:station.z+1.5,yaw:0,pitch:-.2});frame(1);key('keydown','KeyE');key('keyup','KeyE');assert.equal(g.simulation.bait.active,true);
  g.setPose({x:station.x+2,y:g.world.heightAt(station.x+2,station.z+3)+1.65,z:station.z+3});const homes=beetles().map(i=>({...i.home})),visitors=new Set();
  for(let n=0;n<60*60;n++){frame(1);const id=g.simulation.bait?.visitorId;if(id){const i=g.simulation.items.find(i=>i.id===id);assert.equal(i.species,'morpho');visitors.add(id);}assert.ok(beetles().every(i=>i.state!=='feeding'&&i.state!=='bait-approach'));}
- assert.ok(visitors.size>=1);assert.equal(g.simulation.items.length,10);assert.deepEqual(beetles().map(i=>i.home),homes);g.title();assert.equal(g.simulation.bait,null);
+ assert.ok(visitors.size>=1);assert.equal(g.simulation.items.length,11);assert.deepEqual(beetles().map(i=>i.home),homes);g.title();assert.equal(g.simulation.bait,null);
 });
 test('six actual capture records and notes reload; old J/Esc mute0 and habitat reset controls remain usable',async()=>{
  choose('meadow');assert.equal(g.simulation.items.length,29);for(const species of ['butterfly','dragonfly','cicada','grasshopper']){g.restart();catchSpecies(species);g.journal.setNote(species,`memo-${species}`);g.release({lock:false});}
  choose('tropical');catchSpecies('morpho');g.journal.setNote('morpho','青い翅');g.release({lock:false});assert.equal(g.journal.entries.length,6);
  await g.journal.flush();const expected=g.journal.entries,{createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,23);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,24);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
  g.pause();elements.get('volume').value='0';elements.get('volume').dispatchEvent(new Event('input'));key('keydown','Escape');key('keyup','Escape');await settle();frame(1);assert.equal(g.state.mode,'playing');assert.equal(master().value,0);assert.equal(g.state.volume,0);
- g.restart();assert.equal(g.simulation.caught,null);assert.equal(g.simulation.items.length,10);assert.deepEqual(g.journal.entries,expected);assert.equal(document.activeElement,elements.get('game-canvas'));
+ g.restart();assert.equal(g.simulation.caught,null);assert.equal(g.simulation.items.length,11);assert.deepEqual(g.journal.entries,expected);assert.equal(document.activeElement,elements.get('game-canvas'));
 });

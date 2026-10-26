@@ -1,4 +1,4 @@
-import {sampleMetalliferPose} from './metallifer-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import {sampleMetalliferPose} from './metallifer-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
 /** Original male Cyclommatus metallifer display. No photograph tracing or
  * textures. Display dimensions are game readability choices, NOT measurements.
  * Root coordinates: +Z forward; resting feet touch Y=0. Short display steps and

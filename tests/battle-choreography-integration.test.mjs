@@ -27,15 +27,21 @@ function visualState(view){view.scene.updateMatrixWorld(true);const rows=[];view
 
 // The result fixture follows the requested ring-out-only rule. Size, poses and
 // contacts never feed back into the resolved result or the retained roster.
-test('existing four-species ring-out-only fixed-seed outcomes and immutable snapshots remain independent of presentation and storage',()=>{
- const outcomes=[];
+test('hash-pinned old four-species outcomes and current ring-out snapshots remain independent of presentation and storage',async()=>{
+ const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
+ // Only 0.24's documented stag-edge coefficient and 0.25's registry addition
+ // differ from this old fixture. Do not replace the historical outcome hash.
+ const referenceSource=source.replace(",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",'').replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
+ assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b');
+ const reference=await import('data:text/javascript;base64,'+Buffer.from(referenceSource).toString('base64'));
+ const outcomes=[],referenceOutcomes=[];
  for(const p of species)for(const o of species){const wins=new Set();for(let seed=0;seed<32;seed++){
-  const s=advanceBattle(createBattle({playerSpecies:p,opponentSpecies:o,seed}),100);outcomes.push(s);wins.add(s.winner);
+  const s=advanceBattle(createBattle({playerSpecies:p,opponentSpecies:o,seed}),100);outcomes.push(s);wins.add(s.winner);const prior=reference.advanceBattle(reference.createBattle({playerSpecies:p,opponentSpecies:o,seed}),100);referenceOutcomes.push(prior);if(p!=='stag'&&o!=='stag')assert.deepEqual(s,prior);
   assert.equal(s.phase,'finished');assert.ok(s.elapsed>=16.4&&s.elapsed<=59.6);assert.ok(s.exchanges>=9&&s.exchanges<=36);
   if(s.winner==='draw'){assert.equal(s.finishReason,'time-limit');assert.ok(Math.abs(s.position)<4);assert.equal(s.exchanges,36);assert.equal(s.elapsed,59.6);}
   else{assert.ok(['player','opponent'].includes(s.winner));assert.equal(s.finishReason,'ring-out');assert.equal(s.position,s.winner==='player'?4:-4);}
  }assert.ok(wins.has('player')&&wins.has('opponent'),`${p}/${o} supports both ring-out winners`);}
- assert.equal(createHash('sha256').update(JSON.stringify(outcomes)).digest('hex'),'d52859dd3cd6f310f78b6faf317dbdf4ce603f71c367cf16af1d3ffee81aab08');
+ assert.equal(outcomes.length,512);assert.equal(createHash('sha256').update(JSON.stringify(referenceOutcomes)).digest('hex'),'d52859dd3cd6f310f78b6faf317dbdf4ce603f71c367cf16af1d3ffee81aab08');
  const stored={entries:[{species:'rhino',id:'fixed',sizePermille:1150}]},raw=JSON.stringify(stored),calls=storageCalls.length;
  for(const p of species){const view=createBattleView({playerSpecies:p,opponentSpecies:'metallifer',playerSizePermille:1150}),options={playerSpecies:p,opponentSpecies:'metallifer',seed:17},battle=createBattle(options),terminal=advanceBattle(battle,100),bytes=JSON.stringify(terminal);
   assert.deepEqual(advanceBattle(createBattle({...options,playerSizePermille:1150,opponentSizePermille:1000,level:99}),100),terminal,'model size and retained level are not rule inputs');

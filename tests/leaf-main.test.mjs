@@ -48,12 +48,12 @@ test('third title choice enters only on start; capture, inspect, memo, walking r
  let moved=false,previous=point(i);
  for(let n=0;n<180;n++){frame(1);const p=point(i);assert.ok(Math.hypot(p.x-previous.x,p.y-previous.y,p.z-previous.z)<.03,'continuous leaf walking');moved ||= Math.hypot(p.x-caughtAt.x,p.z-caughtAt.z)>.005;previous=p;}
  assert.ok(moved,'released insect resumes walking on the leaf');
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,23);
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,24);
  find('fj-close').click();assert.equal(g.state.mode,'playing');
  const before={...g.state.player};key('keydown','KeyW');frame(10);key('keyup','KeyW');
  assert.ok(Math.hypot(g.state.player.x-before.x,g.state.player.z-before.z)>.05,'walking still works after journal close');
  await g.journal.flush();
- for(const [id,count]of [['meadow',29],['tropical',10],['understory',5]]){choose(id);assert.equal(g.state.habitat,id);assert.equal(g.simulation.items.length,count);assert.equal(g.journal.entries.find(e=>e.species==='leafinsect').note,note);}
+ for(const [id,count]of [['meadow',29],['tropical',11],['understory',5]]){choose(id);assert.equal(g.state.habitat,id);assert.equal(g.simulation.items.length,count);assert.equal(g.journal.entries.find(e=>e.species==='leafinsect').note,note);}
  g.restart();assert.equal(g.simulation.items.length,5);assert.equal(g.simulation.caught,null);
  const {createJournal}=await import(h.moduleURL('journal.js'));
  assert.equal(createJournal(localStorage).entries.find(e=>e.species==='leafinsect').note,note);

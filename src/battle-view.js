@@ -1,9 +1,9 @@
-import {createInsectModel} from './insect-models.js?v=0.24.0&b=8d4c904e2377';
-import {createBattleRig} from './battle-pose.js?v=0.24.0&b=8d4c904e2377';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.24.0&b=8d4c904e2377';
+import {createInsectModel} from './insect-models.js?v=0.25.0&b=1bc3118dbd0d';
+import {createBattleRig} from './battle-pose.js?v=0.25.0&b=1bc3118dbd0d';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.25.0&b=1bc3118dbd0d';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
-const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag']);
+const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant']);
 const finite=(n,f=0)=>Number.isFinite(n)?n:f,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function createBattleView({playerSpecies,opponentSpecies,playerSizePermille=null,opponentSizePermille=null,aspect=1}={}){
  if(!ELIGIBLE.has(playerSpecies)||!ELIGIBLE.has(opponentSpecies))throw new TypeError('Battle view requires supported beetles');
@@ -45,12 +45,12 @@ export function createBattleView({playerSpecies,opponentSpecies,playerSizePermil
    const c=choreography.contact,lift=choreography.drive,prepare=choreography.crouch,jaw=choreography.family==='jaw',defPitch=ringOut?-.03*c-.04*lift:-.05*c-.10*lift,defRoll=jaw?(ringOut?.025:.07)*lift:0;
    const rear=new T.Vector3(0,-receive.restY,-.065*receive.rig.scale).applyEuler(new T.Euler(defPitch,0,defRoll,'YXZ'));
    place(receive,receive.baseX+display,-rear.y,0,defPitch,defRoll);receive.rig.setJaws(.04*c+.06*lift);receive.rig.setWeaponPitch(0);
-   const pitch=(attack.species==='atlas'?.08:attack.species==='rhino'?.12:['stag','giantstag'].includes(attack.species)?0:jaw?.10:.20)*prepare-(jaw?.10:['rhino','atlas'].includes(attack.species)?.04:.15)*lift;
+   const pitch=(attack.species==='elephant'?0:attack.species==='atlas'?.08:attack.species==='rhino'?.12:['stag','giantstag'].includes(attack.species)?0:jaw?.10:.20)*prepare-(jaw?.10:['rhino','atlas','elephant'].includes(attack.species)?.04:.15)*lift;
    place(attack,attack.baseX+display,attack.restY-.006*prepare,0,pitch,jaw?-.025*lift:0);attack.rig.setJaws(.20*prepare-.16*c+.035*lift);attack.rig.setWeaponPitch(.65*prepare-.08*lift);
    receive.rig.contactWorld(target);attack.rig.weaponWorld(weapon);const offset=target.clone().sub(weapon);attack.anchor.position.x+=offset.x*c*.5;receive.anchor.position.x-=offset.x*c*.5;attack.anchor.position.z+=offset.z*c*.5;receive.anchor.position.z-=offset.z*c*.5;attack.anchor.position.y+=offset.y*c;attack.anchor.updateMatrixWorld(true);receive.anchor.updateMatrixWorld(true);
    // Keep the rigid abdomen/head above the stage; the receiver follows the same
    // tiny vertical correction so designated weapon contact cannot separate.
-   const low=attack.rig.torsoBox(scratch).min.y;if(low<.002){const correction=.002-low;attack.anchor.position.y+=correction;if(c>.999)receive.anchor.position.y+=correction;attack.anchor.updateMatrixWorld(true);receive.anchor.updateMatrixWorld(true);}
+   let low=attack.rig.torsoBox(scratch).min.y;if(attack.species==='elephant'){const mesh=attack.rig.weapon.mesh,a=mesh.geometry.attributes.position;for(let i=0;i<a.count;i++)low=Math.min(low,corner.fromBufferAttribute(a,i).applyMatrix4(mesh.matrixWorld).y);}if(low<.002){const correction=.002-low;attack.anchor.position.y+=correction;if(c>.999)receive.anchor.position.y+=correction;attack.anchor.updateMatrixWorld(true);receive.anchor.updateMatrixWorld(true);}
    // A final horizontal shove advances by real steps; do not keep the hind
    // feet pinned to the earlier contact point while the torso crosses the line.
    const footStage=ringOut&&age>=.62&&choreography.stage==='drive'?'release':choreography.stage;
