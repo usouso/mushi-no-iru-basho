@@ -1,0 +1,60 @@
+/** Actual-module CPU flow only. Reuse the established DOM/THREE/audio harness;
+ * no WebGL/browser/physical-input or perceived-visibility claim. */
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+const root=path.resolve(import.meta.dirname,'..');
+const existing=fs.readFileSync(path.join(root,'tests/hercules-main.test.mjs'),'utf8');
+const marker='\nconst beetles=()=>';
+assert.ok(existing.includes(marker),'shared harness boundary remains explicit');
+let harness=existing.slice(0,existing.indexOf(marker));
+harness=harness.replace("from './fixtures/journal-locks.mjs'",`from ${JSON.stringify(pathToFileURL(path.join(root,'tests/fixtures/journal-locks.mjs')).href)}`);
+const rootDeclaration="const root=path.resolve(import.meta.dirname,'..');";
+assert.ok(harness.includes(rootDeclaration));harness=harness.replace(rootDeclaration,`const root=${JSON.stringify(root)};`);
+harness+='\nexport {g,frame,elements,key,find,modal,descendants,choose,renderedScene,moduleURL};';
+const h=await import('data:text/javascript;base64,'+Buffer.from(harness).toString('base64'));
+const {g,frame,elements,key,find,modal,descendants,choose}=h;
+const point=i=>({x:i.x,y:i.y,z:i.z});
+
+test('third title choice enters only on start; capture, inspect, memo, walking release and habitat return preserve notes',async()=>{
+ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+ assert.match(html,/<option value="understory">東南アジア林の観察区画<\/option>/);
+ assert.equal(g.state.mode,'title');assert.equal(g.state.habitat,'meadow');
+ const initial=g.world;elements.get('habitat-select').value='understory';frame(1);
+ assert.equal(g.world,initial,'selection itself does not generate or travel');
+ elements.get('start-button').click();frame(1);
+ assert.equal(g.state.habitat,'understory');assert.equal(g.state.mode,'playing');
+ assert.equal(g.simulation.items.length,3);assert.ok(g.simulation.items.every(i=>i.species==='leafinsect'));
+ assert.match(elements.get('toast').textContent,/葉の形.*ゆっくりした揺れ/);
+ assert.equal(g.state.player.x,g.world.spawn.x);assert.equal(g.state.player.z,g.world.spawn.z);
+ const i=g.simulation.items[0],y=g.world.heightAt(i.x,i.z+1.6)+1.65;
+ g.setPose({x:i.x,y,z:i.z+1.6,yaw:0,pitch:Math.atan2(i.y-y,1.6),quiet:true});
+ key('keydown','Space');key('keyup','Space');assert.equal(g.simulation.caught,i);
+ const caughtAt=point(i);frame(22);assert.equal(g.state.mode,'inspect');assert.deepEqual(point(i),caughtAt);
+ assert.match(elements.get('insect-name').textContent,/コノハムシ/);
+ assert.equal(h.renderedScene.children.find(n=>n.userData.species==='leafinsect').scale.x,4);
+ const record=g.journal.entries.find(e=>e.species==='leafinsect');
+ assert.equal(record.location,g.world.locationLabel(i.x,i.z));
+ elements.get('inspect-journal-button').click();assert.equal(g.state.mode,'journal');
+ const editor=find('fj-note'),note='葉の形。ゆっくり揺れた j';
+ editor.value=note;editor.dispatchEvent(new Event('input'));
+ assert.equal(document.activeElement,editor);frame(30);assert.deepEqual(point(i),caughtAt);
+ key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'inspect');
+ g.release({lock:false});assert.equal(g.state.mode,'playing');assert.equal(g.simulation.caught,null);
+ assert.deepEqual(point(i),caughtAt,'release does not teleport');
+ assert.match(elements.get('toast').textContent,/葉の上へそっと返し/);assert.doesNotMatch(elements.get('toast').textContent,/飛び/);
+ let moved=false,previous=point(i);
+ for(let n=0;n<180;n++){frame(1);const p=point(i);assert.ok(Math.hypot(p.x-previous.x,p.y-previous.y,p.z-previous.z)<.03,'continuous leaf walking');moved ||= Math.hypot(p.x-caughtAt.x,p.z-caughtAt.z)>.005;previous=p;}
+ assert.ok(moved,'released insect resumes walking on the leaf');
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,20);
+ find('fj-close').click();assert.equal(g.state.mode,'playing');
+ const before={...g.state.player};key('keydown','KeyW');frame(10);key('keyup','KeyW');
+ assert.ok(Math.hypot(g.state.player.x-before.x,g.state.player.z-before.z)>.05,'walking still works after journal close');
+ await g.journal.flush();
+ for(const [id,count]of [['meadow',29],['tropical',10],['understory',3]]){choose(id);assert.equal(g.state.habitat,id);assert.equal(g.simulation.items.length,count);assert.equal(g.journal.entries.find(e=>e.species==='leafinsect').note,note);}
+ g.restart();assert.equal(g.simulation.items.length,3);assert.equal(g.simulation.caught,null);
+ const {createJournal}=await import(h.moduleURL('journal.js'));
+ assert.equal(createJournal(localStorage).entries.find(e=>e.species==='leafinsect').note,note);
+});

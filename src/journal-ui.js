@@ -1,6 +1,6 @@
-import { NOTE_LIMIT } from './journal.js';
+import { NOTE_LIMIT } from './journal.js?v=0.15.1&b=a70f15b11632';
 
-const SPECIES_IDS = ['butterfly', 'dragonfly', 'cicada'];
+const LEGACY_SPECIES_IDS = ['butterfly', 'dragonfly', 'cicada'];
 let instance = 0;
 const STYLE = `
 .field-journal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:28px;pointer-events:auto;background:rgba(28,43,30,.45);backdrop-filter:blur(8px);color:var(--ink,#263c2d);font-family:var(--sans,'Yu Gothic',Meiryo,sans-serif)}
@@ -38,6 +38,8 @@ const STYLE = `
 /**
  * createJournalUI({ journal, species, onClose }) -> { open, close, refresh, element }
  * journal is createJournal() from journal.js; species is the SPECIES keyed object.
+ * Cards follow its own keys in order; an empty object retains the legacy three.
+ * Reading/rendering cards never deletes earlier journal records.
  * Creation is DOM-free. First open() appends the modal and scoped CSS to body.
  * element is a getter returning null until the first open.
  * open(optionalSpeciesId) refreshes and focuses that encountered memo if given,
@@ -48,6 +50,9 @@ const STYLE = `
  * remain with the caller. Tab stays within this visible modal. No global hooks.
  * refresh() updates entries/status, preserving a focused memo's selection.
  * Input autosaves plain text, bounded to NOTE_LIMIT, with no required submission.
+ * Optional journal.pending/subscribe report asynchronous persistence. Notifications
+ * only update status, never replace an editor or interrupt its selection/composition.
+ * Subscription exists only while open; closing releases it and reopening reads state.
  */
 export function createJournalUI({ journal, species = {}, onClose } = {}) {
   if (!journal || typeof journal.setNote !== 'function') {
@@ -85,7 +90,7 @@ function mountJournalUI({ journal, species, onClose }) {
   const headingBlock = make('div');
   const title = make('h2', '', '出会いの図鑑');
   title.id = `${prefix}-title`;
-  headingBlock.append(make('p', 'fj-eyebrow', 'FIELD NOTES / SUMMER 01'), title);
+  headingBlock.append(make('p', 'fj-eyebrow', 'FIELD NOTES / HABITAT STUDIES'), title);
   const closeButton = make('button', 'fj-close', '閉じる');
   closeButton.type = 'button';
   header.append(headingBlock, closeButton);
@@ -101,13 +106,18 @@ function mountJournalUI({ journal, species, onClose }) {
   element.append(style, sheet);
   document.body.append(element);
   let editors = [];
+  let unsubscribe = null;
 
   function updateStatus(failed = false) {
-    const unsaved = failed || journal.saved === false;
+    const pending = !failed && journal.pending === true;
+    const unsaved = failed || pending || journal.saved === false;
     status.dataset.unsaved = String(unsaved);
-    const message = unsaved
-      ? '今はこのブラウザに保存できません。記録はこのページを開いている間だけ残ります。'
-      : '記録は自動で保存されます。メモは空欄のままでも大丈夫です。';
+    status.dataset.pending = String(pending);
+    const message = pending
+      ? 'このブラウザに保存中です。ページを閉じると、未保存の記録が失われることがあります。'
+      : unsaved
+        ? '今はこのブラウザに保存できません。今回の未保存の変更は、このページを閉じると失われます。'
+        : '記録は自動で保存されます。メモは空欄のままでも大丈夫です。';
     if (status.textContent !== message) status.textContent = message;
   }
 
@@ -117,12 +127,13 @@ function mountJournalUI({ journal, species, onClose }) {
     const entries = new Map(journal.entries.map(entry => [entry.species, entry]));
     editors = [];
     cards.replaceChildren();
-    for (const id of SPECIES_IDS) {
+    const speciesIds = Object.keys(species);
+    for (const id of speciesIds.length ? speciesIds : LEGACY_SPECIES_IDS) {
       const entry = entries.get(id);
       const card = make('article', entry ? 'fj-card' : 'fj-card fj-unseen');
       if (!entry) {
         // Do not disclose a name, image, location, checklist number, or target.
-        card.append(make('h3', '', 'まだ出会っていない虫'), make('p', '', 'いつか、どこかの草むらで。'));
+        card.append(make('h3', '', 'まだ出会っていない虫'), make('p', '', 'いつか、どこかで。'));
       } else {
         const name = typeof species[id]?.name === 'string' ? species[id].name : '野原で出会った虫';
         card.append(make('h3', '', name));
@@ -130,7 +141,7 @@ function mountJournalUI({ journal, species, onClose }) {
         if (typeof observation === 'string' && observation) {
           card.append(make('p', 'fj-observation', observation));
         }
-        card.append(make('p', 'fj-place-label', 'さいごに出会った場所'), make('p', 'fj-place', entry.location || '夏の野原'));
+        card.append(make('p', 'fj-place-label', 'さいごに出会った場所'), make('p', 'fj-place', entry.location || '出会った場所'));
         const label = make('label', 'fj-note-label', 'ひと言メモ（任意）');
         const input = make('textarea', 'fj-note');
         input.id = `${prefix}-${id}-note`;
@@ -140,7 +151,7 @@ function mountJournalUI({ journal, species, onClose }) {
         input.placeholder = '色や動き、気づいたことなど';
         input.setAttribute('aria-label', `${name}のひと言メモ（任意）`);
         label.htmlFor = input.id;
-        const help = make('p', 'fj-note-help', `${NOTE_LIMIT}文字まで・入力すると自動保存`);
+        const help = make('p', 'fj-note-help', `${NOTE_LIMIT}文字まで・自動保存（保存状況は下に表示）`);
         help.id = `${prefix}-${id}-help`;
         input.setAttribute('aria-describedby', help.id);
         input.addEventListener('input', () => {
@@ -168,10 +179,21 @@ function mountJournalUI({ journal, species, onClose }) {
   function open(speciesId) {
     refresh();
     element.hidden = false;
+    if (!unsubscribe && typeof journal.subscribe === 'function') {
+      unsubscribe = journal.subscribe(() => {
+        // A late notification after close is harmless; do not rebuild cards here.
+        if (!element.hidden) updateStatus();
+      });
+    }
     const focusTarget = editors.find(item => item.id === speciesId)?.input || closeButton;
     focusTarget.focus({ preventScroll: true });
   }
-  function close() { element.hidden = true; }
+  function close() {
+    element.hidden = true;
+    const release = unsubscribe;
+    unsubscribe = null;
+    release?.();
+  }
   closeButton.addEventListener('click', () => { close(); onClose?.(); });
   element.addEventListener('keydown', event => {
     if (element.hidden || event.key !== 'Tab') return;

@@ -47,6 +47,13 @@ export function createInput(canvas, callbacks) {
       if (!e.repeat) callbacks.journal?.();
       return;
     }
+    if (e.code === 'KeyE') {
+      // Fruit-table interaction is a gameplay edge, never a text/IME shortcut.
+      if (elementIsControl(e) || editableMenuTarget(e.target) || e.isComposing || e.keyCode === 229 || e.ctrlKey || e.altKey || e.metaKey || syncMode() !== 'playing') return;
+      e.preventDefault();
+      if (!e.repeat && !keys.has('KeyE')) { keys.add('KeyE'); callbacks.interact?.(); }
+      return;
+    }
     if (elementIsControl(e)) return;
     if (controls.has(e.code)) e.preventDefault();
     if (e.repeat) return; // Held keys cannot re-arm themselves after clear/blur.
@@ -136,6 +143,9 @@ export function createInput(canvas, callbacks) {
         if (version === clearVersion && b[9] && !previous[9]) callbacks.pause();
         if (version === clearVersion && b[8] && !previous[8]) callbacks.journal?.();
         if (version === clearVersion && b[1] && !previous[1]) callbacks.back();
+        // A capture/menu callback may change mode without calling clear itself.
+        // Check again before X / square, and never re-arm a held button on resume.
+        if (version === clearVersion && syncMode() === 'playing' && version === clearVersion && b[2] && !previous[2]) callbacks.interact?.();
         padLast = b; padActive = true;
       } else { padLast = []; padActive = false; }
       const currentMode = syncMode();

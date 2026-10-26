@@ -1,0 +1,27 @@
+/** Deterministic WebAudio/fetch double. Tests scheduling/control only, not decoded waveforms or hearing. */
+import assert from 'node:assert/strict';
+import {createAudio} from '../../src/audio.js?v=0.3.1&b=123456abcdef';
+export const flush=async()=>{for(let i=0;i<40;i++)await Promise.resolve();};
+export function fixture(t,{deferFetch=false,deferDecode=false,deferContext=false,failedFiles=[],decodeFailures=[],callbackOnlyDecode=false,assetBaseURL='https://game.invalid/play/assets/audio/'}={}){
+ const contexts=[],requests=[],fetchPending=[],decodePending=[],timers=new Map(),retired=[];let timerId=0,inflight=0,maxInflight=0;
+ const param=()=>({value:0,events:[],cancelScheduledValues(time){this.events.push(['cancel',time]);},setValueAtTime(v,time){this.value=v;this.events.push(['value',v,time]);},setTargetAtTime(v,time,constant){this.value=v;this.events.push(['target',v,time,constant]);},exponentialRampToValueAtTime(v,time){this.events.push(['ramp',v,time]);},linearRampToValueAtTime(v,time){this.events.push(['linear',v,time]);}});
+ const node=kind=>({kind,gain:param(),frequency:param(),Q:param(),pan:param(),playbackRate:param(),connections:[],connect(to){this.connections.push(to);return to;},disconnect(){this.disconnected=true;},starts:[],stops:[],start(...args){this.starts.push(args);this.started=true;if(this.buffer&&!this.loop)this.naturalEndAt=Math.max(args[0]??0,this.ctx.currentTime)+(args[2]??Math.max(0,this.buffer.duration-(args[1]??0)));},stop(time){this.stops.push(time);if(time===undefined||time<=this.ctx.currentTime)this.end();else this.stopAt=time;},end(){if(this.ended)return;this.ended=true;this.onended?.();},addEventListener(type,fn){if(type==='ended')this.onended=fn;}});
+ class AudioContext{
+  constructor(){this.state='suspended';this.currentTime=0;this.sampleRate=32;this.destination={};this.sources=[];this.gains=[];this.filters=[];this.panners=[];this.operations=[];this.pending=[];contexts.push(this);}
+  newNode(kind,list){const n=node(kind);n.ctx=this;list?.push(n);return n;}
+  createGain(){return this.newNode('gain',this.gains);}createBufferSource(){return this.newNode('buffer',this.sources);}createOscillator(){return this.newNode('oscillator',this.sources);}createBiquadFilter(){return this.newNode('filter',this.filters);}createStereoPanner(){return this.newNode('panner',this.panners);}
+  createBuffer(channels,length,rate){return {duration:length/(rate||this.sampleRate),getChannelData:()=>new Float32Array(length)};}
+  decodeAudioData(bytes,success,failure){
+   const file=new TextDecoder().decode(bytes);const promise=new Promise((resolve,reject)=>{const finish=()=>{if(decodeFailures.includes(file)){const error=new Error('decode failed');failure?.(error);reject(error);}else{const buffer={file,duration:/^(?:bgm_|BGM)/.test(file)?40:file.includes('aburazemi')?40:file.includes('capture')?.8:.5};success?.(buffer);resolve(buffer);}};if(deferDecode)decodePending.push({file,finish});else finish();});if(callbackOnlyDecode){promise.catch(()=>{});return;}return promise;
+  }
+  operate(name,state){this.operations.push(name);return new Promise((resolve,reject)=>{const done=()=>{this.state=state;resolve();};if(deferContext)this.pending.push({name,done,reject});else done();});}
+  resume(){return this.operate('resume','running');}suspend(){return this.operate('suspend','suspended');}close(){return this.operate('close','closed');}
+ }
+ const fetch=(url,options)=>{const file=new URL(String(url),'https://game.invalid/play/').pathname.split('/').at(-1);const request={url:String(url),file,options};requests.push(request);inflight++;maxInflight=Math.max(maxInflight,inflight);return new Promise((resolve,reject)=>{const finish=()=>{inflight--;resolve({ok:!failedFiles.includes(file),status:failedFiles.includes(file)?404:200,arrayBuffer:async()=>new TextEncoder().encode(file).buffer});};request.finish=finish;request.reject=()=>{inflight--;reject(new Error('network failed'));};if(deferFetch)fetchPending.push(request);else finish();});};
+ t.mock.method(globalThis,'setTimeout',(fn,delay)=>{const id=++timerId;timers.set(id,{fn,delay});return id;});t.mock.method(globalThis,'clearTimeout',id=>{if(timers.has(id))retired.push(timers.get(id).fn);timers.delete(id);});
+ const saved=Object.getOwnPropertyDescriptor(globalThis,'window');Object.defineProperty(globalThis,'window',{configurable:true,value:{AudioContext,fetch,location:{href:'https://game.invalid/play/index.html',origin:'https://game.invalid'}}});t.after(()=>{if(saved)Object.defineProperty(globalThis,'window',saved);else delete globalThis.window;});
+ const audio=createAudio({assetBaseURL});t.after(()=>audio.dispose());
+ const f={audio,contexts,requests,fetchPending,decodePending,timers,retired,get ctx(){return contexts[0];},get master(){return contexts[0].gains[0].gain;},get maxInflight(){return maxInflight;},assetShots:()=>contexts[0].sources.filter(n=>n.buffer?.file&&!n.loop),loops:()=>contexts[0].sources.filter(n=>n.loop&&!n.ended),liveShots:()=>contexts[0].sources.filter(n=>n.started&&!n.loop&&!n.ended),finishShots(){for(const n of this.liveShots())n.end();},advance(seconds){this.ctx.currentTime+=seconds;for(const n of this.ctx.sources)if(n.stopAt<=this.ctx.currentTime||n.naturalEndAt<=this.ctx.currentTime)n.end();},fireTimers(){for(const[id,timer]of [...timers]){timers.delete(id);timer.fn();}},async ready(){audio.start();await flush();assert.ok(this.ctx);}};
+ return f;
+}
+export const still={x:0,y:1.65,z:0,yaw:0,speed:0,quiet:false,running:false};

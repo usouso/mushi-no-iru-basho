@@ -1,0 +1,52 @@
+import {NIGHT_BOUNDS,NIGHT_SPAWN,NIGHT_HOMES,NIGHT_SECOND_LEAF,NIGHT_ROUTE,NIGHT_LEAF_NORMAL,NIGHT_LEAF_FORWARD} from './night-layout.js?v=0.15.1&b=a70f15b11632';
+const THREE=window.THREE,EXTENT=30,STEP=1,TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function smooth(a,b,x){const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);}
+const pond=(x,z)=>Math.hypot((x-10)/3.5,(z+5)/11.5);
+function vertexHeight(x,z){const base=.09+.065*Math.sin(x*.14)*Math.cos(z*.12),wet=1-smooth(.78,1.32,pond(x,z));return Math.fround(base*(1-wet)-.42*wet);}
+export function heightAt(x,z){const gx=clamp((x+EXTENT)/STEP,0,EXTENT*2/STEP-1e-8),gz=clamp((z+EXTENT)/STEP,0,EXTENT*2/STEP-1e-8),i=Math.floor(gx),j=Math.floor(gz),u=gx-i,v=gz-j,xx=i*STEP-EXTENT,zz=j*STEP-EXTENT,a=vertexHeight(xx,zz),b=vertexHeight(xx+STEP,zz),c=vertexHeight(xx,zz+STEP),d=vertexHeight(xx+STEP,zz+STEP);return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);}
+function rng(seed){return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
+function pathDistance(x,z){let best=Infinity;for(let i=1;i<NIGHT_ROUTE.length;i++){const[a,b]=NIGHT_ROUTE[i-1],[c,d]=NIGHT_ROUTE[i],dx=c-a,dz=d-b,t=clamp(((x-a)*dx+(z-b)*dz)/(dx*dx+dz*dz),0,1);best=Math.min(best,Math.hypot(x-a-t*dx,z-b-t*dz));}return best;}
+function collector(){const p=[],colors=[];return{add(g,m,tint){const copy=g.index?g.toNonIndexed():g.clone();copy.applyMatrix4(m);p.push(...copy.attributes.position.array);const c=new THREE.Color(tint);for(let i=0;i<copy.attributes.position.count;i++)colors.push(c.r,c.g,c.b);copy.dispose();},finish(){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
+function segment(batch,a,b,r0,r1,color){const v=new THREE.Vector3(...a),w=new THREE.Vector3(...b),delta=w.clone().sub(v),g=new THREE.CylinderGeometry(r1,r0,delta.length(),6),m=new THREE.Matrix4().compose(v.add(w).multiplyScalar(.5),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize()),new THREE.Vector3(1,1,1));batch.add(g,m,color);g.dispose();}
+function blade(outline){const p=[0,0,.045],ix=[];for(const[x,z]of outline)p.push(x,0,z);const area=outline.reduce((sum,a,i)=>{const b=outline[(i+1)%outline.length];return sum+a[0]*b[1]-b[0]*a[1];},0);for(let i=0;i<outline.length;i++){const a=1+i,b=1+(i+1)%outline.length;ix.push(0,...(area>0?[b,a]:[a,b]));}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();return g;}
+export function createNightWorld(scene){
+ const random=rng(88219),owned=[],colliders=[],stems=collector(),wood=collector();
+ // Fixed light and exposure-independent colours only. No pulsation, point lights,
+ // bloom, time-of-day transitions or full-screen brightness animation.
+ scene.background=new THREE.Color('#1c2c39');scene.fog=new THREE.Fog('#2b4047',19,52);
+ const ambient=new THREE.HemisphereLight('#afc6d7','#465447',.92),moon=new THREE.DirectionalLight('#c3d4dc',.65);moon.position.set(-14,25,10);moon.castShadow=true;moon.shadow.mapSize.set(1024,1024);Object.assign(moon.shadow.camera,{left:-26,right:26,top:26,bottom:-26,near:.5,far:65});moon.shadow.bias=-.0004;moon.shadow.normalBias=.02;scene.add(ambient,moon,moon.target);
+ function mesh(name,g,material,shadow=false){const m=new THREE.Mesh(g,material);m.name=name;m.castShadow=shadow;m.receiveShadow=true;scene.add(m);owned.push(m);return m;}
+ function instances(name,g,material,items,shadow=false){const m=new THREE.InstancedMesh(g,material,items.length),o=new THREE.Object3D();items.forEach((p,i)=>{o.position.set(p.x,p.y,p.z);o.rotation.set(p.rx||0,p.ry||0,p.rz||0);o.scale.set(p.sx||1,p.sy||1,p.sz||1);o.updateMatrix();m.setMatrixAt(i,o.matrix);m.setColorAt(i,new THREE.Color(p.color));});m.name=name;m.castShadow=shadow;m.receiveShadow=true;m.frustumCulled=false;scene.add(m);owned.push(m);return m;}
+ const groundG=new THREE.BufferGeometry(),p=[],colors=[],index=[],N=EXTENT*2/STEP;
+ for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=i*STEP-EXTENT,z=j*STEP-EXTENT,c=new THREE.Color(pathDistance(x,z)<.9?'#899283':pond(x,z)<1.3?'#5c7266':'#647b65');p.push(x,vertexHeight(x,z),z);colors.push(c.r,c.g,c.b);}
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,c=a+N+1,d=c+1;index.push(a,c,b,b,c,d);}
+ groundG.setAttribute('position',new THREE.Float32BufferAttribute(p,3));groundG.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));groundG.setIndex(index);groundG.computeVertexNormals();const ground=mesh('night-ground',groundG,new THREE.MeshLambertMaterial({vertexColors:true}));
+ const waterG=new THREE.CircleGeometry(1,64);waterG.rotateX(-Math.PI/2);const waterP=waterG.attributes.position;for(let i=0;i<waterP.count;i++)waterP.setXYZ(i,10+waterP.getX(i)*3.5,-.18,-5+waterP.getZ(i)*11.5);waterG.computeVertexNormals();mesh('night-still-water',waterG,new THREE.MeshLambertMaterial({color:'#42616b',transparent:true,opacity:.83,depthWrite:false,side:THREE.DoubleSide}));
+ // The tiny supporting blade ends just behind the hind feet. Both abdominal
+ // organs overhang the basal edge, without moving the light onto the back.
+ const restBlade=blade([[-.045,-.028],[.045,-.028],[.065,.06],[.045,.16],[0,.25],[-.045,.16],[-.065,.06]]),normal=new THREE.Vector3(NIGHT_LEAF_NORMAL.x,NIGHT_LEAF_NORMAL.y,NIGHT_LEAF_NORMAL.z),forward=new THREE.Vector3(NIGHT_LEAF_FORWARD.x,NIGHT_LEAF_FORWARD.y,NIGHT_LEAF_FORWARD.z),right=normal.clone().cross(forward).normalize(),basis=new THREE.Matrix4().makeBasis(right,normal,forward),restSurfaces=[];
+ const fireflySupports=Object.freeze(NIGHT_HOMES.map(([,x,z,alt],group)=>{
+  const y=heightAt(x,z)+alt,points=Object.freeze([Object.freeze({x,y,z}),Object.freeze({x:x+NIGHT_SECOND_LEAF.dx,y:y+NIGHT_SECOND_LEAF.dy,z:z+NIGHT_SECOND_LEAF.dz})]);
+  for(let k=0;k<points.length;k++){const home=points[k],root={x:home.x+.18,y:heightAt(home.x+.18,home.z+.10)-.015,z:home.z+.10},leafBase=new THREE.Vector3(home.x,home.y,home.z).addScaledVector(right,.050).addScaledVector(forward,.06);segment(stems,[root.x,root.y,root.z],leafBase.toArray(),.008,.0038,'#71836a');const m=basis.clone().setPosition(home.x,home.y,home.z);stems.add(restBlade,m,'#879d78');restSurfaces.push(Object.freeze({id:`night-leaf-${group}-${k}`,point:home,home,root:Object.freeze(root),normal:NIGHT_LEAF_NORMAL,forward:NIGHT_LEAF_FORWARD,rearEdge:-.028}));
+   // Two smaller lower leaves make the support a rooted plant, not a floating sign.
+   for(let n=0;n<2;n++){const m=new THREE.Matrix4().compose(new THREE.Vector3(root.x,root.y+(home.y-root.y)*(.35+n*.22),root.z),new THREE.Quaternion().setFromEuler(new THREE.Euler(.25,.8+group+n*2,.2)),new THREE.Vector3(1.25,1,1.2));stems.add(restBlade,m,'#617e61');}
+  }
+  return Object.freeze({home:points[0],points,normal:NIGHT_LEAF_NORMAL});
+ }));
+ restBlade.dispose();
+ const grass=blade([[-.025,0],[.018,0],[.025,.3],[0,.75],[-.018,.35]]),leaves=blade([[0,.55],[.16,.25],[.17,-.1],[0,-.30],[-.17,-.1],[-.16,.25]]),grassItems=[],canopy=[];
+ function restDistance(x,z){return Math.min(...restSurfaces.map(s=>Math.hypot(x-s.point.x,z-s.point.z)));}
+ // Narrow grasses leave a dry, continuous corridor and an open view to the six leaves.
+ for(let i=0;i<660;i++){const x=(random()-.5)*48,z=(random()-.5)*48;if(pathDistance(x,z)<1.25||restDistance(x,z)<1.2||pond(x,z)<1.02)continue;const h=.30+random()*.45;for(let k=0;k<3;k++)grassItems.push({x:x+(random()-.5)*.15,y:heightAt(x,z),z:z+(random()-.5)*.15,rx:-1.15+random()*.25,ry:k*TAU/3+random()*.3,rz:(random()-.5)*.25,sx:.8+random()*.5,sz:h,color:['#64836b','#78917b','#4e735f'][k]});}
+ for(let i=0;i<85;i++){const a=random()*TAU,r=1.06+random()*.12,x=10+Math.cos(a)*3.5*r,z=-5+Math.sin(a)*11.5*r;if(pathDistance(x,z)<1.3||restDistance(x,z)<1.4)continue;grassItems.push({x,y:heightAt(x,z),z,rx:-1.35,ry:random()*TAU,sx:.8,sz:1.1+random()*.5,color:'#748e76'});}
+ instances('night-grass-and-sedges',grass,new THREE.MeshLambertMaterial({side:THREE.DoubleSide}),grassItems);
+ // A sparse boundary of small broadleaf trees, not dense forest or an empty void.
+ for(let i=0;i<13;i++){const a=i/13*TAU,r=20+random()*3,x=Math.cos(a)*r,z=Math.sin(a)*r;if(pond(x,z)<1.3)continue;const y=heightAt(x,z),h=4+random()*2.3;segment(wood,[x,y-.03,z],[x+.25,y+h,z],.18,.08,'#586c65');colliders.push({x,z,r:.30});for(let b=0;b<3;b++){const angle=b*TAU/3,xx=x+Math.cos(angle)*1.4,zz=z+Math.sin(angle)*1.4;segment(wood,[x,y+h*.6,z],[xx,y+h,zz],.075,.018,'#65796c');for(let n=0;n<12;n++)canopy.push({x:xx+(random()-.5)*2,y:y+h+(random()-.5)*.8,z:zz+(random()-.5)*2,rx:(random()-.5)*.5,ry:random()*TAU,sx:2+random(),sz:1.4+random(),color:['#58705c','#6c826d','#42634f'][n%3]});}}
+ const trunks=mesh('night-boundary-trunks',wood.finish(),new THREE.MeshLambertMaterial({vertexColors:true}),true);instances('night-boundary-leaves',leaves,new THREE.MeshLambertMaterial({side:THREE.DoubleSide}),canopy,true);
+ const plants=mesh('night-rest-plants',stems.finish(),new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}));
+ function sampleAt(position){if(!position||![position.x,position.y,position.z].every(Number.isFinite))return null;return restSurfaces.find(s=>Math.hypot(position.x-s.point.x,position.y-s.point.y,position.z-s.point.z)<1e-6)||null;}
+ function fireflySupportAt(item){const s=sampleAt(item);if(s)return{...s,sampleAt};if(item?.species==='firefly'){const start=sampleAt(item.flightStart),end=sampleAt(item.flightEnd);if(start||end)return{normal:NIGHT_LEAF_NORMAL,forward:NIGHT_LEAF_FORWARD,start,end,sampleAt};}return null;}
+ const stats={meshes:owned.length,drawCalls:owned.length,triangles:0,instances:0,leafInstances:grassItems.length+canopy.length,trees:colliders.length};for(const o of owned){stats.triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3*(o.isInstancedMesh?o.count:1);if(o.isInstancedMesh)stats.instances+=o.count;}
+ return{heightAt,bounds:NIGHT_BOUNDS,spawn:{...NIGHT_SPAWN},colliders,insectHomes:NIGHT_HOMES,fireflySupports,fireflySupportAt,supports:Object.freeze(restSurfaces),captureOccluders:Object.freeze([ground,trunks]),meshes:Object.freeze(owned),stats,landmarks:{wetland:{x:10,z:-5,y:-.18},restLeaves:restSurfaces.map(s=>s.point)},locationLabel(x,z){return pond(x,z)<1.7?'夜の湿地の水ぎわ':z>1?'夜の草むらの入口':'葉の間の静かな小道';},update(){/* Fixed illumination, still support geometry, no flashing. */}};
+}

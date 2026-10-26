@@ -219,7 +219,7 @@ export function createWorld(scene) {
     rocks.push({x,y:heightAt(x,z)+size*.25,z,rx:rand()*.5,ry:rand()*TAU,rz:rand()*.5,sx:size*(1+rand()*.4),sy:size*.65,sz:size,color:new THREE.Color().setHSL(.14,.06,.68+rand()*.16)});
     if(size>.55)colliders.push({x,z,r:size*.8});
   }
-  addInstanced(scene,rockGeo,rockMaterial,rocks,true);
+  const rockMesh=addInstanced(scene,rockGeo,rockMaterial,rocks,true);
 
   // Pond surface uses broad moving highlights, not mirror/glitter overload.
   const waterG=new THREE.CircleGeometry(1,72);waterG.rotateX(-Math.PI/2);const wp=waterG.attributes.position;
@@ -240,21 +240,105 @@ export function createWorld(scene) {
   // Resting insects have actual supports: these coordinates intentionally match
   // insects.js homes. Keeping the head still makes landing / release readable.
   const perchHomes=[
-    ['flower',0,5,1.15],['flower',-3.7,1.8,1.15],['flower',5,-3,1.3],
+    ['flower',0,5,1.15],['flower',-4.8,5.6,1.15],['flower',5,-3,1.3],
     ['flower',-17,-1,1.25],['flower',12,-13,1.2],['flower',-26,-21,1.15],
-    ['flower',15,15,1.25],['flower',-7,15,1.2],
+    ['flower',10.5,-.2,1.25],['flower',-6.8,8.4,1.2],
     ['reed',18,-14,1.4],['reed',19,-24,1.25],['reed',29,-13,1.35],
     ['reed',31,-24,1.2],['reed',22,-29,1.3],['reed',10,-19,1.2]
   ];
   const perchGeometry=meshCollector(),perchMatrix=new THREE.Matrix4(),perchObject=new THREE.Object3D();
+  // Contact metadata is measured in world coordinates. It adds no random draws.
+  const supports=[];
+  const supportIds=[1,2,3,4,5,6,7,18,8,9,10,11,12,13];
+  const supportRay=new THREE.Raycaster(),supportDown=new THREE.Vector3(0,-1,0);
+  ground.updateMatrixWorld(true);
+  function renderedGroundAt(x,z){
+    supportRay.set(new THREE.Vector3(x,30,z),supportDown);
+    const hit=supportRay.intersectObject(ground,false)[0];
+    return hit?hit.point.y:heightAt(x,z);
+  }
+  const barkSupportCache=new Map();
+  trunks.updateMatrixWorld(true);
+  const firstTrunkTemplate=new THREE.CylinderGeometry(1,1,1,9,1,false);
+  const firstTrunkVertexCount=firstTrunkTemplate.attributes.position.count;
+  firstTrunkTemplate.dispose();
+  function fitBarkFootprint(point,normal,home){
+    const up=new THREE.Vector3(0,1,0).addScaledVector(normal,-normal.y).normalize();
+    const right=new THREE.Vector3().crossVectors(normal,up).normalize(),polygon=[];
+    // Recover the four corners of this actual tapered trunk facet. This is run
+    // only once for each cached home, never searched or adjusted every frame.
+    const positions=trunks.geometry.attributes.position;
+    for(let i=0;i<firstTrunkVertexCount;i++){
+      const delta=new THREE.Vector3().fromBufferAttribute(positions,i).applyMatrix4(trunks.matrixWorld).sub(point);
+      if(Math.abs(delta.dot(normal))<1e-5){
+        const p={x:delta.dot(right),y:delta.dot(up)};
+        if(!polygon.some(q=>Math.hypot(p.x-q.x,p.y-q.y)<1e-5))polygon.push(p);
+      }
+    }
+    if(polygon.length!==4)return null;
+    const cx=polygon.reduce((sum,p)=>sum+p.x,0)/4,cy=polygon.reduce((sum,p)=>sum+p.y,0)/4;
+    polygon.sort((a,b)=>Math.atan2(a.y-cy,a.x-cx)-Math.atan2(b.y-cy,b.x-cx));
+    let lower=-Infinity,upper=Infinity;
+    for(let edge=0;edge<4;edge++){
+      const a=polygon[edge],b=polygon[(edge+1)%4],dx=b.x-a.x,dy=b.y-a.y;
+      for(const side of [-1,1])for(let leg=0;leg<3;leg++){
+        const footX=side*.048*1.6,footZ=(.041-leg*.026)*1.6;
+        const constant=dx*(footZ-a.y)-dy*(footX-a.x),margin=.003*Math.hypot(dx,dy);
+        if(Math.abs(dy)<1e-9){if(constant<margin)return null;continue;}
+        const bound=(constant-margin)/dy;
+        if(dy>0)upper=Math.min(upper,bound);else lower=Math.max(lower,bound);
+      }
+    }
+    if(lower>upper)return null;
+    const shift=clamp(0,lower,upper),fitted=point.clone().addScaledVector(right,shift);
+    const center=fitted.clone().addScaledVector(normal,.04),correction=center.distanceTo(new THREE.Vector3(home.x,home.y,home.z));
+    if(correction>.085)return null;
+    return {point:fitted,shift,correction};
+  }
+  function barkSupportAt(home){
+    if(!home||![home.x,home.y,home.z].every(Number.isFinite))return null;
+    const radial=new THREE.Vector3(home.x-oak.x,0,home.z-oak.z),radius=radial.length();
+    if(radius<.001||radius>2||home.y<oak.y+.3||home.y>oak.y+3.5)return null;
+    const key=`${home.x},${home.y},${home.z}`;
+    if(barkSupportCache.has(key))return barkSupportCache.get(key);
+    radial.normalize();
+    supportRay.set(new THREE.Vector3(home.x,home.y,home.z).addScaledVector(radial,.5),radial.clone().negate());
+    const hit=supportRay.intersectObject(trunks,false)[0];
+    if(!hit||hit.distance>1.6){barkSupportCache.set(key,null);return null;}
+    const normal=hit.face.normal.clone().applyMatrix3(new THREE.Matrix3().getNormalMatrix(trunks.matrixWorld)).normalize();
+    const fitted=fitBarkFootprint(hit.point,normal,home);
+    if(!fitted){barkSupportCache.set(key,null);return null;}
+    const support=Object.freeze({kind:'bark',home:Object.freeze({x:home.x,y:home.y,z:home.z}),point:Object.freeze({x:fitted.point.x,y:fitted.point.y,z:fitted.point.z}),normal:Object.freeze({x:normal.x,y:normal.y,z:normal.z}),tangentShiftMetres:fitted.shift,renderCenterCorrectionMetres:fitted.correction});
+    barkSupportCache.set(key,support);return support;
+  }
   const perchLeaf=new THREE.SphereGeometry(1,7,3),perchPetal=new THREE.SphereGeometry(1,7,4);
+  // One thin, pointed pond-side leaf instead of inflating every reed seedhead.
+  // The very shallow fold keeps a natural silhouette while supporting the feet.
+  const landingLeaf=new THREE.BufferGeometry();
+  const leafOutline=[[0,.115,-.0016],[.045,.09,-.0008],[.065,.055,-.0005],[.072,.015,-.0003],[.061,-.045,-.0003],[.032,-.075,-.0004],[0,-.063,-.0002],[-.037,-.077,-.0004],[-.067,-.041,-.0003],[-.071,.016,-.0002],[-.058,.062,-.0005],[-.03,.097,-.001]];
+  const leafPositions=[],leafUvs=[],leafIndices=[];
+  for(let side=0;side<2;side++){
+    const offset=leafPositions.length/3;
+    leafPositions.push(0,.0003,0);leafUvs.push(.5,.4);
+    for(const [x,z,y]of leafOutline){leafPositions.push(x,y,z);leafUvs.push((x+.072)/.144,(z+.077)/.192);}
+    for(let j=0;j<leafOutline.length;j++){
+      const a=offset+1+j,b=offset+1+(j+1)%leafOutline.length;
+      if(side===0)leafIndices.push(offset,a,b);else leafIndices.push(offset,b,a);
+    }
+  }
+  landingLeaf.setAttribute('position',new THREE.Float32BufferAttribute(leafPositions,3));landingLeaf.setAttribute('uv',new THREE.Float32BufferAttribute(leafUvs,2));landingLeaf.setIndex(leafIndices);landingLeaf.computeVertexNormals();
   function perchPart(geometry,x,y,z,sx,sy,sz,rx,ry,rz,color){
     perchObject.position.set(x,y,z);perchObject.scale.set(sx,sy,sz);perchObject.rotation.set(rx,ry,rz);perchObject.updateMatrix();
     perchMatrix.copy(perchObject.matrix);perchGeometry.add(geometry,perchMatrix,new THREE.Color(color));
   }
   for(let i=0;i<perchHomes.length;i++){
-    const [kind,x,z,h]=perchHomes[i],headY=heightAt(x,z)+h-.025;
-    const bx=i===0?1.2:x+.16*Math.cos(i*1.9),bz=i===0?z+.06:z+.16*Math.sin(i*1.9),baseY=heightAt(bx,bz);
+    const [kind,x,z,h]=perchHomes[i],homeY=heightAt(x,z)+h;
+    // Field scale remains 1. A shallow flower disk and thin leaf meet the
+    // actual foot endpoints; only supporting flora changes, never the insect.
+    const contactY=homeY-(kind==='flower'?.01625:.02125);
+    const headY=kind==='flower'?homeY-.01815:contactY;
+    const bx=i===0?1.2:x+.16*Math.cos(i*1.9),bz=i===0?z+.06:z+.16*Math.sin(i*1.9),baseY=renderedGroundAt(bx,bz);
+    supports.push({id:`insect-${supportIds[i]}`,kind,home:{x,y:homeY,z},root:{x:bx,y:baseY-.015,z:bz},groundY:baseY,head:{x,y:headY,z},topY:headY+(kind==='flower'?.0035:.0009),radius:kind==='flower'?.052:.115,contactY,contactRadius:kind==='flower'?.0411:.054,surface:kind==='flower'?'flower-disc':'leaf'});
     let last=[bx,baseY-.015,bz];
     // Tall cow-parsley-like stems lean naturally, rather than forming poles in the path.
     for(let j=1;j<=4;j++){
@@ -268,17 +352,21 @@ export function createWorld(scene) {
     if(kind==='flower'){
       // Small cream petals, golden centre. The insect remains the salient shape.
       for(let j=0;j<7;j++){const a=j/7*TAU;perchPart(perchPetal,x+Math.cos(a)*.047,headY-.006,z+Math.sin(a)*.047,.043,.009,.019,0,-a,0,'#e2d697');}
-      perchPart(perchPetal,x,headY,z,.029,.014,.029,0,0,0,'#b79b45');
+      perchPart(perchPetal,x,headY,z,.052,.0035,.052,0,0,0,'#b79b45');
       // One smaller companion bloom makes the tall plant legible from the path.
       const ax=x+.15*Math.cos(i+1),az=z+.15*Math.sin(i+1),ay=headY-.22;
       const branchT=.65,branchCurve=branchT*branchT*(3-2*branchT);
       cylinderInto(perchGeometry,[bx+(x-bx)*branchCurve,baseY+(headY-baseY)*branchT,bz+(z-bz)*branchCurve],[ax,ay,az],.005,.003,new THREE.Color('#78864a'),5);
       perchPart(perchPetal,ax,ay,az,.035,.012,.035,0,0,0,'#d8ce8d');
     }else{
-      cylinderInto(perchGeometry,[x,headY-.105,z],[x,headY,z],.022,.013,new THREE.Color('#91825a'),6);
+      // A narrow stem supports one leaf; the plant is not a 13cm-wide reed cone.
+      const leafAngle=i*1.9;
+      perchPart(landingLeaf,x,headY,z,1,1,1,0,leafAngle,0,'#7b8d4d');
+      const a=new THREE.Vector3(0,.0001,-.058).applyAxisAngle(new THREE.Vector3(0,1,0),leafAngle),b=new THREE.Vector3(0,-.0011,.102).applyAxisAngle(new THREE.Vector3(0,1,0),leafAngle);
+      cylinderInto(perchGeometry,[x+a.x,headY+a.y,z+a.z],[x+b.x,headY+b.y,z+b.z],.0008,.0005,new THREE.Color('#9aa268'),4);
     }
   }
-  perchLeaf.dispose();perchPetal.dispose();
+  perchLeaf.dispose();perchPetal.dispose();landingLeaf.dispose();
   const perches=new THREE.Mesh(perchGeometry.finish(),new THREE.MeshLambertMaterial({vertexColors:true}));
   perches.name='insect-resting-perches';perches.receiveShadow=true;scene.add(perches);
 
@@ -291,9 +379,46 @@ export function createWorld(scene) {
   const log=new THREE.Mesh(new THREE.CylinderGeometry(.17,.23,3.1,9),new THREE.MeshStandardMaterial({map:barkTexture,color:'#7c715a',roughness:1}));log.rotation.set(.1,.5,Math.PI/2-.1);log.position.set(-16,heightAt(-16,-4)+.21,-4);log.castShadow=true;log.receiveShadow=true;scene.add(log);
   colliders.push({x:-16,z:-4,r:.55});
 
+  // Nine finite ground contacts for three local grasshopper groups. These are
+  // read-only samples of the existing terrain, not extra patches or moved plants.
+  const grasshopperGroups=[
+    // First group is 1.26m off the entrance-to-east-flowers walking line.
+    [[3.25,8.6],[4.8,8],[3.5,6.5]],
+    [[-11,10],[-12.45,11.2],[-10.25,12.05]],
+    [[5,-15],[6.5,-16],[3.95,-16.5]],
+  ];
+  const grasshopperContactCache=new Map(),grasshopperContacts=[],grasshopperRay=new THREE.Raycaster(),grasshopperDown=new THREE.Vector3(0,-1,0);
+  ground.updateMatrixWorld(true);
+  const frozenPoint=v=>Object.freeze({x:v.x,y:v.y,z:v.z});
+  const grasshopperSupports=Object.freeze(grasshopperGroups.map(group=>{
+    const points=Object.freeze(group.map(([x,z])=>{
+      grasshopperRay.set(new THREE.Vector3(x,30,z),grasshopperDown);
+      const hit=grasshopperRay.intersectObject(ground,false)[0];
+      if(!hit)throw new Error('Missing grasshopper ground support');
+      const normal=hit.face.normal.clone().transformDirection(ground.matrixWorld),target=hit.point.clone().addScaledVector(normal,.045);
+      // A 12cm foot disk must remain within this single actual triangle for every
+      // body heading. Fail closed if a future terrain edit invalidates the contract.
+      const vertices=[hit.face.a,hit.face.b,hit.face.c].map(i=>new THREE.Vector3().fromBufferAttribute(terrainG.attributes.position,i).applyMatrix4(ground.matrixWorld));
+      let margin=Infinity;for(let i=0;i<3;i++){const a=vertices[i],b=vertices[(i+1)%3],edge=b.clone().sub(a);margin=Math.min(margin,new THREE.Vector3().crossVectors(edge,hit.point.clone().sub(a)).length()/edge.length());}
+      if(margin<.12||normal.y<.98)throw new Error('Unsafe grasshopper ground support');
+      const support=Object.freeze({point:frozenPoint(hit.point),normal:frozenPoint(normal),target:frozenPoint(target)});
+      grasshopperContactCache.set(`${x},${z}`,support);grasshopperContactCache.set(`${target.x},${target.z}`,support);grasshopperContacts.push(support);
+      return support.target;
+    }));
+    return Object.freeze({home:points[0],points});
+  }));
+  const grasshopperHomes=Object.freeze(grasshopperSupports.map(({home})=>Object.freeze(['grasshopper',home.x,home.z,home.y-heightAt(home.x,home.z)])));
+  function grasshopperSupportAt(position){
+    if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
+    const direct=grasshopperContactCache.get(`${position.x},${position.z}`);if(direct)return direct;
+    // Simulation landing arithmetic can differ by an ulp; never raycast per frame
+    // or return an unrelated plane while the insect is in the air.
+    return grasshopperContacts.find(s=>Math.hypot(position.x-s.target.x,position.z-s.target.z)<=1e-6||Math.hypot(position.x-s.point.x,position.z-s.point.z)<=1e-6)||null;
+  }
+
   const landmarks={oak,pond:{x:24,z:-20,y:-.29,rx:9,rz:6},meadow:{x:4,z:-3,y:heightAt(4,-3)},flowers:{x:8,z:-1,y:heightAt(8,-1)},forest:{x:-24,z:-25,y:heightAt(-24,-25)}};
   return {
-    heightAt,colliders,bounds:85,spawn:{x:0,z:10},landmarks,
+    heightAt,colliders,bounds:85,spawn:{x:0,z:10},captureOccluders:Object.freeze([ground,trunks,rockMesh,log].filter(Boolean)),landmarks,supports,barkSupportAt,grasshopperSupportAt,grasshopperSupports,grasshopperHomes,
     update(time,dt){windTime.value=time;dust.rotation.y=Math.sin(time*.012)*.035;dust.position.y=Math.sin(time*.21)*.09;},
     // Useful renderer inspection without changing simulation state.
     stats:{trees:treeCount,leafCards:leafInstances.length,grassTufts:grassInstances.length},

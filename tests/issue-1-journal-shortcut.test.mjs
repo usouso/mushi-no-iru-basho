@@ -1,3 +1,4 @@
+import {createTestLocks} from './fixtures/journal-locks.mjs';
 /** Issue #1: actual input + journal UI, minimal DOM; not browser/WebGL QA.
  * Self-contained: node --test tests/issue-1-journal-shortcut.test.mjs
  * Data-URL imports also work in the published runtime checkout without package.json.
@@ -9,7 +10,7 @@ const moduleURL=source=>'data:text/javascript;base64,'+Buffer.from(source).toStr
 const source=name=>readFile(new URL(`../src/${name}`,import.meta.url),'utf8');
 const journalURL=moduleURL(await source('journal.js'));
 const {createJournal}=await import(journalURL);
-const {createJournalUI}=await import(moduleURL((await source('journal-ui.js')).replace("'./journal.js'",JSON.stringify(journalURL))));
+const {createJournalUI}=await import(moduleURL((await source('journal-ui.js')).replace(/['"]\.\/journal\.js(?:\?[^'"]*)?['"]/,JSON.stringify(journalURL))));
 const {createInput}=await import(moduleURL(await source('input.js')));
 class Element extends EventTarget {
  constructor(tagName,doc){super();this.tagName=tagName.toUpperCase();this.doc=doc;this.children=[];this.dataset={};this.value='';}
@@ -22,10 +23,10 @@ class Element extends EventTarget {
 function fixture(t){
  const document=new EventTarget(),window=new EventTarget();let pads=[],mode='playing',toggles=0,pauseOptions=[];
  document.createElement=tag=>new Element(tag,document);document.body=document.createElement('body');const canvas=document.createElement('canvas');document.body.append(canvas);canvas.focus();
- for(const [key,value]of Object.entries({document,window,navigator:{getGamepads:()=>pads}})){
+ for(const [key,value]of Object.entries({document,window,navigator:{locks:createTestLocks(),getGamepads:()=>pads}})){
   const old=Object.getOwnPropertyDescriptor(globalThis,key);Object.defineProperty(globalThis,key,{configurable:true,value});t.after(()=>{if(old)Object.defineProperty(globalThis,key,old);else delete globalThis[key];});
  }
- const journal=createJournal({getItem:()=>null,setItem(){}});journal.record({species:'butterfly',location:'野原'});
+ const values=new Map();const journal=createJournal({getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value)});journal.record({species:'butterfly',location:'野原'});
  let input;const close=()=>{ui.close();mode='playing';input.clear();canvas.focus();};
  const toggle=()=>{toggles++;if(mode==='journal')close();else{mode='journal';input.clear();ui.open();}};
  const ui=createJournalUI({journal,onClose:close});
