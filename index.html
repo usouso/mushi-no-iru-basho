@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20392b">
-  <meta name="application-version" content="0.18.1">
+  <meta name="application-version" content="0.19.0">
   <meta name="description" content="草木の揺れに目をこらし、小さな生きものに出会う。静かな一人称の虫とり体験。">
   <title>虫のいる場所 — 生きものの観察手帖</title>
-  <link rel="stylesheet" href="./style.css?v=0.18.1&b=0f85c9d0b1ba">
+  <link rel="stylesheet" href="./style.css?v=0.19.0&b=2b3a7a48ca63">
 </head>
 <body>
   <canvas id="game-canvas" aria-label="各生息地をマウスで見回し、移動して虫を探します。" tabindex="-1"></canvas>
@@ -18,7 +18,7 @@
         <p class="eyebrow"><span class="sun-mark" aria-hidden="true"></span> FIELD NOTES / HABITAT STUDIES</p>
         <p class="small-heading">生きものの観察手帖</p>
         <h1>虫のいる場所</h1>
-        <p class="title-version">試遊版 <span data-build-version>0.18.1</span></p>
+        <p class="title-version">試遊版 <span data-build-version>0.19.0</span></p>
         <p class="title-intro">草をかきわけると、<br>小さな世界が、動きだす。</p>
         <div class="habitat-choice">
           <label for="habitat-select">散策する再現区画</label>
@@ -91,10 +91,11 @@
         <button id="pause-companions-button" class="text-button" type="button">B 仲間・バトル</button>
         <button id="pause-journal-button" class="text-button pause-journal-button" type="button">出会いの図鑑を見る</button>
         <div class="secondary-actions">
-          <button id="restart-button" class="text-button" type="button">はじめから歩く</button>
+          <button id="restart-button" class="text-button" type="button">新しい散策を始める</button>
           <button id="title-button" class="text-button" type="button">表紙へ</button>
         </div>
-        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.18.1</span></p>
+        <p id="expedition-status" class="expedition-status" role="status"></p>
+        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.19.0</span></p>
       </div>
     </section>
 
@@ -107,6 +108,7 @@
         <button id="capture-battle-button" class="primary-button" type="button" aria-describedby="capture-battle-note" hidden>この虫でバトル</button>
         <p id="capture-battle-note" class="capture-battle-note"></p>
         <p id="insect-size" class="insect-size"></p>
+        <p id="insect-individual-size" class="individual-size" hidden></p>
         <p id="insect-description" class="insect-description"></p>
         <p id="insect-hint" class="insect-hint"></p>
         <button id="keep-button" class="text-button" type="button" hidden>連れていくだけ</button>
@@ -146,7 +148,7 @@
       <div class="error-card"><p class="eyebrow">FIELD NOTES</p><h2>野原を開けませんでした</h2><p id="error-message">このブラウザでは3D表示を開始できませんでした。WebGLに対応したブラウザで、もう一度お試しください。</p><p class="error-note">ページを再読み込みするか、別のブラウザでお試しください。</p></div>
     </section>
   </main>
-  <script src="./assets/vendor/three.min.js?v=0.18.1&b=0f85c9d0b1ba"></script>
-  <script type="module" src="./src/main.js?v=0.18.1&b=0f85c9d0b1ba"></script>
+  <script src="./assets/vendor/three.min.js?v=0.19.0&b=2b3a7a48ca63"></script>
+  <script type="module" src="./src/main.js?v=0.19.0&b=2b3a7a48ca63"></script>
 </body>
 </html>

@@ -7,21 +7,24 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 const root=path.resolve(import.meta.dirname,'..');
-const JOURNAL_KEY='mushi-journal-v2',ROSTER_KEY='mushi-companions-v1';
+const JOURNAL_KEY='mushi-journal-v2',ROSTER_KEY='mushi-companions-v2',LEGACY_ROSTER_KEY='mushi-companions-v1',EXPEDITION_KEY='mushi-expedition-v1';
 let nonce=0;
-function testLocks(){const tails=new Map();return {request(key,options,callback){assert.ok([JOURNAL_KEY,ROSTER_KEY].includes(key));assert.equal(options.mode,'exclusive');const next=(tails.get(key)||Promise.resolve()).then(callback);tails.set(key,next.catch(()=>{}));return next;}};}
-async function app(t,{entries=[],battleSeed=0,locks=testLocks(),blockWrite=()=>false,extraExports='roster,battle,models,keepCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,leaveBattle,returnFromBattle,applyCompanionPresence'}={}){
- const config={entries,battleSeed,locks,blockWrite,writes:[]};Object.defineProperty(globalThis,'__companionsMainConfig',{configurable:true,value:config});
+function testLocks(){const tails=new Map();return {request(key,options,callback){assert.ok([JOURNAL_KEY,ROSTER_KEY,LEGACY_ROSTER_KEY,EXPEDITION_KEY].includes(key));assert.equal(options.mode,'exclusive');const next=(tails.get(key)||Promise.resolve()).then(callback);tails.set(key,next.catch(()=>{}));return next;}};}
+async function app(t,{entries=[],battleSeed=0,locks=testLocks(),blockWrite=()=>false,expeditionEnabled=false,extraExports='roster,battle,models,keepCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,leaveBattle,returnFromBattle,applyCompanionPresence'}={}){
+ const config={entries,battleSeed,locks,blockWrite,expeditionEnabled,writes:[]};Object.defineProperty(globalThis,'__companionsMainConfig',{configurable:true,value:config});
  const existing=fs.readFileSync(path.join(root,'tests/direct-habitat-switch.test.mjs'),'utf8'),marker="\nconst select=()=>elements.get('travel-habitat-select');";assert.ok(existing.includes(marker));
  let source=existing.slice(0,existing.indexOf(marker));
  source=source.replace("from './fixtures/journal-locks.mjs'",`from ${JSON.stringify(pathToFileURL(path.join(root,'tests/fixtures/journal-locks.mjs')).href)}`).replace("const root=path.resolve(import.meta.dirname,'..');",`const root=${JSON.stringify(root)};\nconst companionConfig=globalThis.__companionsMainConfig;`);
  source=source.replace('const savedSettings=new Map();','const savedSettings=new Map(companionConfig.entries);');
+ // Legacy scenarios explicitly make only the new outing key unavailable.
+ // New individual scenarios enable the real production store and Web Locks.
+ source=source.replace("getItem:key=>{if(blockStorage)throw Error('Storage blocked');return savedSettings.get(key)??null;}","getItem:key=>{if(blockStorage||(!companionConfig.expeditionEnabled&&key==='mushi-expedition-v1'))throw Error('Storage blocked');return savedSettings.get(key)??null;}");
  source=source.replace("setItem:(key,value)=>{if(blockStorage)throw Error('Storage blocked');savedSettings.set(key,String(value));}","setItem:(key,value)=>{if(blockStorage||companionConfig.blockWrite(key))throw Error('Storage blocked');companionConfig.writes.push([key,String(value)]);savedSettings.set(key,String(value));}");
  source=source.replace('navigator:{locks:createTestLocks(),','navigator:{locks:companionConfig.locks,');
  source=source.replace('const globals={window,', 'const globals={crypto:{getRandomValues(array){array[0]=companionConfig.battleSeed;return array;}},window,');
  const read="let source=fs.readFileSync(path.join(root,'src',name),'utf8');";assert.ok(source.includes(read));
  source=source.replace(read,read+`\n source+='\\n// companions-main scenario ${++nonce}';`);
- if(extraExports)source=source.replace('export {state,simulation,world,journal,',`export {${extraExports},state,simulation,world,journal,`);
+ source=source.replace('export {state,simulation,world,journal,',`export {expedition,activeOuting,newOuting,capturedMeasurement,${extraExports?extraExports+',':''}state,simulation,world,journal,`);
  source+='\nexport {g,frame,elements,key,choose,find,modal,descendants,moduleURL,savedSettings,settle,master};';
  const h=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
  const appWindow=window;t.after(()=>{appWindow.dispatchEvent(new Event('pagehide'));delete globalThis.__companionsMainConfig;});
@@ -59,7 +62,7 @@ test('actual captures become three companions, survive resets/travel/reload, fig
  assert.equal(g.roster.entries.length,0,'existing encounter records do not create ownership');
  h.choose('tropical');const hercules=h.catchEligible('hercules',{wait:false});g.openCompanions();assert.equal(g.state.mode,'playing','capture-delay transition cannot be stolen by companions');h.frame(22);assert.equal(g.state.mode,'inspect');assert.equal(elements.get('keep-button').hidden,false);click(h,'keep-button');assert.equal(g.state.mode,'playing');assert.equal(g.simulation.caught,null);assert.equal(hercules.companion,true);assert.equal(g.roster.entries.length,1);click(h,'keep-button');assert.equal(g.roster.entries.length,1,'double Keep cannot duplicate');await g.roster.flush();await g.journal.flush();
  const first=g.roster.entries[0];hasOrigin(h,first);g.restart();hasOrigin(h,first);
- const another=h.catchEligible('hercules');assert.notEqual(another.id,first.originIndividualId);assert.equal(elements.get('keep-button').disabled,true);g.keepCaptured();assert.equal(g.state.mode,'inspect');assert.equal(g.roster.entries.length,1);g.release({lock:false});
+ const another=h.catchEligible('hercules');assert.notEqual(another.id,first.originIndividualId);assert.equal(elements.get('keep-button').disabled,false);g.keepCaptured();assert.equal(g.state.mode,'inspect');assert.equal(g.roster.entries.length,1);g.release({lock:false});
  h.travel('night');for(const species of ['rhino','stag']){h.catchEligible(species);click(h,'keep-button');assert.equal(g.state.mode,'playing');await g.roster.flush();await g.journal.flush();}
  assert.deepEqual(g.roster.entries.map(e=>e.species),['hercules','rhino','stag']);assert.equal(g.journal.entries.find(e=>e.species==='rhino').note,journalRecord.note);
  for(const e of g.roster.entries.filter(e=>e.originHabitat==='night'))hasOrigin(h,e);
@@ -67,7 +70,7 @@ test('actual captures become three companions, survive resets/travel/reload, fig
  const rosterRaw=h.savedSettings.get(ROSTER_KEY),journalRaw=h.savedSettings.get(JOURNAL_KEY);assert.equal(h.savedSettings.get('mushi-journal-v1'),legacy);
  // Explicitly load a new store against the current bytes. Main's own reload is
  // exercised below as a separate independent scenario, not a hidden fake save.
- const store=await import(h.moduleURL('companion-roster.js'));assert.deepEqual(store.createCompanionRoster(localStorage,{locks:testLocks()}).entries,g.roster.entries);
+ const store=await import(h.moduleURL('individual-roster.js'));assert.deepEqual(store.createCompanionRoster(localStorage,{locks:testLocks()}).entries,g.roster.entries);
  h.travel('tropical');hasOrigin(h,first);h.travel('night');
  click(h,'companions-button');assert.equal(g.state.mode,'companions');assert.equal(elements.get('companions-screen').hidden,false);await h.settle();assert.equal(h.master().value,0);assert.equal(elements.get('companion-select').children.length,3);select(h,'companion-select',first.id);select(h,'battle-opponent-select','rhino');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');assert.equal(elements.get('battle-screen').hidden,false);assert.match(elements.get('battle-cue').textContent,/操作は不要/);assert.equal(g.battle.opponentSpecies,'rhino');
  const oldRoster=g.roster.entries;finishWatching(h);
@@ -87,16 +90,16 @@ test('unsupported captured insects keep the existing journal and release flow wi
 
 test('failed companion persistence remains visibly session-only without overwriting stored ownership or the journal',async t=>{
  // Quota-like failure on the new key only; the existing journal remains usable.
- const raw=JSON.stringify({version:1,entries:[{id:'night/insect-4',species:'rhino',originHabitat:'night',originIndividualId:'insect-4',capturedAt:100}]}),h=await app(t,{entries:[[ROSTER_KEY,raw],[JOURNAL_KEY,journalSeed]],blockWrite:key=>key===ROSTER_KEY}),{g,elements}=h;
- h.choose('tropical');const item=h.catchEligible('hercules');click(h,'keep-button');await g.roster.flush();await g.journal.flush();assert.equal(g.roster.saved,false);assert.equal(g.roster.entries.length,2);assert.equal(item.companion,true);h.frame(1);assert.equal(g.models.get(item.id).visible,false);assert.equal(h.savedSettings.get(ROSTER_KEY),raw);click(h,'companions-button');assert.equal(elements.get('companion-save-status').dataset.unsaved,'true');assert.match(elements.get('companion-save-status').textContent,/保存できません/);assert.match(elements.get('companion-save-status').textContent,/ページ内では遊べます/);
- const before=g.roster.entries,journalRaw=h.savedSettings.get(JOURNAL_KEY);select(h,'companion-select','tropical/'+item.id);click(h,'battle-start-button');assert.equal(g.state.mode,'battle');click(h,'battle-exit-button');assert.equal(g.state.mode,'companions');assert.deepEqual(g.roster.entries,before);assert.equal(h.savedSettings.get(JOURNAL_KEY),journalRaw);assert.equal(h.savedSettings.get(ROSTER_KEY),raw);
+ const raw=JSON.stringify({version:1,entries:[{id:'night/insect-4',species:'rhino',originHabitat:'night',originIndividualId:'insect-4',capturedAt:100}]}),h=await app(t,{entries:[[LEGACY_ROSTER_KEY,raw],[JOURNAL_KEY,journalSeed]],blockWrite:key=>key===ROSTER_KEY}),{g,elements}=h;
+ h.choose('tropical');const item=h.catchEligible('hercules');click(h,'keep-button');await g.roster.flush();await g.journal.flush();assert.equal(g.roster.saved,false);assert.equal(g.roster.entries.length,2);assert.equal(item.companion,true);h.frame(1);assert.equal(g.models.get(item.id).visible,false);assert.equal(h.savedSettings.get(LEGACY_ROSTER_KEY),raw);assert.equal(h.savedSettings.has(ROSTER_KEY),false);click(h,'companions-button');assert.equal(elements.get('companion-save-status').dataset.unsaved,'true');assert.match(elements.get('companion-save-status').textContent,/保存できません/);assert.match(elements.get('companion-save-status').textContent,/ページ内では遊べます/);
+ const before=g.roster.entries,journalRaw=h.savedSettings.get(JOURNAL_KEY);select(h,'companion-select','tropical/'+item.id);click(h,'battle-start-button');assert.equal(g.state.mode,'battle');click(h,'battle-exit-button');assert.equal(g.state.mode,'companions');assert.deepEqual(g.roster.entries,before);assert.equal(h.savedSettings.get(JOURNAL_KEY),journalRaw);assert.equal(h.savedSettings.get(LEGACY_ROSTER_KEY),raw);assert.equal(h.savedSettings.has(ROSTER_KEY),false);
 });
 
 
 test('failed release of the last companion remains warned after closing the menu; original saved bytes survive',async t=>{
- const raw=JSON.stringify({version:1,entries:[{id:'night/insect-4',species:'rhino',originHabitat:'night',originIndividualId:'insect-4',capturedAt:100}]}),h=await app(t,{entries:[[ROSTER_KEY,raw],[JOURNAL_KEY,journalSeed]],blockWrite:key=>key===ROSTER_KEY}),{g,elements}=h;
+ const raw=JSON.stringify({version:1,entries:[{id:'night/insect-4',species:'rhino',originHabitat:'night',originIndividualId:'insect-4',capturedAt:100}]}),h=await app(t,{entries:[[LEGACY_ROSTER_KEY,raw],[JOURNAL_KEY,journalSeed]],blockWrite:key=>key===ROSTER_KEY}),{g,elements}=h;
  h.choose('night');click(h,'companions-button');select(h,'companion-select','night/insect-4');click(h,'companion-release-button');click(h,'companion-release-button');await g.roster.flush();
- assert.equal(g.roster.entries.length,0);assert.equal(g.roster.saved,false);assert.equal(h.savedSettings.get(ROSTER_KEY),raw);assert.match(elements.get('companion-save-status').textContent,/保存できません/);
+ assert.equal(g.roster.entries.length,0);assert.equal(g.roster.saved,false);assert.equal(h.savedSettings.get(LEGACY_ROSTER_KEY),raw);assert.equal(h.savedSettings.has(ROSTER_KEY),false);assert.match(elements.get('companion-save-status').textContent,/保存できません/);
  click(h,'companions-close-button');assert.equal(g.state.mode,'playing');assert.match(elements.get('toast').textContent,/未保存/);
  g.pause({lock:false});g.resume({lock:false});assert.match(elements.get('toast').textContent,/未保存/);
 });

@@ -1,32 +1,34 @@
-import { createWorld } from './world.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createTropicalWorld } from './world-tropical.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createUnderstoryWorld } from './world-understory.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createNightWorld } from './world-night.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createSavannaWorld } from './world-savanna.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createWaterHabitat } from './water-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createDivingHabitat } from './diving-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createMantisHabitat } from './mantis-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createBeeHabitat } from './bee-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createJewelHabitat } from './jewel-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createLonghornHabitat } from './longhorn-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createRhinoHabitat } from './rhino-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createStagHabitat } from './stag-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createAntHabitat } from './ant-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createInsects, SPECIES } from './insects.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createInput } from './input.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createAudio } from './audio.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createNet } from './net.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createJournal } from './journal.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createJournalUI } from './journal-ui.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createCaptureVisibility } from './capture-visibility.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createCompanionRoster, isCompanionSpecies } from './companion-roster.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createBattleView } from './battle-view.js?v=0.18.1&b=0f85c9d0b1ba';
+import { createWorld } from './world.js?v=0.19.0&b=2b3a7a48ca63';
+import { createTropicalWorld } from './world-tropical.js?v=0.19.0&b=2b3a7a48ca63';
+import { createUnderstoryWorld } from './world-understory.js?v=0.19.0&b=2b3a7a48ca63';
+import { createNightWorld } from './world-night.js?v=0.19.0&b=2b3a7a48ca63';
+import { createSavannaWorld } from './world-savanna.js?v=0.19.0&b=2b3a7a48ca63';
+import { createWaterHabitat } from './water-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createDivingHabitat } from './diving-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createMantisHabitat } from './mantis-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createBeeHabitat } from './bee-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createJewelHabitat } from './jewel-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createLonghornHabitat } from './longhorn-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createRhinoHabitat } from './rhino-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createStagHabitat } from './stag-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createAntHabitat } from './ant-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.19.0&b=2b3a7a48ca63';
+import { createInsects, SPECIES } from './insects.js?v=0.19.0&b=2b3a7a48ca63';
+import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.19.0&b=2b3a7a48ca63';
+import { createInput } from './input.js?v=0.19.0&b=2b3a7a48ca63';
+import { createAudio } from './audio.js?v=0.19.0&b=2b3a7a48ca63';
+import { createNet } from './net.js?v=0.19.0&b=2b3a7a48ca63';
+import { createJournal } from './journal.js?v=0.19.0&b=2b3a7a48ca63';
+import { createJournalUI } from './journal-ui.js?v=0.19.0&b=2b3a7a48ca63';
+import { createCaptureVisibility } from './capture-visibility.js?v=0.19.0&b=2b3a7a48ca63';
+import { createCompanionRoster, isCompanionSpecies } from './individual-roster.js?v=0.19.0&b=2b3a7a48ca63';
+import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.19.0&b=2b3a7a48ca63';
+import { createBattleView } from './battle-view.js?v=0.19.0&b=2b3a7a48ca63';
+import { createExpedition } from './expedition.js?v=0.19.0&b=2b3a7a48ca63';
+import { individualHabitatOptions, individualScale, individualLabel } from './individual-layout.js?v=0.19.0&b=2b3a7a48ca63';
 
 const HABITATS={
  meadow:{name:'温帯の草地・林縁',create:createWorld,hint:'白い翅が、草花の上でひと休み。近づいてみよう。'},
@@ -47,6 +49,7 @@ const insectStates=new Map();
 // Own the lock transition explicitly; browsers may queue duplicate unlock events.
 let pointerOwned=false;
 let journal,journalUI,journalReturn='playing';
+let expedition,activeOuting=null,outingChanging=false,outingInterrupted=false,capturedMeasurement=null,replaceArmed=null;
 let roster,companionReturn='playing',releaseArmed=null,battle,battleView,battleSuspended=false,battleAudioFresh=false,companionEdited=false;
 const forward=new THREE.Vector3();
 function fatal(message){state.mode='error';$('error-message').textContent=message;$('error-screen').hidden=false;$('start-screen').hidden=true;$('hud').hidden=true;audio?.pause();audio?.dispose?.();journalUI?.close();$('app-shell').inert=false;canvas.inert=false;}
@@ -122,16 +125,16 @@ function activateHabitat(id){
  if(longhornHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...longhornHabitat.homes];habitatOptions.longhornSupports=longhornHabitat.longhornSupports;}
  const captureOccluders=[...(world.captureOccluders||[]),...(antHabitat?.captureOccluders||[]),...(mantisHabitat?.captureOccluders||[]),...(ladybirdHabitat?.captureOccluders||[]),...(rhinoHabitat?.captureOccluders||[]),...(stagHabitat?.captureOccluders||[]),...(metalliferHabitat?.captureOccluders||[]),...(beeHabitat?.captureOccluders||[]),...(swallowtailHabitat?.captureOccluders||[]),...(jewelHabitat?.captureOccluders||[])];
  habitatOptions.hasLineOfSight=createCaptureVisibility(captureOccluders);
- simulation=createInsects(world.heightAt,habitatOptions);
- models=new Map();for(const item of simulation.items){const model=createInsectModel(item.species);models.set(item.id,model);scene.add(model);}
+ simulation=createInsects(world.heightAt,individualHabitatOptions(next,habitatOptions,activeOuting,world.heightAt));
+ models=new Map();for(const item of simulation.items){const model=createInsectModel(item.species,{sizePermille:item.sizePermille});models.set(item.id,model);scene.add(model);}
  state.habitat=next;insectStates.clear();captureDelay=0;state.swing=0;state.cooldown=0;applyCompanionPresence();
 }
 function resetPlayer(){
  const p=state.player;p.x=world.spawn.x;p.z=world.spawn.z;p.y=world.heightAt(p.x,p.z)+1.65;p.yaw=0;p.pitch=-.07;p.speed=0;p.quiet=false;p.running=false;
 }
 function start(){
- if(state.mode==='error')return;
- if(state.mode==='title'){const selected=habitatId($('habitat-select')?.value);if(selected!==state.habitat)activateHabitat(selected);simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;resetPlayer();}
+ if(state.mode==='error'||outingChanging||expedition.pending&&!expedition.snapshot)return;
+ if(state.mode==='title'){const selected=habitatId($('habitat-select')?.value);const nextOuting=expedition.snapshot,changedOuting=(activeOuting?.worldSeed??null)!==(nextOuting?.worldSeed??null)||(activeOuting?.outingCounter??null)!==(nextOuting?.outingCounter??null);activeOuting=nextOuting;if(selected!==state.habitat||changedOuting)activateHabitat(selected);simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;resetPlayer();}
  state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast(HABITATS[state.habitat].hint,6);
 }
 function pause({lock=true}={}){
@@ -143,7 +146,7 @@ function pause({lock=true}={}){
  if(state.mode!=='playing')return;
  state.mode='paused';state.player.speed=0;input.clear();unlock();audio.pause();syncTravelChoice();syncScreens();$('resume-button').focus({preventScroll:true});
 }
-function resume({lock=true}={}){if(state.mode!=='paused')return;applySettings();state.mode='playing';syncScreens();input.clear();audio.start();restoreControl(lock);companionStatus();}
+function resume({lock=true}={}){if(state.mode!=='paused'||outingChanging)return;applySettings();state.mode='playing';syncScreens();input.clear();audio.start();restoreControl(lock);companionStatus();}
 function syncTravelChoice(){
  $('travel-habitat-select').value=state.habitat;$('travel-button').disabled=true;
 }
@@ -152,7 +155,7 @@ function updateTravelChoice(){
  $('travel-button').disabled=state.mode!=='paused'||!Object.prototype.hasOwnProperty.call(HABITATS,selected)||selected===state.habitat;
 }
 function travelHabitat(){
- if(state.mode!=='paused')return;
+ if(state.mode!=='paused'||outingChanging)return;
  const selected=$('travel-habitat-select').value;
  if(!Object.prototype.hasOwnProperty.call(HABITATS,selected)||selected===state.habitat)return;
  // A catch can be paused during its short transition to inspection. Its journal
@@ -164,19 +167,45 @@ function travelHabitat(){
  resume({lock:false});toast(`${HABITATS[selected].name}へ。${HABITATS[selected].hint}`,6);
 }
 function title(){
+ if(outingChanging)return;
  state.mode='title';simulation.release();simulation.removeBait?.();simulation.removeLogFruit?.();captureDelay=0;state.swing=0;state.cooldown=0;input.clear();unlock();audio.pause();resetPlayer();syncScreens();$('start-button').focus({preventScroll:true});
 }
-function restart(){
- simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;state.cooldown=0;captureDelay=0;state.swing=0;resetPlayer();state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast('風の通る入り口から、もう一度。');
+function restart({resume:resumeWalking=true}={}){
+ simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;state.cooldown=0;captureDelay=0;state.swing=0;resetPlayer();state.mode=resumeWalking?'playing':'paused';syncScreens();input.clear();if(resumeWalking){audio.start();requestLock();toast('風の通る入り口から、もう一度。');}else{audio.pause();unlock();syncTravelChoice();}
+}
+function expeditionStatus(){
+ const label=$('expedition-status');if(!label)return;
+ $('start-button').disabled=outingChanging||expedition.pending&&!expedition.snapshot;
+ label.textContent=outingChanging?'新しい散策を準備しています…':!expedition.saved?'散策・大きさの変更は未保存です。今の散策は続けられます。':`散策 ${activeOuting?.outingCounter||expedition.snapshot?.outingCounter||1} · 図鑑と仲間は引き継がれます。`;
+ for(const id of ['restart-button','resume-button','title-button','pause-journal-button','pause-companions-button'])$(id).disabled=outingChanging;
+ if(outingChanging)$('travel-button').disabled=true;else updateTravelChoice();
+ if(state.mode==='inspect')refreshIndividualSize();
+}
+async function newOuting(){
+ if(state.mode!=='paused'||outingChanging)return;
+ outingChanging=true;outingInterrupted=false;expeditionStatus();
+ const result=await expedition.beginNextOuting(activeOuting?.outingCounter);
+ outingChanging=false;
+ if(result.ok){activeOuting=expedition.snapshot;activateHabitat(state.habitat);restart({resume:!outingInterrupted&&!document.hidden&&document.hasFocus?.()!==false});toast('新しい散策へ。甲虫の顔ぶれと大きさが変わりました。',6);}
+ else {$('expedition-status').textContent='新しい散策を保存できませんでした。今の散策と記録はそのままです。';}
+ expeditionStatus();
+ if(!result.ok)$('expedition-status').textContent='新しい散策を保存できませんでした。今の散策と記録はそのままです。';
+}
+function refreshIndividualSize(){
+ const item=simulation.caught,label=$('insect-individual-size');
+ label.hidden=!item||!isCompanionSpecies(item.species);
+ if(label.hidden)return;
+ const best=expedition.snapshot?.best.find(entry=>entry.species===item.species);
+ label.textContent=individualLabel(item)+(capturedMeasurement?.newRecord?' · 自己最大を更新！':best?` · 自己最大 ${Math.round(best.sizePermille/10)}`:'')+(item.encounterId&&!expedition.saved?' · サイズ記録は未保存':'')+'。ゲーム内の表示指標です。実寸mmや強さではありません。';
 }
 function showInspection(item){
- state.mode='inspect';state.player.speed=0;unlock();input.clear();audio.inspect();
+ state.mode='inspect';replaceArmed=null;state.player.speed=0;unlock();input.clear();audio.inspect();
  if(inspectModel){inspectScene.remove(inspectModel);inspectModel.traverse(o=>{o.geometry?.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});}
- inspectModel=createInsectModel(item.species,{inspection:true});
- const scales={butterfly:5.1,dragonfly:4.7,cicada:6.1,morpho:3.4,grasshopper:4.4,hercules:3.8,leafinsect:4,waterstrider:4,leafcutterant:4,firefly:4,dungbeetle:4,divingbeetle:4,mantis:4,ladybird:12,rhino:4,stag:4,metallifer:3.4,bee:8,swallowtail:4,jewel:6,longhorn:6};inspectModel.scale.setScalar(scales[item.species]||5);inspectScene.add(inspectModel);
+ inspectModel=createInsectModel(item.species,{inspection:true,sizePermille:item.sizePermille});
+ const scales={butterfly:5.1,dragonfly:4.7,cicada:6.1,morpho:3.4,grasshopper:4.4,hercules:3.8,leafinsect:4,waterstrider:4,leafcutterant:4,firefly:4,dungbeetle:4,divingbeetle:4,mantis:4,ladybird:12,rhino:4,stag:4,metallifer:3.4,bee:8,swallowtail:4,jewel:6,longhorn:6};inspectModel.scale.setScalar((scales[item.species]||5)*individualScale(item));inspectScene.add(inspectModel);
  inspectTurn=-.45;inspectTilt=.3;positionInspector();
- const data=SPECIES[item.species];$('insect-name').textContent=data.name||data.label;$('insect-size').textContent=data.size||'';$('insect-description').textContent=data.observation||data.description||'';$('insect-hint').textContent=data.hint||'';
- refreshCapturedChoices(item);
+ const data=SPECIES[item.species];$('insect-name').textContent=data.name||data.label;$('insect-size').textContent=(data.size||'').replace('試作表示は','基準模型の表示は');$('insect-description').textContent=data.observation||data.description||'';$('insect-hint').textContent=data.hint||'';
+ refreshCapturedChoices(item);refreshIndividualSize();
  syncScreens();($('capture-battle-button').hidden||$('capture-battle-button').disabled?$('release-button'):$('capture-battle-button')).focus({preventScroll:true});
 }
 function swing(){
@@ -188,10 +217,11 @@ function swing(){
  world.setDungBall?.(simulation.dungBall);
  const result=simulation.swing(state.player,direction());
  if(result.ok){
+  capturedMeasurement=result.item.encounterId?expedition.measure(result.item.encounterId):null;
   state.captures++;if(!state.seen.includes(result.item.species))state.seen.push(result.item.species);
   journal.record({species:result.item.species,location:result.item.species==='metallifer'?'東南アジア林・低い観察枝':result.item.species==='longhorn'?'温帯の林縁・太い幹':result.item.species==='jewel'?'温帯の草地・若木の葉':result.item.species==='swallowtail'?'温帯の草地・池岸':result.item.species==='bee'?'温帯の草地・西の花群':['rhino','stag'].includes(result.item.species)?'夜の林縁・樹液のある木':locationLabel(result.item.x,result.item.z),x:Math.round(result.item.x*10)/10,z:Math.round(result.item.z*10)/10});
   captureDelay=.28;audio.capture();toast('そっと、つかまえた。',.6);
- }else toast(result.reason,2.4);
+ }else {simulation.startleFromNet?.(state.player,direction());toast(result.reason,2.4);}
 }
 function nearbyBaitStation(){
  const p=state.player;let nearest=null,distance=Infinity;
@@ -220,6 +250,7 @@ function release({lock=true}={}){
 }
 function locationLabel(x,z){if(world.locationLabel)return world.locationLabel(x,z);return Math.hypot(x-24,z+20)<16?'水辺の草むら':Math.hypot(x+10,z+8)<10?'大きな木の下':z<-32?'森の入り口':'風の通る野原';}
 function openJournal(speciesId){
+ if(outingChanging)return;
  if(state.mode==='journal'){closeJournal({lock:false});return;}
  if(!['playing','paused','inspect'].includes(state.mode))return;
  journalReturn=state.mode;state.mode='journal';state.player.speed=0;input.clear();unlock();audio.pause();syncScreens();
@@ -239,7 +270,13 @@ function continueObservationAudio(){
 }
 function applyCompanionPresence(){
  if(!roster||!simulation)return;
- simulation.setCompanions(roster.entries.filter(e=>e.originHabitat===state.habitat).map(e=>({id:e.originIndividualId,species:e.species})),state.player);
+ const origins=[];
+ for(const entry of roster.entries){
+  if(entry.originHabitat!==state.habitat)continue;
+  const item=simulation.items.find(i=>i.species===entry.species&&(entry.originKind==='expedition'?i.encounterId===entry.originEncounterId:!i.encounterId&&i.id===entry.originIndividualId));
+  if(item)origins.push({id:item.id,species:item.species});
+ }
+ simulation.setCompanions(origins,state.player);
 }
 function companionStatus(){
  const status=$('companion-save-status');
@@ -250,7 +287,7 @@ function companionStatus(){
 }
 function refreshCompanions(){
  const select=$('companion-select'),before=select.value;select.replaceChildren();
- for(const entry of roster.entries){const option=document.createElement('option');option.value=entry.id;option.textContent=SPECIES[entry.species].name;select.append(option);}
+ for(const entry of roster.entries){const option=document.createElement('option');option.value=entry.id;option.textContent=SPECIES[entry.species].name+' · '+individualLabel(entry);select.append(option);}
  select.value=roster.entries.some(e=>e.id===before)?before:(roster.entries[0]?.id||'');
  const selected=roster.entries.find(e=>e.id===select.value);
  $('companion-empty').hidden=!!selected;select.disabled=!selected;$('battle-start-button').disabled=!selected;$('companion-release-button').disabled=!selected;
@@ -259,18 +296,24 @@ function refreshCompanions(){
  companionStatus();
 }
 function refreshCapturedChoices(item){
- const eligible=!!item&&isCompanionSpecies(item.species),owned=eligible&&roster.entries.some(entry=>entry.species===item.species);
- $('keep-button').hidden=!eligible;$('keep-button').disabled=owned;$('keep-button').textContent=owned?'この種類は連れていき済み':'連れていくだけ';
- $('capture-battle-button').hidden=!eligible;$('capture-battle-button').disabled=owned;
- $('capture-battle-note').textContent=!eligible?'虫相撲はカブトムシ・ノコギリクワガタ・ヘラクレス・メタリフェルで遊べます。':owned?'この種類はすでに仲間がいます。この虫は返して、B「仲間・バトル」から対戦できます。':'仲間にしてCOMと対戦。勝敗でいなくなりません。';
+ const eligible=!!item&&isCompanionSpecies(item.species),owned=eligible?roster.entries.find(entry=>entry.species===item.species):null;
+ $('keep-button').hidden=!eligible;$('keep-button').disabled=false;
+ $('keep-button').textContent=owned?(replaceArmed===item.id?'今の仲間を返して、この虫を連れていく':'今の仲間と入れ替える'):'連れていくだけ';
+ $('capture-battle-button').hidden=!eligible;$('capture-battle-button').disabled=!!owned;
+ $('capture-battle-note').textContent=!eligible?'虫相撲はカブトムシ・ノコギリクワガタ・ヘラクレス・メタリフェルで遊べます。':owned?`今の仲間：${individualLabel(owned)}。入れ替えると今の仲間を元の生息地へ返します。`:'仲間にしてCOMと対戦。勝敗でいなくなりません。';
 }
+function captureOwnership(item){return{species:item.species,originHabitat:state.habitat,originIndividualId:item.id,originKind:item.encounterId?'expedition':'legacy',originEncounterId:item.encounterId||null,sizePermille:item.encounterId?item.sizePermille:null,measureVersion:item.encounterId?1:null};}
 function keepCaptured({resumeAudio=true}={}){
  const item=simulation.caught;if(state.mode!=='inspect'||!item||!isCompanionSpecies(item.species))return;
- const accepted=roster.add({species:item.species,originHabitat:state.habitat,originIndividualId:item.id});
- if(!accepted.ok){refreshCapturedChoices(item);if(accepted.reason!=='already-owned')$('capture-battle-note').textContent='この虫を仲間にできませんでした。観察や放虫は続けられます。';return;}
- companionEdited=true;
- if(!simulation.retain()){roster.release(accepted.entry.id);return;}
- applyCompanionPresence();state.mode='playing';state.cooldown=.8;captureDelay=0;state.swing=0;input.clear();syncScreens();if(resumeAudio){audio.start();restoreControl(false);}
+ const owned=roster.entries.find(entry=>entry.species===item.species);
+ if(owned&&replaceArmed!==item.id){replaceArmed=item.id;refreshCapturedChoices(item);return;}
+ // Retain must succeed before a replacement can alter the old roster. A store
+ // rejection returns the new specimen safely; it cannot remove the old friend.
+ if(!simulation.retain())return;
+ const accepted=owned?roster.replace(owned.id,captureOwnership(item)):roster.add(captureOwnership(item));
+ replaceArmed=null;applyCompanionPresence();state.mode='playing';state.cooldown=.8;captureDelay=0;state.swing=0;input.clear();syncScreens();
+ if(!accepted.ok){audio.start();restoreControl(false);toast('仲間にできなかったため、この虫を野原へ返しました。元の仲間はそのままです。',7);return;}
+ companionEdited=true;if(resumeAudio){audio.start();restoreControl(false);}
  toast(`${SPECIES[item.species].name}が仲間になりました。B「仲間・バトル」から対戦できます。`,6);companionStatus();return accepted.entry;
 }
 function battleCaptured(){
@@ -282,7 +325,7 @@ function battleCaptured(){
 }
 function toggleCompanions(){if(state.mode==='companions')closeCompanions();else openCompanions();}
 function openCompanions(){
- if(!['playing','paused'].includes(state.mode)||simulation.caught)return;
+ if(outingChanging||!['playing','paused'].includes(state.mode)||simulation.caught)return;
  companionReturn=state.mode;state.mode='companions';releaseArmed=null;state.player.speed=0;input.clear();unlock();audio.pause();refreshCompanions();syncScreens();$('companions-close-button').focus({preventScroll:true});
 }
 function closeCompanions(){
@@ -305,7 +348,7 @@ function startBattle(){
  if(state.mode!=='companions')return;
  const entry=roster.entries.find(e=>e.id===$('companion-select').value),opponentSpecies=$('battle-opponent-select').value;
  if(!entry||!Object.prototype.hasOwnProperty.call(BATTLE_SPECIES,opponentSpecies))return;
- battle=createBattle({playerSpecies:entry.species,opponentSpecies,seed:battleSeed()});battleView?.dispose();battleView=createBattleView({playerSpecies:entry.species,opponentSpecies,aspect:innerWidth/innerHeight});battleSuspended=document.hidden||document.hasFocus?.()===false;
+ battle=createBattle({playerSpecies:entry.species,opponentSpecies,seed:battleSeed()});battleView?.dispose();battleView=createBattleView({playerSpecies:entry.species,opponentSpecies,playerSizePermille:entry.sizePermille,aspect:innerWidth/innerHeight});battleSuspended=document.hidden||document.hasFocus?.()===false;
  releaseArmed=null;state.mode='battle';battleAudioFresh=true;input.clear();if(battleSuspended)audio.pause();else resumeBattleAudio();syncScreens();refreshBattle();$('battle-exit-button').focus({preventScroll:true});
 }
 function battleMoveName(species,action){
@@ -356,9 +399,9 @@ function positionInspector(){
   if(inspectModel.userData.species==='longhorn')inspectModel.scale.setScalar(Math.min(6,inspectCamera.aspect*10.7));
   if(inspectModel.userData.species==='swallowtail')inspectModel.scale.setScalar(Math.min(4,inspectCamera.aspect*6.2));
   if(inspectModel.userData.species==='bee')inspectModel.scale.setScalar(Math.min(8,inspectCamera.aspect*16));
-  if(inspectModel.userData.species==='metallifer')inspectModel.scale.setScalar(Math.min(3.4,inspectCamera.aspect*4.5));
-  if(inspectModel.userData.species==='stag')inspectModel.scale.setScalar(Math.min(4,inspectCamera.aspect*5.2));
-  if(inspectModel.userData.species==='rhino')inspectModel.scale.setScalar(Math.min(4,inspectCamera.aspect*5.2));
+  if(inspectModel.userData.species==='metallifer')inspectModel.scale.setScalar(Math.min(3.4*(inspectModel.userData.individualScale||1),inspectCamera.aspect*4.5));
+  if(inspectModel.userData.species==='stag')inspectModel.scale.setScalar(Math.min(4*(inspectModel.userData.individualScale||1),inspectCamera.aspect*5.2));
+  if(inspectModel.userData.species==='rhino')inspectModel.scale.setScalar(Math.min(4*(inspectModel.userData.individualScale||1),inspectCamera.aspect*5.2));
  }
 }
 function resize(){if(!renderer)return;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();positionInspector();}
@@ -439,7 +482,7 @@ function frame(ms){
  render(state.time,dt);
 }
 try{
- roster=createCompanionRoster();
+ roster=createCompanionRoster();expedition=createExpedition();
  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
  renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  camera=new THREE.PerspectiveCamera(66,innerWidth/innerHeight,.04,240);activateHabitat('meadow');
@@ -448,7 +491,7 @@ try{
  const key=new THREE.DirectionalLight(0xffedcc,1.2);key.position.set(-3,5,4);inspectScene.add(key);const fill=new THREE.DirectionalLight(0xd2e7f2,.65);fill.position.set(3,1,-2);inspectScene.add(fill);
  inspectCamera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.05,20);inspectCamera.position.set(0,1.35,3.4);inspectCamera.lookAt(0,0,0);
  audio=createAudio();audio.resetField(state.habitat);journal=createJournal();journalUI=createJournalUI({journal,species:SPECIES,onClose:()=>closeJournal()});
- input=createInput(canvas,{action:swing,interact,pause,journal:()=>openJournal(),companions:toggleCompanions,back:()=>{if(state.mode==='inspect')release();else pause();},blur:()=>{suspendBattle();if(state.mode==='playing')pause();else audio.pause();},mode:()=>state.mode,lock:requestLock});
+ input=createInput(canvas,{action:swing,interact,pause,journal:()=>openJournal(),companions:toggleCompanions,back:()=>{if(state.mode==='inspect')release();else pause();},blur:()=>{if(outingChanging)outingInterrupted=true;suspendBattle();if(state.mode==='playing')pause();else audio.pause();},mode:()=>state.mode,lock:requestLock});
  try{const saved=JSON.parse(localStorage.getItem('mushi-settings-v1')||'null');if(saved){state.sensitivity=Math.max(.3,Math.min(2,Number(saved.sensitivity)||1));state.volume=Math.max(0,Math.min(1,Number(saved.volume)||0));}}catch{}
  for(const [id,habitat] of Object.entries(HABITATS)){const option=document.createElement('option');option.value=id;option.textContent=habitat.name;$('travel-habitat-select').append(option);}
  syncTravelChoice();$('travel-habitat-select').addEventListener('change',updateTravelChoice);$('travel-button').onclick=travelHabitat;
@@ -458,17 +501,17 @@ try{
  $('companions-close-button').onclick=closeCompanions;$('companion-release-button').onclick=releaseCompanion;
  $('companion-select').addEventListener('change',()=>{releaseArmed=null;refreshCompanions();});
  $('battle-start-button').onclick=startBattle;$('battle-exit-button').onclick=leaveBattle;$('battle-finish-button').onclick=returnFromBattle;
- roster.subscribe(companionStatus);
+ roster.subscribe(companionStatus);expedition.subscribe(expeditionStatus);
  $('sensitivity').value=state.sensitivity;$('volume').value=state.volume;audio.setVolume(state.volume);
  $('sensitivity').addEventListener('input',applySettings);$('volume').addEventListener('input',applySettings);
  $('sensitivity').addEventListener('change',applySettings);$('volume').addEventListener('change',applySettings);
- $('start-button').onclick=start;$('pause-button').onclick=pause;$('resume-button').onclick=resume;$('restart-button').onclick=restart;$('title-button').onclick=title;$('release-button').onclick=release;
+ $('start-button').onclick=start;$('pause-button').onclick=pause;$('resume-button').onclick=resume;$('restart-button').onclick=newOuting;$('title-button').onclick=title;$('release-button').onclick=release;
  $('journal-button').onclick=()=>openJournal();$('pause-journal-button').onclick=()=>openJournal();$('inspect-journal-button').onclick=()=>openJournal(simulation.caught?.species);
  document.addEventListener('pointerlockchange',()=>{const locked=document.pointerLockElement===canvas;const lost=pointerOwned&&!locked;pointerOwned=locked;if(lost&&state.mode==='playing'&&!simulation.caught)pause();});
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();fatal('3D表示が中断されました。ページを再読み込みすると、野原の入り口から再開できます。');disposed=true;});
  window.addEventListener('focus',continueVisibleActivity);
- document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendBattle();else continueVisibleActivity();});
- window.addEventListener('pagehide',()=>{suspendBattle();if(state.mode==='playing')pause();else audio.pause();input.clear();audio.dispose?.();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(outingChanging)outingInterrupted=true;suspendBattle();}else continueVisibleActivity();});
+ window.addEventListener('pagehide',()=>{if(outingChanging)outingInterrupted=true;suspendBattle();if(state.mode==='playing')pause();else audio.pause();input.clear();audio.dispose?.();});
  window.addEventListener('pageshow',event=>{if(event.persisted){audio=createAudio();audio.setVolume(state.volume);audio.resetField(state.habitat);continueVisibleActivity();}});
  window.addEventListener('resize',()=>{resize();battleView?.resize(innerWidth/innerHeight);});resetPlayer();resize();syncScreens();requestAnimationFrame(frame);
  

@@ -1,6 +1,6 @@
 /* Small, self-contained tropical forest-edge study. All materials and meshes are
  * authored here; no imported assets, ecological simulation, or visual QA claim. */
-import {TROPICAL_HOMES,TROPICAL_BOUNDS,TROPICAL_SPAWN,TROPICAL_ROUTE,TROPICAL_BAIT,TROPICAL_LOGS} from './tropical-layout.js?v=0.18.1&b=0f85c9d0b1ba';
+import {TROPICAL_HOMES,TROPICAL_BOUNDS,TROPICAL_SPAWN,TROPICAL_ROUTE,TROPICAL_BAIT,TROPICAL_LOGS} from './tropical-layout.js?v=0.19.0&b=2b3a7a48ca63';
 const THREE=window.THREE,TAU=Math.PI*2,EXTENT=35,STEP=.5;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function rng(seed){return()=>{seed=(seed+0x6D2B79F5)|0;let t=Math.imul(seed^seed>>>15,seed|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
@@ -111,7 +111,7 @@ export function createTropicalWorld(scene){
   function herculesSupportAt(position){
     if(!position||!Number.isFinite(position.x)||!Number.isFinite(position.z))return null;
     const log=logSurfaces.find(s=>Math.abs(position.x-s.x)<=.6+1e-6&&Math.abs(position.z-s.z)<=1e-6);
-    return log?{point:{x:position.x,y:log.topY,z:position.z},normal:upNormal}:null;
+    return log?{point:{x:position.x,y:log.topY,z:position.z},normal:upNormal,footHeightAt(x,z){if(!Number.isFinite(x)||!Number.isFinite(z)||Math.abs(x-log.x)>log.length/2||Math.abs(z-log.z)>.30)return null;return log.topY-Math.max(0,Math.abs(z-log.z)-log.halfWidth);}}:null;
   }
   // Static colour-pass entries only: shadow passes/driver calls require real rendering.
   const stats={trees:treeCount,leafInstances:canopy.length+understory.length+litter.length,canopyLeaves:canopy.length,understoryLeaves:understory.length,meshes:0,drawCalls:0,triangles:0,instances:0};scene.traverse(o=>{if(o.isMesh){stats.meshes++;stats.drawCalls+=Array.isArray(o.material)?o.material.length:1;stats.triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3*(o.isInstancedMesh?o.count:1);if(o.isInstancedMesh)stats.instances+=o.count;}});

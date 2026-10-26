@@ -20,7 +20,7 @@ test('actual production graph has a closed exact token on every edge and matchin
  // Public repository documents are not build inputs; all other unexpected files still fail.
  const reviewDocuments=new Set(['README.md','PLAYTEST-JA.md','AUDIO-PLAYTEST-JA.md']);
  const files=walk(dist).filter(name=>!name.startsWith('tests/')&&!reviewDocuments.has(name)),html=read('index.html').toString();
- const version=html.match(/<meta name="application-version" content="([0-9.]+)">/)?.[1];assert.equal(version,'0.18.1');
+ const version=html.match(/<meta name="application-version" content="([0-9.]+)">/)?.[1];assert.equal(version,'0.19.0');
  assert.equal([...html.matchAll(/<span data-build-version>([^<]+)<\/span>/g)].filter(m=>m[1]===version).length,2);
  const refs=[...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m=>m[1]);
  assert.equal(refs.length,3);const token=new URL(refs[0],'https://local.invalid/nested/index.html').search;
@@ -44,7 +44,7 @@ test('actual production graph has a closed exact token on every edge and matchin
   for(const ref of dependencies.toReversed())source=source.slice(0,ref.start)+ref.specifier.slice(0,-token.length)+source.slice(ref.end);
   originals.set(file,Buffer.from(source));
  }
- assert.equal(seen.size,84);assert.ok(edgeCount>11);assert.deepEqual(files,[...expected].sort(),'runtime only; no maps, tests, helpers or package files');
+ assert.equal(seen.size,88);assert.ok(edgeCount>11);assert.deepEqual(files,[...expected].sort(),'runtime only; no maps, tests, helpers or package files');
  const originalHTML=html.split(token).join('');
  originals.set('index.html',Buffer.from(originalHTML));
  const hash=createHash('sha256');hash.update('bundle-v1\0'+version+'\0');
