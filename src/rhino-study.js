@@ -1,6 +1,6 @@
 /** Unregistered horizontal-branch study. Distances, speed and waits are game
  * tuning, not measured natural activity or an intelligent escape response. */
-import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.18.0&b=f75693c4884e';
 const TAU=2*Math.PI,length=.12,speed=.02,rampTime=.5,halfStep=D.cycleDistance/2;
 const smooth=t=>t*t*(3-2*t);
 export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0}={}){

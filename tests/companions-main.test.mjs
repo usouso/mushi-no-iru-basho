@@ -10,14 +10,15 @@ const root=path.resolve(import.meta.dirname,'..');
 const JOURNAL_KEY='mushi-journal-v2',ROSTER_KEY='mushi-companions-v1';
 let nonce=0;
 function testLocks(){const tails=new Map();return {request(key,options,callback){assert.ok([JOURNAL_KEY,ROSTER_KEY].includes(key));assert.equal(options.mode,'exclusive');const next=(tails.get(key)||Promise.resolve()).then(callback);tails.set(key,next.catch(()=>{}));return next;}};}
-async function app(t,{entries=[],locks=testLocks(),blockWrite=()=>false,extraExports='roster,battle,battleCooldown,models,keepCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,battleAction,leaveBattle,returnFromBattle,applyCompanionPresence'}={}){
- const config={entries,locks,blockWrite,writes:[]};Object.defineProperty(globalThis,'__companionsMainConfig',{configurable:true,value:config});
+async function app(t,{entries=[],battleSeed=0,locks=testLocks(),blockWrite=()=>false,extraExports='roster,battle,models,keepCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,leaveBattle,returnFromBattle,applyCompanionPresence'}={}){
+ const config={entries,battleSeed,locks,blockWrite,writes:[]};Object.defineProperty(globalThis,'__companionsMainConfig',{configurable:true,value:config});
  const existing=fs.readFileSync(path.join(root,'tests/direct-habitat-switch.test.mjs'),'utf8'),marker="\nconst select=()=>elements.get('travel-habitat-select');";assert.ok(existing.includes(marker));
  let source=existing.slice(0,existing.indexOf(marker));
  source=source.replace("from './fixtures/journal-locks.mjs'",`from ${JSON.stringify(pathToFileURL(path.join(root,'tests/fixtures/journal-locks.mjs')).href)}`).replace("const root=path.resolve(import.meta.dirname,'..');",`const root=${JSON.stringify(root)};\nconst companionConfig=globalThis.__companionsMainConfig;`);
  source=source.replace('const savedSettings=new Map();','const savedSettings=new Map(companionConfig.entries);');
  source=source.replace("setItem:(key,value)=>{if(blockStorage)throw Error('Storage blocked');savedSettings.set(key,String(value));}","setItem:(key,value)=>{if(blockStorage||companionConfig.blockWrite(key))throw Error('Storage blocked');companionConfig.writes.push([key,String(value)]);savedSettings.set(key,String(value));}");
  source=source.replace('navigator:{locks:createTestLocks(),','navigator:{locks:companionConfig.locks,');
+ source=source.replace('const globals={window,', 'const globals={crypto:{getRandomValues(array){array[0]=companionConfig.battleSeed;return array;}},window,');
  const read="let source=fs.readFileSync(path.join(root,'src',name),'utf8');";assert.ok(source.includes(read));
  source=source.replace(read,read+`\n source+='\\n// companions-main scenario ${++nonce}';`);
  if(extraExports)source=source.replace('export {state,simulation,world,journal,',`export {${extraExports},state,simulation,world,journal,`);
@@ -36,6 +37,12 @@ async function app(t,{entries=[],locks=testLocks(),blockWrite=()=>false,extraExp
  function travel(id){const {g,elements}=h;if(g.state.mode==='paused'){}else{assert.equal(g.state.mode,'playing');g.pause({lock:false});}const select=elements.get('travel-habitat-select');select.value=id;select.dispatchEvent(new Event('change'));elements.get('travel-button').click();h.frame(1);assert.equal(g.state.mode,'playing');assert.equal(g.state.habitat,id);}
  return {...h,config,mouse,catchEligible,travel};
 }
+function finishWatching(h){
+ const frozenTime=h.g.simulation.time;let frames=0;
+ assert.equal(h.g.battle.phase,'watching');
+ while(h.g.battle.phase==='watching'&&frames<30*60){h.frame(1);frames++;assert.equal(h.g.simulation.time,frozenTime,'field time is frozen throughout the match');}
+ assert.equal(h.g.battle.phase,'finished');assert.ok(h.g.battle.elapsed>=15&&h.g.battle.elapsed<=30,'a short visible match ends without action input');return h.g.battle;
+}
 const legacy=JSON.stringify({version:1,entries:[]});
 const journalRecord={species:'rhino',firstSeen:1,lastSeen:2,location:'previous visit',x:1,z:2,note:'既存の角のメモ'};
 const journalSeed=JSON.stringify({version:2,legacyImportDone:true,entries:[journalRecord]});
@@ -45,11 +52,6 @@ function hasOrigin(h,entry){
  const item=h.g.simulation.items.find(i=>i.id===entry.originIndividualId&&i.species===entry.species);assert.ok(item);assert.equal(item.companion,true);assert.equal(item.caught,true);assert.equal(h.g.simulation.caught,null);h.frame(1);assert.equal(h.g.models.get(item.id).visible,false);
  const eye={x:item.x,y:item.y+.5,z:item.z+1.5},direction={x:0,y:-.5,z:-1.5};assert.notEqual(h.g.simulation.findTarget(eye,direction)?.item.id,item.id,'retained specimen is not a target');
  const result=h.g.simulation.swing(eye,direction);assert.notEqual(result.item?.id,item.id,'retained specimen cannot be caught twice');if(result.ok)h.g.simulation.release(eye);
-}
-function pathToLoss(rules,start){
- const queue=[{state:start,path:[]}],seen=new Set();
- while(queue.length){const {state,path}=queue.shift();if(state.phase==='finished'){if(state.winner==='opponent')return path;continue;}const key=JSON.stringify([state.turn,state.position,state.playerEnergy,state.opponentEnergy]);if(seen.has(key))continue;seen.add(key);for(const action of rules.availableActions(state))queue.push({state:rules.takeTurn(state,action),path:[...path,action]});}
- assert.fail('a reproducible opponent-win path is required');
 }
 
 test('actual captures become three companions, survive resets/travel/reload, fight COM without loss, and return only after explicit release',async t=>{
@@ -67,9 +69,8 @@ test('actual captures become three companions, survive resets/travel/reload, fig
  // exercised below as a separate independent scenario, not a hidden fake save.
  const store=await import(h.moduleURL('companion-roster.js'));assert.deepEqual(store.createCompanionRoster(localStorage,{locks:testLocks()}).entries,g.roster.entries);
  h.travel('tropical');hasOrigin(h,first);h.travel('night');
- click(h,'companions-button');assert.equal(g.state.mode,'companions');assert.equal(elements.get('companions-screen').hidden,false);await h.settle();assert.equal(h.master().value,0);assert.equal(elements.get('companion-select').children.length,3);select(h,'companion-select',first.id);select(h,'battle-opponent-select','rhino');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');assert.equal(elements.get('battle-screen').hidden,false);assert.equal(elements.get('battle-cue').textContent,g.battle.cue);assert.equal(g.battle.opponentSpecies,'rhino');
- const rules=await import(h.moduleURL('beetle-battle.js')),loss=pathToLoss(rules,g.battle),frozenTime=g.simulation.time,oldRoster=g.roster.entries;
- for(const action of loss){const before=g.battle.exchanges;assert.equal(elements.get('battle-'+action).disabled,false);click(h,'battle-'+action);assert.equal(g.battle.exchanges,before+1);click(h,'battle-'+action);assert.equal(g.battle.exchanges,before+1,'short repeated click cannot advance twice');h.frame(50);assert.equal(g.simulation.time,frozenTime);}
+ click(h,'companions-button');assert.equal(g.state.mode,'companions');assert.equal(elements.get('companions-screen').hidden,false);await h.settle();assert.equal(h.master().value,0);assert.equal(elements.get('companion-select').children.length,3);select(h,'companion-select',first.id);select(h,'battle-opponent-select','rhino');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');assert.equal(elements.get('battle-screen').hidden,false);assert.match(elements.get('battle-cue').textContent,/操作は不要/);assert.equal(g.battle.opponentSpecies,'rhino');
+ const oldRoster=g.roster.entries;finishWatching(h);
  assert.equal(g.battle.phase,'finished');assert.equal(g.battle.winner,'opponent');assert.match(elements.get('battle-cue').textContent,/相手の勝ち/);assert.equal(elements.get('battle-finish-button').hidden,false);assert.deepEqual(g.roster.entries,oldRoster);assert.equal(h.savedSettings.get(ROSTER_KEY),rosterRaw);assert.equal(h.savedSettings.get(JOURNAL_KEY),journalRaw);click(h,'battle-finish-button');assert.equal(g.state.mode,'playing');
  // Paused-origin cancellation returns through the list, not a hidden resume.
  g.pause({lock:false});click(h,'pause-companions-button');assert.equal(g.state.mode,'companions');click(h,'battle-start-button');assert.equal(g.state.mode,'battle');h.key('keydown','Escape');h.key('keyup','Escape');assert.equal(g.state.mode,'companions');assert.equal(g.battle.phase,'cancelled');h.key('keydown','Escape');h.key('keyup','Escape');assert.equal(g.state.mode,'paused');assert.deepEqual(g.roster.entries,oldRoster);assert.equal(h.savedSettings.get(ROSTER_KEY),rosterRaw);g.resume({lock:false});

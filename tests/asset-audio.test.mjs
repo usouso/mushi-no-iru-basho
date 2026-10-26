@@ -62,18 +62,21 @@ test('field reset and same-id replacement establish a new snapshot without phant
  const f=fixture(t);await f.ready();f.audio.resetField('meadow');step(f,.1,[hopper()]);step(f,.1,[hopper({airborne:true})]);const count=calls(f,'grasshopper').length;f.audio.resetField('tropical');step(f,1,[hopper()]);assert.equal(calls(f,'grasshopper').length,count);f.audio.resetField('meadow');step(f,11,[cicada(),hopper({airborne:true})]);assert.equal(calls(f,'aburazemi').length,0);assert.equal(calls(f,'grasshopper').length,count);f.audio.setVolume(0);step(f,3,[cicada(),hopper()]);assert.equal(f.master.value,0);
 });
 
-test('inspection keeps only the already-started capture tail, then suspends; zero/pause/reset/dispose stop it immediately',async t=>{
+test('observation keeps the same BGM and wind while existing action samples finish; explicit stop gates still work',async t=>{
  for(const gate of ['complete','pause','mute','reset','dispose']){
-  const f=fixture(t);await f.ready();f.audio.capture();f.audio.swing();f.advance(.28);const tail=calls(f,'capture').at(-1);assert.ok(tail&&!tail.ended);f.audio.inspect();await flush();
-  assert.equal(f.liveShots().length,1);assert.equal(f.liveShots()[0],tail);assert.equal(f.loops().filter(n=>n.buffer?.file).length,0);assert.equal(f.ctx.gains[1].gain.value,0,'wind is silent during inspection');
-  const before=f.ctx.sources.length;f.audio.capture();f.audio.swing();f.audio.release();step(f,.1,[beetle(),cicada()]);assert.equal(f.ctx.sources.length,before,'inspection cannot enqueue new audio');
-  if(gate==='complete'){f.advance(.6);await flush();assert.ok(tail.ended);assert.equal(f.master.value,0);assert.equal(f.ctx.state,'suspended');}
-  else{if(gate==='mute')f.audio.setVolume(0);else if(gate==='reset')f.audio.resetField('tropical');else f.audio[gate]();await flush();assert.ok(tail.ended);assert.equal(f.master.value,0);}
+  const f=fixture(t);await f.ready();const bgm=f.loops().find(n=>n.buffer?.file),wind=f.loops().find(n=>!n.buffer?.file);f.audio.capture();f.audio.swing();f.advance(.28);const effect=calls(f,'capture').at(-1),existing=f.liveShots();assert.ok(effect&&!effect.ended);f.audio.inspect();await flush();
+  assert.deepEqual(f.liveShots(),existing);assert.equal(f.loops().find(n=>n.buffer?.file),bgm);assert.equal(f.loops().find(n=>!n.buffer?.file),wind);assert.ok(f.ctx.gains[1].gain.value>0,'wind continues in observation');
+  const before=f.ctx.sources.length;f.audio.capture();f.audio.swing();step(f,.1,[beetle(),cicada()],{...still,speed:3});assert.equal(f.ctx.sources.length,before,'frozen locomotion and repeated capture/swing cannot enqueue sound');
+  if(gate==='complete'){f.advance(.6);await flush();assert.ok(effect.ended);assert.equal(f.master.value,.25);assert.equal(f.ctx.state,'running');assert.equal(f.loops().find(n=>n.buffer?.file),bgm);}
+  else{if(gate==='mute')f.audio.setVolume(0);else if(gate==='reset')f.audio.resetField('tropical');else f.audio[gate]();await flush();assert.ok(effect.ended);assert.ok(bgm.ended);assert.equal(f.master.value,gate==='reset'?.25:0);}
  }
 });
-test('resume invalidates old inspection-tail expiry, and inspection before delayed decode never starts a new capture',async t=>{
- const f=fixture(t);await f.ready();f.audio.capture();f.advance(.28);f.audio.inspect();const tail=calls(f,'capture').at(-1);f.audio.start();await flush();assert.equal(f.master.value,.25);tail.end();for(const callback of f.retired)callback();f.fireTimers();await flush();assert.equal(f.ctx.state,'running');assert.equal(f.master.value,.25);
- const late=fixture(t,{deferDecode:true});await late.ready();late.audio.capture();late.audio.inspect();await flush();for(let i=0;i<30&&late.decodePending.length;i++){late.decodePending.shift().finish();await flush();}assert.equal(late.master.value,0);assert.equal(late.assetShots().length,0);assert.equal(late.ctx.state,'suspended');
+test('repeat observation/release keeps one BGM/context; late decoding may supply ambience but never replays capture',async t=>{
+ const f=fixture(t);await f.ready();const bgm=f.loops().find(n=>n.buffer?.file),initialStarts=f.ctx.operations.length;
+ for(let i=0;i<10;i++){f.audio.capture();f.advance(.28);f.audio.inspect();await flush();assert.equal(f.loops().find(n=>n.buffer?.file),bgm);f.audio.start();f.audio.release();f.advance(1);await flush();assert.equal(f.loops().length,2);assert.equal(f.ctx.state,'running');assert.equal(f.master.value,.25);}
+ assert.equal(f.ctx.operations.length,initialStarts);assert.equal(f.contexts.length,1);assert.equal(bgm.starts.length,1);assert.equal(f.requests.length,13);
+ const late=fixture(t,{deferDecode:true});await late.ready();late.audio.capture();late.audio.inspect();late.fireTimers();await flush();const fallbackCount=late.ctx.sources.filter(n=>n.kind==='oscillator').length;assert.equal(fallbackCount,2,'the existing two-tone capture fallback finishes');
+ for(let i=0;i<30&&late.decodePending.length;i++){late.decodePending.shift().finish();await flush();}assert.equal(late.master.value,.25);assert.equal(late.assetShots().length,0);assert.equal(late.ctx.sources.filter(n=>n.kind==='oscillator').length,fallbackCount);assert.equal(late.loops().filter(n=>n.buffer?.file).length,1);assert.equal(late.ctx.state,'running');
 });
 
 test('only explicit meadow enables BGM; understory and unknown fields stop it and meadow return resets its offset',async t=>{

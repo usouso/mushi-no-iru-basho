@@ -1,11 +1,11 @@
-import {createInsectModel} from './insect-models.js?v=0.16.0&b=ef7356bcd944';
+import {createInsectModel} from './insect-models.js?v=0.18.0&b=f75693c4884e';
 
-/** Small presentation-only sumo table. Rules, energy and COM choices are supplied
- * by the pure battle snapshot. This is a restrained push/stance illustration,
+/** Small presentation-only sumo table. Automatic exchanges are supplied
+ * by the pure watching/finished/cancelled battle snapshot. This is a restrained push/stance illustration,
  * not a new realistic walking/fighting simulation. No renderer or audio owned.
  */
 const T=window.THREE;
-const ELIGIBLE=new Set(['rhino','stag','hercules']);
+const ELIGIBLE=new Set(['rhino','stag','hercules','metallifer']);
 const finite=(value,fallback=0)=>Number.isFinite(value)?value:fallback;
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -48,7 +48,7 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
  const negativeEnd=-ringRadius-corner.copy(player.bodyCenter).applyMatrix4(player.anchor.matrixWorld).x;
  const mapPosition=value=>{const p=clamp(finite(value),-4,4);return p>=0?p/4*positiveEnd:-p/4*negativeEnd;};
  // Conservative content box includes the entire table and all allowed stance/
- // push displacement. Fit it above the lower control area, even in portrait.
+ // push displacement. Fit it above the lower result area, even in portrait.
  fit.min.set(-radius*1.08,-.14,-radius*1.08);fit.max.set(radius*1.08,Math.max(player.height,opponent.height)+.12,radius*1.08);
  let disposed=false,displayPosition=0,exchangeAge=1,exchangeKey=null;
  function resize(nextAspect){
@@ -59,21 +59,21 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
    corner.set(x,y,z).applyMatrix4(camera.matrixWorldInverse);minX=Math.min(minX,corner.x);maxX=Math.max(maxX,corner.x);minY=Math.min(minY,corner.y);maxY=Math.max(maxY,corner.y);
   }
   // NDC x [-.90,.90], y [-.08,.84]: 46% of screen height is reserved
-  // beneath the table. Caller owns the actual DOM controls and their layout.
+  // beneath the table. Caller owns the compact result/cancel panel and its layout.
   const span=Math.max((maxX-minX)/(.90*a),(maxY-minY)/.46),cy=(minY+maxY)/2-.38*span/2,cx=(minX+maxX)/2;
   camera.left=cx-span*a/2;camera.right=cx+span*a/2;camera.top=cy+span/2;camera.bottom=cy-span/2;camera.updateProjectionMatrix();
  }
  function update(snapshot={},dt=0,{reducedMotion=false}={}){
   if(disposed)return;
   const step=clamp(finite(dt),0,.1),position=mapPosition(snapshot.position);
-  const last=snapshot.lastExchange,key=last?`${finite(snapshot.exchanges,finite(snapshot.turn))}:${finite(last.positionBefore)}:${finite(last.positionAfter)}:${finite(last.delta)}`:null;
+  const last=snapshot.lastExchange,key=last?`${finite(snapshot.exchanges)}:${finite(last.positionBefore)}:${finite(last.positionAfter)}:${finite(last.delta)}`:null;
   if(key!==exchangeKey){exchangeKey=key;exchangeAge=0;}
   exchangeAge=Math.min(1,exchangeAge+step);
   const resolving=!!last&&exchangeAge<.65,p=clamp(exchangeAge/.65,0,1),ease=p*p*(3-2*p);
   displayPosition=reducedMotion?position:resolving?mapPosition(last.positionBefore)+(position-mapPosition(last.positionBefore))*ease:position;
-  // Show BOTH just-resolved actions before revealing the next COM cue. Under
+  // Show BOTH automatic resolved actions; never preview a future decision. Under
   // reduced motion this is one fixed action pose, not an oscillating clip.
-  const amount=resolving?(reducedMotion?1:Math.sin(p*Math.PI)):.6;
+  const amount=resolving?(reducedMotion?1:Math.sin(p*Math.PI)):0;
   function actionPose(entry,sign,action){
    const push=action==='push',evade=action==='evade',brace=action==='brace';
    const approach=(push?.035:brace?-.012:0)*amount*sign;
@@ -81,7 +81,7 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
    place(entry,entry.baseX+displayPosition+approach,sign*Math.PI/2+(evade?.16*amount*sign:0),lean,evade?.09*amount*sign:0);
   }
   actionPose(player,1,resolving?last.playerAction:null);
-  actionPose(opponent,-1,resolving?last.opponentAction:snapshot.phase==='choosing'?snapshot.intent:null);
+  actionPose(opponent,-1,resolving?last.opponentAction:null);
   // The illustrative approach must never drive real horn/jaw geometry through
   // its opponent. Correct only the pair's separation, independently of rules.
   scratch.setFromObject(player.anchor);otherBox.setFromObject(opponent.anchor);
@@ -96,6 +96,6 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
   // Never dispose texture maps or call a field-world disposal helper here.
   scene.clear();
  }
- resize(aspect);update({position:0,phase:'choosing',intent:null},0,{reducedMotion:true});
+ resize(aspect);update({position:0,phase:'watching',lastExchange:null},0,{reducedMotion:true});
  return{scene,camera,update,resize,dispose};
 }

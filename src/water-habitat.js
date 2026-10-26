@@ -1,5 +1,5 @@
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.16.0&b=ef7356bcd944';
-import {WATER_LEVEL,WATER_FOOT_RADIUS,WATER_PATCH} from './water-layout.js?v=0.16.0&b=ef7356bcd944';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.18.0&b=f75693c4884e';
+import {WATER_LEVEL,WATER_FOOT_RADIUS,WATER_PATCH} from './water-layout.js?v=0.18.0&b=f75693c4884e';
 const THREE=window.THREE;
 /** Additive meadow adapter: no geometry, RNG, collision or existing insect mutation. */
 export function createWaterHabitat(world,scene){

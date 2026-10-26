@@ -1,5 +1,5 @@
 /** Direct actual-triangle support. Deliberately independent of cicada bark fitting. */
-import {LONGHORN_PROBE as P} from './longhorn-layout.js?v=0.16.0&b=ef7356bcd944';
+import {LONGHORN_PROBE as P} from './longhorn-layout.js?v=0.18.0&b=f75693c4884e';
 const T=window.THREE,xyz=v=>({x:v.x,y:v.y,z:v.z});
 export function createLonghornHabitat(world,scene){
  const trunk=world?.captureOccluders?.[1];

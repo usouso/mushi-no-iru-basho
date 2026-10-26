@@ -1,0 +1,48 @@
+/** Real main/input/net logic with the existing DOM/THREE/audio/storage doubles.
+ * Not WebGL appearance, physical input or real browser persistence verification. */
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..'),source=fs.readFileSync(path.join(root,'tests/companions-main.test.mjs'),'utf8'),marker='\nconst legacy=';
+assert.ok(source.includes(marker));const factory=source.slice(0,source.indexOf(marker)).replace("const root=path.resolve(import.meta.dirname,'..');",`const root=${JSON.stringify(root)};`)+'\nexport {app,finishWatching};';
+const{app,finishWatching}=await import('data:text/javascript;base64,'+Buffer.from(factory).toString('base64'));
+const extraExports='roster,battle,models,keepCaptured,battleCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,leaveBattle,returnFromBattle,applyCompanionPresence';
+const ROSTER='mushi-companions-v1',click=(h,id)=>h.elements.get(id).click();
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),css=fs.readFileSync(path.join(root,'style.css'),'utf8');
+function key(h,type='keydown',props={}){const e=new Event(type,{cancelable:true});for(const[k,v]of Object.entries({code:'KeyB',repeat:false,target:document.activeElement||h.elements.get('game-canvas'),...props}))Object.defineProperty(e,k,{value:v});document.dispatchEvent(e);return e;}
+const up=h=>key(h,'keyup');
+function chosen(h,id,value){h.elements.get(id).value=value;h.elements.get(id).dispatchEvent(new Event('change'));}
+function assertResult(h){const{battle}=h.g,last=battle.lastExchange;if(!last)return;assert.ok(h.elements.get('battle-result').textContent.includes(last.reason));assert.ok(Number.isFinite(battle.position));}
+
+test('all three eligible actual captures enter COM directly with the exact retained individual and cannot duplicate on short clicks',async t=>{
+ for(const species of['hercules','rhino','stag']){
+  const h=await app(t,{extraExports}),{g,elements}=h;h.choose(species==='hercules'?'tropical':'night');const item=h.catchEligible(species);assert.equal(elements.get('capture-battle-button').hidden,false);assert.equal(elements.get('capture-battle-button').disabled,false);assert.equal(document.activeElement,elements.get('capture-battle-button'));assert.match(elements.get('capture-battle-note').textContent,/仲間にしてCOMと対戦。勝敗でいなくなりません/);
+  click(h,'capture-battle-button');assert.equal(g.state.mode,'battle');assert.equal(g.battle.playerSpecies,species);assert.equal(g.battle.opponentSpecies,'rhino');assert.equal(g.roster.entries.length,1);assert.equal(g.roster.entries[0].originIndividualId,item.id);assert.equal(g.simulation.caught,null);assert.equal(item.companion,true);h.frame(1);assert.equal(g.models.get(item.id).visible,false);const battle=g.battle;click(h,'capture-battle-button');click(h,'keep-button');assert.equal(g.battle,battle);assert.equal(g.roster.entries.length,1);
+  assert.equal(elements.get('battle-save-status').hidden,false);assert.match(elements.get('battle-save-status').textContent,/保存中/);await g.roster.flush();assert.equal(elements.get('battle-save-status').hidden,true);assert.match(elements.get('battle-cue').textContent,/操作は不要/);
+  finishWatching(h);assertResult(h);
+  assert.equal(g.battle.phase,'finished');assert.equal(g.roster.entries.length,1);click(h,'battle-finish-button');assert.equal(g.state.mode,'playing');assert.equal(g.roster.entries[0].originIndividualId,item.id);assert.equal(g.simulation.items.find(i=>i.id===item.id).companion,true);
+ }
+ assert.ok(html.indexOf('id="capture-battle-button"')<html.indexOf('id="insect-description"'),'direct action precedes long description');assert.match(html,/操作せず.*見守/);for(const action of ['push','evade','brace'])assert.doesNotMatch(html,new RegExp('id="battle-'+action+'"'),'manual action buttons were removed');
+});
+
+test('already-owned species cannot substitute a different companion; unsupported insects remain ordinary release/observe',async t=>{
+ const old={id:'tropical/insect-5',species:'hercules',originHabitat:'tropical',originIndividualId:'insect-5',capturedAt:1},raw=JSON.stringify({version:1,entries:[old]}),h=await app(t,{entries:[[ROSTER,raw]],extraExports}),{g,elements}=h;h.choose('tropical');const item=h.catchEligible('hercules');assert.notEqual(item.id,old.originIndividualId);assert.equal(elements.get('capture-battle-button').disabled,true);assert.equal(elements.get('keep-button').disabled,true);assert.match(elements.get('capture-battle-note').textContent,/すでに仲間/);click(h,'capture-battle-button');g.battleCaptured();assert.equal(g.state.mode,'inspect');assert.equal(g.simulation.caught,item);assert.deepEqual(g.roster.entries,[old]);assert.equal(h.savedSettings.get(ROSTER),raw);g.release({lock:false});
+ h.travel('meadow');g.restart();h.frame(60);const butterfly=g.simulation.items[0];g.setPose({x:butterfly.x,y:butterfly.y+.5,z:butterfly.z+1.5,yaw:0,pitch:-.3});g.swing();h.frame(22);assert.equal(g.state.mode,'inspect');assert.equal(elements.get('capture-battle-button').hidden,true);assert.equal(elements.get('keep-button').hidden,true);assert.match(elements.get('capture-battle-note').textContent,/カブトムシ・ノコギリクワガタ・ヘラクレス/);g.battleCaptured();assert.equal(g.state.mode,'inspect');assert.equal(g.simulation.caught.species,'butterfly');click(h,'release-button');assert.equal(g.state.mode,'playing');assert.deepEqual(g.roster.entries,[old]);
+});
+
+test('direct battle shows pending/read-only/asynchronous quota warnings and cancellation keeps the session companion',async t=>{
+ for(const blocked of[false,true]){
+  const original=blocked?'{"version":1,"entries":[]}':'{"version":99,"entries":[]}',h=await app(t,{entries:[[ROSTER,original]],blockWrite:key=>blocked&&key===ROSTER,extraExports}),{g,elements}=h;h.choose('night');const item=h.catchEligible('rhino');click(h,'capture-battle-button');if(blocked){assert.equal(g.roster.pending,true);assert.equal(elements.get('battle-save-status').hidden,false);assert.match(elements.get('battle-save-status').textContent,/保存中/);}await g.roster.flush();assert.equal(g.state.mode,'battle');assert.equal(g.roster.saved,false);assert.equal(elements.get('battle-save-status').hidden,false);assert.match(elements.get('battle-save-status').textContent,/未保存/);assert.equal(h.savedSettings.get(ROSTER),original);click(h,'battle-exit-button');assert.equal(g.state.mode,'companions');assert.equal(g.roster.entries.length,1);assert.equal(g.roster.entries[0].originIndividualId,item.id);assert.equal(elements.get('companion-save-status').dataset.unsaved,'true');key(h);up(h);assert.equal(g.state.mode,'playing');assert.equal(g.simulation.items.find(i=>i.id===item.id).companion,true);assert.match(elements.get('toast').textContent,/未保存/);assert.equal(h.savedSettings.get(ROSTER),original);
+ }
+});
+
+test('B opens under pointer lock, closes from focused close button, ignores held repeats and clears movement',async t=>{
+ const h=await app(t,{extraExports}),{g,elements}=h;h.choose('meadow');assert.equal(document.pointerLockElement,elements.get('game-canvas'));h.key('keydown','KeyW');h.frame(2);const before=g.state.player.z;assert.equal(key(h).defaultPrevented,true);assert.equal(g.state.mode,'companions');assert.equal(document.pointerLockElement,null);assert.equal(document.activeElement,elements.get('companions-close-button'));key(h,'keydown',{repeat:true});key(h);assert.equal(g.state.mode,'companions');h.frame(10);assert.equal(g.state.player.z,before);up(h);key(h);assert.equal(g.state.mode,'playing');assert.equal(document.activeElement,elements.get('game-canvas'));up(h);h.frame(5);assert.equal(g.state.player.z,before,'held walking does not leak through menu');h.key('keyup','KeyW');h.key('keydown','KeyW');h.frame(3);h.key('keyup','KeyW');assert.notEqual(g.state.player.z,before,'fresh walking still works');
+ g.pause({lock:false});key(h);assert.equal(g.state.mode,'companions');up(h);key(h);up(h);assert.equal(g.state.mode,'paused');assert.equal(document.activeElement,elements.get('resume-button'));g.resume({lock:true});g.state.elapsed=30;h.frame(1);assert.equal(elements.get('controls-hint').hidden,true);assert.equal(elements.get('hud').hidden,false);assert.match(html,/<button id="companions-button"[^>]*>B 仲間・バトル<span class="battle-entry-hint">連れている虫でCOMと対戦<\/span><\/button>/);assert.match(css,/\.battle-entry-hint\{display:block/);
+});
+
+
+test('B leaves editing, IME, shortcuts and unrelated modes untouched',async t=>{
+ const h=await app(t,{extraExports}),{g,elements}=h;assert.equal(g.state.mode,'title');assert.equal(key(h).defaultPrevented,false);h.choose('meadow');
+ for(const target of[{tagName:'INPUT'},{tagName:'TEXTAREA'},{tagName:'SELECT'},{tagName:'DIV',isContentEditable:true},{tagName:'SPAN',closest:()=>({tagName:'TEXTAREA'})}]){assert.equal(key(h,'keydown',{target}).defaultPrevented,false);assert.equal(g.state.mode,'playing');}
+ for(const props of[{isComposing:true},{keyCode:229},{ctrlKey:true},{altKey:true},{metaKey:true},{shiftKey:true}]){assert.equal(key(h,'keydown',props).defaultPrevented,false);assert.equal(g.state.mode,'playing');}
+ h.key('keydown','KeyJ');h.key('keyup','KeyJ');assert.equal(g.state.mode,'journal');assert.equal(key(h).defaultPrevented,false);assert.equal(g.state.mode,'journal');h.key('keydown','Escape');h.key('keyup','Escape');h.travel('night');h.catchEligible('rhino');assert.equal(g.state.mode,'inspect');assert.equal(key(h).defaultPrevented,false);assert.equal(g.state.mode,'inspect');click(h,'capture-battle-button');assert.equal(g.state.mode,'battle');assert.equal(key(h).defaultPrevented,false);assert.equal(g.state.mode,'battle');assert.equal(g.roster.entries.length,1);
+});

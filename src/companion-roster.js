@@ -6,8 +6,8 @@
  */
 export const COMPANION_KEY = 'mushi-companions-v1';
 export const COMPANION_VERSION = 1;
-export const COMPANION_SPECIES = Object.freeze(['hercules', 'rhino', 'stag']);
-const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night'});
+export const COMPANION_SPECIES = Object.freeze(['hercules', 'rhino', 'stag', 'metallifer']);
+const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory'});
 const entryFields = ['id','species','originHabitat','originIndividualId','capturedAt'];
 const copy = entries => entries.map(entry => ({...entry}));
 const timestamp = value => Number.isSafeInteger(value) && value >= 0;
@@ -56,7 +56,7 @@ const serialize=entries=>JSON.stringify({version:COMPANION_VERSION,entries});
 
 /**
  * createCompanionRoster(storage?, {now?, locks?})
- * - entries: detached records; at most one per eligible species (3 slots).
+ * - entries: detached records; at most one per eligible species (4 slots).
  * - add({species, originHabitat, originIndividualId}) / release(id):
  *   {ok:true, entry} or {ok:false, reason}; session state changes synchronously.
  * - saved, pending, reason: persistent status, not acceptance of a Keep click.

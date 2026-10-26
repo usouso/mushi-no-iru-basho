@@ -1,15 +1,16 @@
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.16.0&b=ef7356bcd944';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.16.0&b=ef7356bcd944';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.16.0&b=ef7356bcd944';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.16.0&b=ef7356bcd944';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.16.0&b=ef7356bcd944';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.16.0&b=ef7356bcd944';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.16.0&b=ef7356bcd944';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.16.0&b=ef7356bcd944';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.16.0&b=ef7356bcd944';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.16.0&b=ef7356bcd944';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.16.0&b=ef7356bcd944';
-import {applyInsectReadability} from './insect-readability.js?v=0.16.0&b=ef7356bcd944';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.18.0&b=f75693c4884e';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.18.0&b=f75693c4884e';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.18.0&b=f75693c4884e';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.18.0&b=f75693c4884e';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.18.0&b=f75693c4884e';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.18.0&b=f75693c4884e';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.18.0&b=f75693c4884e';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.18.0&b=f75693c4884e';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.18.0&b=f75693c4884e';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.18.0&b=f75693c4884e';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.18.0&b=f75693c4884e';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.18.0&b=f75693c4884e';
+import {applyInsectReadability} from './insect-readability.js?v=0.18.0&b=f75693c4884e';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -739,6 +740,9 @@ export function createInsectModel(species, { inspection = false } = {}) {
 }
 
 function buildInsectModel(species, { inspection = false } = {}) {
+  if(species==='metallifer'){
+    const root=createMetalliferModel({inspection});root.userData.species='metallifer';return root;
+  }
   if(species==='longhorn'){
     const root=createLonghornModel({inspection});root.userData.species='longhorn';return root;
   }
@@ -788,6 +792,10 @@ function buildInsectModel(species, { inspection = false } = {}) {
 }
 
 export function updateInsectModel(group, item, time = 0, support = null) {
+  if(group.userData.species==='metallifer'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateMetalliferModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,phase:item.metalliferPhase,caught:item.caught});
+  }
   if(group.userData.species==='longhorn'){
     if(!group.userData.inspection)group.visible=!item.caught;
     return updateLonghornModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.longhornPhase,caught:item.caught});
