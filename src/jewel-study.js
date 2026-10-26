@@ -1,6 +1,6 @@
 /** Unregistered horizontal-leaf study. Distances, speed and waits are game
  * tuning, not measured natural activity or an intelligent escape response. */
-import {JEWEL_DIMENSIONS as D} from './jewel-kinematics.js?v=0.15.1&b=a70f15b11632';
+import {JEWEL_DIMENSIONS as D} from './jewel-kinematics.js?v=0.16.0&b=ef7356bcd944';
 const TAU=2*Math.PI,length=.06,speed=.018,rampTime=.5,halfStep=D.cycleDistance/2;
 const smooth=t=>t*t*(3-2*t);
 export function createJewelStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0}={}){

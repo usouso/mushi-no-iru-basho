@@ -1,4 +1,4 @@
-import { NOTE_LIMIT } from './journal.js?v=0.15.1&b=a70f15b11632';
+import { NOTE_LIMIT } from './journal.js?v=0.16.0&b=ef7356bcd944';
 
 const LEGACY_SPECIES_IDS = ['butterfly', 'dragonfly', 'cicada'];
 let instance = 0;
@@ -94,15 +94,15 @@ function mountJournalUI({ journal, species, onClose }) {
   const closeButton = make('button', 'fj-close', '閉じる');
   closeButton.type = 'button';
   header.append(headingBlock, closeButton);
-  const intro = make('p', 'fj-intro', 'このブラウザに記録。虫は野原へ。');
+  const intro = make('p', 'fj-intro', '捕まえた種類を、このブラウザに記録。');
   intro.id = `${prefix}-intro`;
-  const subtitle = make('p', 'fj-subtitle', '出会った場所は自動で記録されます。覚えておきたいことがあれば、ひと言だけ。');
+  const subtitle = make('p', 'fj-subtitle', '捕獲した場所は自動で記録されます。目で見ただけでは登録されません。覚えておきたいことがあれば、ひと言だけ。');
   const cards = make('div', 'fj-cards');
   const status = make('p', 'fj-status');
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   status.setAttribute('aria-atomic', 'true');
-  sheet.append(header, intro, subtitle, cards, status);
+  sheet.append(header, intro, subtitle, status, cards);
   element.append(style, sheet);
   document.body.append(element);
   let editors = [];
@@ -133,7 +133,7 @@ function mountJournalUI({ journal, species, onClose }) {
       const card = make('article', entry ? 'fj-card' : 'fj-card fj-unseen');
       if (!entry) {
         // Do not disclose a name, image, location, checklist number, or target.
-        card.append(make('h3', '', 'まだ出会っていない虫'), make('p', '', 'いつか、どこかで。'));
+        card.append(make('h3', '', 'まだ図鑑に記録されていない虫'), make('p', '', 'いつか、どこかで。'));
       } else {
         const name = typeof species[id]?.name === 'string' ? species[id].name : '野原で出会った虫';
         card.append(make('h3', '', name));
@@ -151,7 +151,7 @@ function mountJournalUI({ journal, species, onClose }) {
         input.placeholder = '色や動き、気づいたことなど';
         input.setAttribute('aria-label', `${name}のひと言メモ（任意）`);
         label.htmlFor = input.id;
-        const help = make('p', 'fj-note-help', `${NOTE_LIMIT}文字まで・自動保存（保存状況は下に表示）`);
+        const help = make('p', 'fj-note-help', `${NOTE_LIMIT}文字まで・自動保存（保存状況は上に表示）`);
         help.id = `${prefix}-${id}-help`;
         input.setAttribute('aria-describedby', help.id);
         input.addEventListener('input', () => {

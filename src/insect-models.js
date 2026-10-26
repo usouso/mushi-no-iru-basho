@@ -1,14 +1,15 @@
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.15.1&b=a70f15b11632';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.15.1&b=a70f15b11632';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.15.1&b=a70f15b11632';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.15.1&b=a70f15b11632';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.15.1&b=a70f15b11632';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.15.1&b=a70f15b11632';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.15.1&b=a70f15b11632';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.15.1&b=a70f15b11632';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.15.1&b=a70f15b11632';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.15.1&b=a70f15b11632';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.15.1&b=a70f15b11632';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.16.0&b=ef7356bcd944';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.16.0&b=ef7356bcd944';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.16.0&b=ef7356bcd944';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.16.0&b=ef7356bcd944';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.16.0&b=ef7356bcd944';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.16.0&b=ef7356bcd944';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.16.0&b=ef7356bcd944';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.16.0&b=ef7356bcd944';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.16.0&b=ef7356bcd944';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.16.0&b=ef7356bcd944';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.16.0&b=ef7356bcd944';
+import {applyInsectReadability} from './insect-readability.js?v=0.16.0&b=ef7356bcd944';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -733,6 +734,11 @@ function batchBody(root) {
 }
 
 export function createInsectModel(species, { inspection = false } = {}) {
+  const root = buildInsectModel(species, { inspection });
+  return applyInsectReadability(root, { inspection, species });
+}
+
+function buildInsectModel(species, { inspection = false } = {}) {
   if(species==='longhorn'){
     const root=createLonghornModel({inspection});root.userData.species='longhorn';return root;
   }
