@@ -28,7 +28,7 @@ function nextEnergy(energy,action){return action==='push'?Math.max(0,energy-1):M
 function roleBonus(species,number,ownPosition,action,previous){
  if(species==='hercules'&&number<=3)return .10;
  if(species==='rhino'&&action==='push'&&previous==='brace')return .10;
- if(species==='stag'&&ownPosition<=-1.5)return .10;
+ if(species==='stag'&&ownPosition<=-1.5)return .05;
  if(species==='metallifer'&&action==='push'&&previous==='evade')return .10;
  if(species==='atlas'&&action==='brace'&&previous==='push')return .08;
  return 0;

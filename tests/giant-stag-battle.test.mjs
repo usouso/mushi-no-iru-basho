@@ -26,11 +26,17 @@ function triangle(rig){const {mesh,triangleIndex}=rig.contactPatch,a=mesh.geomet
 function terminal(sign){return Object.freeze({phase:'finished',position:sign*4,winner:sign>0?'player':'opponent',finishReason:'ring-out',exchanges:20,lastExchange:Object.freeze({number:20,playerAction:sign>0?'push':'brace',opponentAction:sign>0?'brace':'push',positionBefore:sign*3.65,positionAfter:sign*4,delta:sign*.35})});}
 function signature(m){m.updateMatrixWorld(true);const h=createHash('sha256');m.traverse(n=>{h.update(JSON.stringify([n.name,...n.matrixWorld.elements]));for(const a of Object.values(n.geometry?.attributes||{}))h.update(Buffer.from(a.array.buffer,a.array.byteOffset,a.array.byteLength));});return h.digest('hex');}
 
-test('old five-species motions and terminal rule outputs match the existing baseline exactly',()=>{
+test('hash-verified old five-species baseline stays pinned and current non-stag outcomes match it',async()=>{
+ const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
+ const referenceSource=source.replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
+ assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b','only the single edge coefficient may differ from 0.23');
+ const reference=await import('data:text/javascript;base64,'+Buffer.from(referenceSource).toString('base64'));
+
  const rows=[],ends=[];
  for(const p of old)for(const o of old)for(const seed of[0,17,1234]){
-  let s=createBattle({playerSpecies:p,opponentSpecies:o,seed});ends.push(advanceBattle(s,100));
-  for(let i=1;i<=12&&s.phase==='watching';i++){s=advanceBattle(s,BATTLE_LIMITS.introSeconds+i*BATTLE_LIMITS.exchangeSeconds-s.elapsed);rows.push([p,o,seed,s.exchanges,s.position,s.playerEnergy,s.opponentEnergy,s.lastExchange]);}
+  let s=reference.createBattle({playerSpecies:p,opponentSpecies:o,seed});const end=reference.advanceBattle(s,100);ends.push(end);
+  if(p!=='stag'&&o!=='stag')assert.deepEqual(advanceBattle(createBattle({playerSpecies:p,opponentSpecies:o,seed}),100),end);
+  for(let i=1;i<=12&&s.phase==='watching';i++){s=reference.advanceBattle(s,BATTLE_LIMITS.introSeconds+i*BATTLE_LIMITS.exchangeSeconds-s.elapsed);rows.push([p,o,seed,s.exchanges,s.position,s.playerEnergy,s.opponentEnergy,s.lastExchange]);}
  }
  assert.equal(rows.length,836);
  assert.equal(createHash('sha256').update(JSON.stringify(rows)).digest('hex'),'74ecce04ae832fe00025e9fac7d9a419e3e9dd960844cec53304e616a874a324');
