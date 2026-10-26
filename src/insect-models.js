@@ -1,19 +1,20 @@
-import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.26.0&b=b8d401c0400d';
-import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.26.0&b=b8d401c0400d';
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.26.0&b=b8d401c0400d';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.26.0&b=b8d401c0400d';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.26.0&b=b8d401c0400d';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.26.0&b=b8d401c0400d';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.26.0&b=b8d401c0400d';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.26.0&b=b8d401c0400d';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.26.0&b=b8d401c0400d';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.26.0&b=b8d401c0400d';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.26.0&b=b8d401c0400d';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.26.0&b=b8d401c0400d';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.26.0&b=b8d401c0400d';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.26.0&b=b8d401c0400d';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.26.0&b=b8d401c0400d';
-import {applyInsectReadability} from './insect-readability.js?v=0.26.0&b=b8d401c0400d';
+import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.27.0&b=572abb81497f';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.27.0&b=572abb81497f';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.27.0&b=572abb81497f';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.27.0&b=572abb81497f';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.27.0&b=572abb81497f';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.27.0&b=572abb81497f';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.27.0&b=572abb81497f';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.27.0&b=572abb81497f';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.27.0&b=572abb81497f';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.27.0&b=572abb81497f';
+import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.27.0&b=572abb81497f';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.27.0&b=572abb81497f';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.27.0&b=572abb81497f';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.27.0&b=572abb81497f';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.27.0&b=572abb81497f';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.27.0&b=572abb81497f';
+import {applyInsectReadability} from './insect-readability.js?v=0.27.0&b=572abb81497f';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -739,8 +740,8 @@ function batchBody(root) {
   }
 }
 
-export function createInsectModel(species, { inspection = false, sizePermille = null } = {}) {
-  const root = buildInsectModel(species, { inspection });
+export function createInsectModel(species, { inspection = false, sizePermille = null, fieldFlight = false } = {}) {
+  const root = buildInsectModel(species, { inspection, fieldFlight });
   // Individual size is fixed at creation. Inspection framing may scale its root
   // further; animation must never replace that transform or redraw native art.
   const eligible=['hercules','rhino','stag','metallifer','giantstag'].includes(species);
@@ -749,7 +750,7 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
   return applyInsectReadability(root, { inspection, species });
 }
 
-function buildInsectModel(species, { inspection = false } = {}) {
+function buildInsectModel(species, { inspection = false, fieldFlight = false } = {}) {
   if(species==='elephant'){const root=createElephantModel({inspection});root.userData.species='elephant';return root;}
   if(species==='giantstag'){const root=createGiantStagModel({inspection});root.userData.species='giantstag';return root;}
   if(species==='atlas'){const root=createAtlasModel({inspection});root.userData.species='atlas';return root;}
@@ -772,7 +773,7 @@ function buildInsectModel(species, { inspection = false } = {}) {
     const root=createStagModel({inspection});root.userData.species='stag';return root;
   }
   if(species==='rhino'){
-    const root=createRhinoModel({inspection});root.userData.species='rhino';return root;
+    const root=fieldFlight&&!inspection?createRhinoFlightModel({inspection}):createRhinoModel({inspection});root.userData.species='rhino';return root;
   }
   if(species==='ladybird'){
     const root=createLadybirdModel({inspection});root.userData.species='ladybird';return root;
@@ -843,7 +844,7 @@ export function updateInsectModel(group, item, time = 0, support = null) {
   }
   if(group.userData.species==='rhino'){
     if(!group.userData.inspection)group.visible=!item.caught;
-    return updateRhinoModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.rhinoPhase,warningBlend:item.warningBlend,caught:item.caught});
+    return (group.userData.flightRig?updateRhinoFlightModel:updateRhinoModel)(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,phase:item.rhinoPhase,warningBlend:item.warningBlend,caught:item.caught,flightPose:item.flightPose});
   }
   if(group.userData.species==='ladybird'){
     if(!group.userData.inspection)group.visible=!item.caught;

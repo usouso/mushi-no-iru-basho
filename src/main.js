@@ -1,37 +1,37 @@
-import {createElephantHabitat} from './elephant-habitat.js?v=0.26.0&b=b8d401c0400d';
-import {createGiantStagHabitat} from './giant-stag-habitat.js?v=0.26.0&b=b8d401c0400d';
-import {createAtlasHabitat} from './atlas-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createWorld } from './world.js?v=0.26.0&b=b8d401c0400d';
-import { createTropicalWorld } from './world-tropical.js?v=0.26.0&b=b8d401c0400d';
-import { createUnderstoryWorld } from './world-understory.js?v=0.26.0&b=b8d401c0400d';
-import { createNightWorld } from './world-night.js?v=0.26.0&b=b8d401c0400d';
-import { createSavannaWorld } from './world-savanna.js?v=0.26.0&b=b8d401c0400d';
-import { createWaterHabitat } from './water-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createDivingHabitat } from './diving-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createMantisHabitat } from './mantis-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createBeeHabitat } from './bee-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createJewelHabitat } from './jewel-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createLonghornHabitat } from './longhorn-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createRhinoHabitat } from './rhino-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createStagHabitat } from './stag-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createAntHabitat } from './ant-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.26.0&b=b8d401c0400d';
-import { createInsects, SPECIES } from './insects.js?v=0.26.0&b=b8d401c0400d';
-import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.26.0&b=b8d401c0400d';
-import { createInput } from './input.js?v=0.26.0&b=b8d401c0400d';
-import { createAudio } from './audio.js?v=0.26.0&b=b8d401c0400d';
-import { createNet } from './net.js?v=0.26.0&b=b8d401c0400d';
-import { createJournal } from './journal.js?v=0.26.0&b=b8d401c0400d';
-import { createJournalUI } from './journal-ui.js?v=0.26.0&b=b8d401c0400d';
-import { createCaptureVisibility } from './capture-visibility.js?v=0.26.0&b=b8d401c0400d';
-import { createCompanionRoster, isCompanionSpecies } from './individual-roster.js?v=0.26.0&b=b8d401c0400d';
-import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.26.0&b=b8d401c0400d';
-import { createBattleView } from './battle-view.js?v=0.26.0&b=b8d401c0400d';
-import { createExpedition } from './expedition.js?v=0.26.0&b=b8d401c0400d';
-import { individualHabitatOptions, individualScale, individualLabel } from './individual-layout.js?v=0.26.0&b=b8d401c0400d';
+import {createElephantHabitat} from './elephant-habitat.js?v=0.27.0&b=572abb81497f';
+import {createGiantStagHabitat} from './giant-stag-habitat.js?v=0.27.0&b=572abb81497f';
+import {createAtlasHabitat} from './atlas-habitat.js?v=0.27.0&b=572abb81497f';
+import { createWorld } from './world.js?v=0.27.0&b=572abb81497f';
+import { createTropicalWorld } from './world-tropical.js?v=0.27.0&b=572abb81497f';
+import { createUnderstoryWorld } from './world-understory.js?v=0.27.0&b=572abb81497f';
+import { createNightWorld } from './world-night.js?v=0.27.0&b=572abb81497f';
+import { createSavannaWorld } from './world-savanna.js?v=0.27.0&b=572abb81497f';
+import { createWaterHabitat } from './water-habitat.js?v=0.27.0&b=572abb81497f';
+import { createDivingHabitat } from './diving-habitat.js?v=0.27.0&b=572abb81497f';
+import { createMantisHabitat } from './mantis-habitat.js?v=0.27.0&b=572abb81497f';
+import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.27.0&b=572abb81497f';
+import { createBeeHabitat } from './bee-habitat.js?v=0.27.0&b=572abb81497f';
+import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.27.0&b=572abb81497f';
+import { createJewelHabitat } from './jewel-habitat.js?v=0.27.0&b=572abb81497f';
+import { createLonghornHabitat } from './longhorn-habitat.js?v=0.27.0&b=572abb81497f';
+import { createRhinoHabitat } from './rhino-habitat.js?v=0.27.0&b=572abb81497f';
+import { createStagHabitat } from './stag-habitat.js?v=0.27.0&b=572abb81497f';
+import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.27.0&b=572abb81497f';
+import { createAntHabitat } from './ant-habitat.js?v=0.27.0&b=572abb81497f';
+import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.27.0&b=572abb81497f';
+import { createInsects, SPECIES } from './insects.js?v=0.27.0&b=572abb81497f';
+import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.27.0&b=572abb81497f';
+import { createInput } from './input.js?v=0.27.0&b=572abb81497f';
+import { createAudio } from './audio.js?v=0.27.0&b=572abb81497f';
+import { createNet } from './net.js?v=0.27.0&b=572abb81497f';
+import { createJournal } from './journal.js?v=0.27.0&b=572abb81497f';
+import { createJournalUI } from './journal-ui.js?v=0.27.0&b=572abb81497f';
+import { createCaptureVisibility } from './capture-visibility.js?v=0.27.0&b=572abb81497f';
+import { createCompanionRoster, isCompanionSpecies } from './individual-roster.js?v=0.27.0&b=572abb81497f';
+import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.27.0&b=572abb81497f';
+import { createBattleView } from './battle-view.js?v=0.27.0&b=572abb81497f';
+import { createExpedition } from './expedition.js?v=0.27.0&b=572abb81497f';
+import { individualHabitatOptions, individualScale, individualLabel } from './individual-layout.js?v=0.27.0&b=572abb81497f';
 
 const HABITATS={
  meadow:{name:'温帯の草地・林縁',create:createWorld,hint:'白い翅が、草花の上でひと休み。近づいてみよう。'},
@@ -136,7 +136,7 @@ function activateHabitat(id){
  const captureOccluders=[...(world.captureOccluders||[]),...(antHabitat?.captureOccluders||[]),...(mantisHabitat?.captureOccluders||[]),...(ladybirdHabitat?.captureOccluders||[]),...(rhinoHabitat?.captureOccluders||[]),...(stagHabitat?.captureOccluders||[]),...(giantStagHabitat?.captureOccluders||[]),...(elephantHabitat?.captureOccluders||[]),...(metalliferHabitat?.captureOccluders||[]),...(atlasHabitat?.captureOccluders||[]),...(beeHabitat?.captureOccluders||[]),...(swallowtailHabitat?.captureOccluders||[]),...(jewelHabitat?.captureOccluders||[])];
  habitatOptions.hasLineOfSight=createCaptureVisibility(captureOccluders);
  simulation=createInsects(world.heightAt,individualHabitatOptions(next,habitatOptions,activeOuting,world.heightAt));
- models=new Map();for(const item of simulation.items){const model=createInsectModel(item.species,{sizePermille:item.sizePermille});models.set(item.id,model);scene.add(model);}
+ models=new Map();for(const item of simulation.items){const model=createInsectModel(item.species,{sizePermille:item.sizePermille,fieldFlight:item.rhinoFlightEnabled===true});models.set(item.id,model);scene.add(model);}
  state.habitat=next;insectStates.clear();captureDelay=0;state.swing=0;state.cooldown=0;applyCompanionPresence();
 }
 function resetPlayer(){
