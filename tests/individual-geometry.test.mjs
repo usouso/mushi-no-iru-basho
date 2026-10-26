@@ -20,6 +20,7 @@ const {createStagHabitat}=await import('../src/stag-habitat.js');
 const {createMetalliferHabitat}=await import('../src/metallifer-habitat.js');
 const species=['hercules','rhino','stag','metallifer'],height={hercules:.06,rhino:.05,stag:.045,metallifer:0};
 const v=p=>new T.Vector3(p.x,p.y,p.z);
+function minimumSkinY(root){let y=Infinity;const p=new T.Vector3();root.traverse(n=>{const a=n.geometry?.attributes.position;if(!a)return;for(let i=0;i<a.count;i++)y=Math.min(y,p.fromBufferAttribute(a,i).applyMatrix4(n.matrixWorld).y);});return y;}
 function dispose(model){const g=new Set(),m=new Set();model.traverse(n=>{if(n.geometry)g.add(n.geometry);if(n.material)for(const x of Array.isArray(n.material)?n.material:[n.material])m.add(x);});for(const x of[...g,...m])x.dispose();}
 function signature(model){const hash=createHash('sha256');model.traverse(n=>{for(const key of Object.keys(n.geometry?.attributes||{}).sort()){const a=n.geometry.attributes[key].array;hash.update(key);hash.update(Buffer.from(a.buffer,a.byteOffset,a.byteLength));}if(n.geometry?.index){const a=n.geometry.index.array;hash.update(Buffer.from(a.buffer,a.byteOffset,a.byteLength));}});return hash.digest('hex');}
 function rig(model){return model.userData.species==='hercules'?model.userData.visual.userData.legs:model.userData.legs;}
@@ -94,7 +95,7 @@ test('scaled Hercules planted feet stay fixed in world space, swing lift scales,
  }
 });
 
-test('all 4x4 battle pairings with mixed/maximum sizes stay grounded, separated, framed and correctly reach the ring without changing rules',()=>{
+test('all 4x4 battle pairings with mixed/maximum sizes keep support, permitted weapon contact, framing and the unchanged final ring position',()=>{
  const point=new T.Vector3();
  for(const playerSpecies of species)for(const opponentSpecies of species)for(const[playerSizePermille,opponentSizePermille]of[[1000,1150],[1150,1000],[1150,1150]]){
   const view=createBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille}),player=view.scene.getObjectByName('battle-player'),opponent=view.scene.getObjectByName('battle-opponent'),radius=view.scene.getObjectByName('battle-stump').geometry.parameters.radiusTop;
@@ -102,11 +103,13 @@ test('all 4x4 battle pairings with mixed/maximum sizes stay grounded, separated,
   for(const aspect of[.45,16/9])for(const position of[-4,0,4]){
    view.resize(aspect);
    for(const action of['push','evade','brace']){
-    const state={phase:'finished',position,exchanges:action==='push'?1:action==='evade'?2:3,lastExchange:{playerAction:action,opponentAction:action==='push'?'brace':'push',positionBefore:0,positionAfter:position,delta:position}},bytes=JSON.stringify(state);
-    for(let frame=0;frame<9;frame++){
+    const delta=(Math.sign(position)||1)*.35,before=position-delta;view.update({phase:'watching',position:before,exchanges:0,lastExchange:null},0,{reducedMotion:true});
+    const state={phase:'finished',position,exchanges:action==='push'?1:action==='evade'?2:3,lastExchange:{playerAction:action,opponentAction:action==='push'?'brace':'push',positionBefore:before,positionAfter:position,delta}},bytes=JSON.stringify(state);
+    for(let frame=0;frame<16;frame++){
      view.update(state,.1);assert.equal(JSON.stringify(state),bytes,'view cannot change strength/outcome');view.scene.updateMatrixWorld(true);
-     const a=new T.Box3().setFromObject(player),b=new T.Box3().setFromObject(opponent);assert.ok(b.min.x-a.max.x>=.004-1e-10);
-     for(const box of[a,b]){assert.ok(Math.abs(box.min.y)<1e-10);for(const x of[box.min.x,box.max.x])for(const y of[box.min.y,box.max.y])for(const z of[box.min.z,box.max.z]){assert.ok(Math.hypot(x,z)<radius);point.set(x,y,z).project(view.camera);assert.ok(point.x>=-.881&&point.x<=.881&&point.y>=-.581&&point.y<=.581&&point.z>=-1&&point.z<=1,`${playerSpecies}/${opponentSpecies} scaled pose outside frame`);}}
+     const a=new T.Box3().setFromObject(player),b=new T.Box3().setFromObject(opponent),presentation=view.getPresentation();if(presentation.settled)assert.ok(b.min.x-a.max.x>=.004-1e-10);if(presentation.contactActive)assert.ok(view.scene.userData.battleContact.distance<.006);
+     for(const body of[player,opponent])assert.ok(Math.abs(minimumSkinY(body))<2e-5,'actual feet, not rotated empty bbox corners, touch the table');
+     for(const box of[a,b]){for(const x of[box.min.x,box.max.x])for(const y of[box.min.y,box.max.y])for(const z of[box.min.z,box.max.z]){assert.ok(Math.hypot(x,z)<radius);point.set(x,y,z).project(view.camera);assert.ok(point.x>=-.881&&point.x<=.881&&point.y>=-.581&&point.y<=.581&&point.z>=-1&&point.z<=1,`${playerSpecies}/${opponentSpecies} scaled pose outside frame`);}}
     }
    }
    if(position!==0){const losing=(position>0?opponent:player).children[0],body=losing.userData.visual?.userData.bodyBounds;if(body)body.getCenter(point).applyMatrix4(losing.matrixWorld);else new T.Box3().setFromObject(losing.userData.bodyMesh).getCenter(point);const ring=view.scene.getObjectByName('battle-ring').geometry.parameters.radius;assert.ok(Math.abs(point.x-Math.sign(position)*ring)<1e-10,'size must transform body centre exactly once');}

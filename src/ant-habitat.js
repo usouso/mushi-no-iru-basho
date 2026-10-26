@@ -1,4 +1,4 @@
-import {ANT_ROUTE,ANT_START_DISTANCES,ANT_CARRYING_LEAF,ANT_SHELTER_CENTRES,ANT_PATH_LENGTH,ANT_FOOT_RADIUS,sampleAntPath} from './ant-layout.js?v=0.19.0&b=2b3a7a48ca63';
+import {ANT_ROUTE,ANT_START_DISTANCES,ANT_CARRYING_LEAF,ANT_SHELTER_CENTRES,ANT_PATH_LENGTH,ANT_FOOT_RADIUS,sampleAntPath} from './ant-layout.js?v=0.21.0&b=80addd8ed820';
 const THREE=window.THREE;
 /** Additive adapter; terrain/old plants/old colliders and seeded generation are untouched. */
 export function createAntHabitat(world,scene){

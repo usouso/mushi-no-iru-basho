@@ -1,6 +1,6 @@
 /** Display study only: reuse the established short branch walk / retreat.
  * Timing, range and jaw response are game tuning, not measured wild behaviour. */
-import {createStagStudy} from './stag-study.js?v=0.19.0&b=2b3a7a48ca63';
+import {createStagStudy} from './stag-study.js?v=0.21.0&b=80addd8ed820';
 export const METALLIFER_MOTION=Object.freeze({rootAboveSupport:0,cycleDistance:.04,range:.12,speed:.02,restJawOpen:.15});
 export function createMetalliferStudy({position={x:0,y:0,z:0},heading=0,scale=1,motionSeed=null}={}){
  const study=createStagStudy({position,heading,scale,motionSeed});

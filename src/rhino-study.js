@@ -1,11 +1,14 @@
-/** Unregistered horizontal-branch study. Distances, speed and waits are game
- * tuning, not measured natural activity or an intelligent escape response. */
-import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+/** Registered branch study: the original short walk stays the default; an
+ * opt-in supported field response receives threat position and safe limits.
+ * Distances, speeds and waits are game tuning, not measured wild behaviour. */
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.21.0&b=80addd8ed820';
+import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.21.0&b=80addd8ed820';
 const TAU=2*Math.PI,rampTime=.5;
 const smooth=t=>t*t*(3-2*t);
-export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null}={}){
+export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null,retreatBounds=undefined}={}){
  if(!position||![Object.prototype,null].includes(Object.getPrototypeOf(position))||Reflect.ownKeys(position).length!==3||!['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(position,k)&&'value'in Object.getOwnPropertyDescriptor(position,k)&&Number.isFinite(position[k])&&Math.abs(position[k])<=1e4)||!Number.isFinite(heading)||Math.abs(heading)>1e4)throw new TypeError('Invalid rhino support');
  if(!Number.isFinite(scale)||scale<1||scale>1.15||motionSeed!==null&&(!Number.isInteger(motionSeed)||motionSeed<0||motionSeed>0xffffffff))throw new TypeError('Invalid individual motion');
+ if(retreatBounds!==undefined)return createBranchRetreatStudy({species:'rhino',position,heading,scale,motionSeed,retreatBounds,cycleDistance:D.cycleDistance,rootAboveSupport:D.rootAboveSupport,warningSeconds:0.3,retreatDistance:0.4,retreatSpeed:0.14});
  const length=.12*scale,speed=.02*scale,cycleDistance=D.cycleDistance*scale,halfStep=cycleDistance/2;
  let restNumber=0;const rest=(initial=false)=>motionSeed===null?(initial?10:6):3+(((Math.imul(motionSeed^++restNumber,1664525)+1013904223)>>>0)%700)/100;
  const initialWait=rest(true);

@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#20392b">
-  <meta name="application-version" content="0.19.0">
+  <meta name="application-version" content="0.21.0">
   <meta name="description" content="草木の揺れに目をこらし、小さな生きものに出会う。静かな一人称の虫とり体験。">
   <title>虫のいる場所 — 生きものの観察手帖</title>
-  <link rel="stylesheet" href="./style.css?v=0.19.0&b=2b3a7a48ca63">
+  <link rel="stylesheet" href="./style.css?v=0.21.0&b=80addd8ed820">
 </head>
 <body>
   <canvas id="game-canvas" aria-label="各生息地をマウスで見回し、移動して虫を探します。" tabindex="-1"></canvas>
@@ -15,11 +15,8 @@
   <main id="app-shell">
     <section id="start-screen" class="screen title-screen" aria-label="虫のいる場所 タイトル画面">
       <div class="title-content">
-        <p class="eyebrow"><span class="sun-mark" aria-hidden="true"></span> FIELD NOTES / HABITAT STUDIES</p>
-        <p class="small-heading">生きものの観察手帖</p>
         <h1>虫のいる場所</h1>
-        <p class="title-version">試遊版 <span data-build-version>0.19.0</span></p>
-        <p class="title-intro">草をかきわけると、<br>小さな世界が、動きだす。</p>
+        <p class="title-version">試遊版 <span data-build-version>0.21.0</span></p>
         <div class="habitat-choice">
           <label for="habitat-select">散策する再現区画</label>
           <select id="habitat-select" name="habitat">
@@ -30,10 +27,9 @@
             <option value="savanna">南部アフリカ草地の再現区画</option>
           </select>
         </div>
-        <button id="start-button" class="primary-button" type="button">野原へ <span aria-hidden="true">↗</span></button>
-        <p class="journey">そっと近づく <span aria-hidden="true">—</span> 網をふる <span aria-hidden="true">—</span> 観察・仲間と虫相撲</p>
-        <div class="start-controls" aria-label="操作方法">
-          <p class="controls-heading">歩く、見つける、観察する。</p>
+        <button id="start-button" class="primary-button" type="button">散策を始める <span aria-hidden="true">↗</span></button>
+        <details class="start-controls help-details">
+          <summary>操作</summary>
           <dl>
             <div><dt>W A S D / 矢印</dt><dd>歩く</dd></div>
             <div><dt>マウス</dt><dd>見回す</dd></div>
@@ -41,95 +37,92 @@
             <div><dt>右クリック保持</dt><dd>そっと歩く</dd></div>
             <div><dt>Space</dt><dd>網をふる</dd></div>
             <div><dt>Esc</dt><dd>ひと休み</dd></div>
-            <div><dt>J</dt><dd>図鑑をひらく</dd></div>
+            <div><dt>J</dt><dd>図鑑</dd></div>
+            <div><dt>B</dt><dd>仲間・虫相撲</dd></div>
           </dl>
-          <p class="gamepad-help">左クリック：見回し中は網 · 停止中は見回し再開。<br>ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB 保持 そっと歩く · RB 保持 ダッシュ · View 図鑑 · Start ひと休み<br>同時に押したときは、そっと歩く操作を優先。<br>E / X / □：熱帯の果実台・倒木で置く・片付ける</p>
-        </div>
-        <p class="phone-note">この野原は、キーボードとマウスでの散策がおすすめです。</p>
+          <p class="gamepad-help">左クリック：見回し中は網 · 停止中は見回し再開。<br>ゲームパッド：左スティック 移動 · 右スティック 視点<br>RT / A 網 · LB 保持 そっと歩く · RB 保持 ダッシュ · View 図鑑 · Start ひと休み<br>E / X / □：熱帯の果実台・倒木で置く・片付ける</p>
+        </details>
       </div>
-      <div class="title-footnote" aria-hidden="true"><span>風の向こうに、目をこらす。</span><span>A SMALL WINDOW INTO LIVING PLACES</span></div>
     </section>
 
     <section id="hud" aria-label="散策中の表示" hidden>
       <div class="hud-status">
-        <p class="eyebrow">FIELD NOTES / HABITAT STUDIES</p>
         <p id="location-label">観察する生息地</p>
         <p id="count-label">出会った虫 0 匹</p>
       </div>
-      <button id="pause-button" class="pause-button" type="button" aria-label="ひと休み・設定を開く"><span aria-hidden="true">Ⅱ</span><span>ひと休み</span></button>
-      <button id="companions-button" class="text-button" type="button">B 仲間・バトル<span class="battle-entry-hint">連れている虫でCOMと対戦</span></button>
-      <button id="journal-button" class="journal-button" type="button">図鑑 <span>J</span></button>
+      <nav class="hud-actions" aria-label="散策メニュー">
+        <button id="pause-button" class="pause-button" type="button" aria-label="ひと休み・設定と生息地移動を開く">Esc 設定・移動</button>
+        <button id="journal-button" class="journal-button" type="button">J 図鑑</button>
+        <button id="companions-button" class="text-button" type="button">B 仲間・虫相撲</button>
+      </nav>
       <div id="crosshair" aria-hidden="true"></div>
       <p id="target-hint" class="target-hint" role="status"></p>
       <p id="toast" class="toast" role="status" aria-live="polite"></p>
       <div class="hud-controls">
-        <p id="controls-hint" class="controls-hint">WASD 歩く · Shift 走る · 右クリック そっと · マウス 見回す · Space 網（見回し中は左クリックも）</p>
+        <p id="controls-hint" class="controls-hint">WASD 移動 · Shift 走る · 右クリック そっと · Space 網</p>
         <p id="look-resume-hint" class="look-resume-hint" role="status" hidden>見回し停止中 · 左クリックで見回し再開</p>
         <p id="interaction-hint" class="interaction-hint" role="status" hidden></p>
+        <p id="quiet-label" class="quiet-label" role="status" hidden>そっと歩いています</p>
       </div>
-      <p id="quiet-label" class="quiet-label" role="status" hidden>そっと歩いています</p>
     </section>
 
     <section id="pause-screen" class="screen pause-screen" role="dialog" aria-modal="true" aria-label="ひと休み" hidden>
       <div class="pause-card">
-        <p class="eyebrow">A MOMENT IN THE SHADE</p>
         <h2>ひと休み</h2>
-        <p class="pause-copy">野原は、そのまま待っています。</p>
         <button id="resume-button" class="primary-button" type="button">散策にもどる <span aria-hidden="true">↗</span></button>
         <div class="habitat-choice travel-choice">
           <label for="travel-habitat-select">ほかの生息地へ移動</label>
           <select id="travel-habitat-select" aria-describedby="travel-help"></select>
-          <p id="travel-help" class="travel-help">移動先は入り口から。置いた餌は片付きます。図鑑と設定は残ります。</p>
+          <p id="travel-help" class="travel-help">入口へ移動します。置いた餌は片付きます。</p>
           <button id="travel-button" class="travel-button" type="button" disabled>選んだ生息地へ移動</button>
         </div>
         <div class="settings">
-          <label for="sensitivity"><span>見回す速さ</span><span class="setting-caption">ゆっくり — はやく</span></label>
+          <label for="sensitivity"><span>見回す速さ</span><span class="setting-caption">遅い — 速い</span></label>
           <input id="sensitivity" type="range" min="0.3" max="2" step="0.1" value="1">
-          <label for="volume"><span>野原の音</span><span class="setting-caption">しずか — おおきく</span></label>
+          <label for="volume"><span>音量</span><span class="setting-caption">小 — 大</span></label>
           <input id="volume" type="range" min="0" max="1" step="0.05" value="0.25">
         </div>
-        <button id="pause-companions-button" class="text-button" type="button">B 仲間・バトル</button>
-        <button id="pause-journal-button" class="text-button pause-journal-button" type="button">出会いの図鑑を見る</button>
+        <button id="pause-companions-button" class="text-button" type="button">B 仲間・虫相撲</button>
+        <button id="pause-journal-button" class="text-button pause-journal-button" type="button">J 図鑑</button>
         <div class="secondary-actions">
           <button id="restart-button" class="text-button" type="button">新しい散策を始める</button>
           <button id="title-button" class="text-button" type="button">表紙へ</button>
         </div>
         <p id="expedition-status" class="expedition-status" role="status"></p>
-        <p class="pause-bottom">Esc でも散策にもどれます · 試遊版 <span data-build-version>0.19.0</span></p>
+        <details class="help-details pause-controls"><summary>操作</summary><p>WASD：移動 · マウス：見回す<br>Shift 保持：走る · 右クリック保持：そっと歩く<br>Space：網 · 左クリック：見回し中は網、停止中は再開<br>J：図鑑 · B：仲間・虫相撲 · E：餌<br>Esc：閉じて散策へ</p></details>
+        <p class="pause-bottom">Esc で戻る · 試遊版 <span data-build-version>0.21.0</span></p>
       </div>
     </section>
 
     <section id="inspect-screen" class="screen inspect-screen" role="dialog" aria-modal="true" aria-label="虫の観察" hidden>
-      <div class="observation-label"><p class="eyebrow">A SMALL ENCOUNTER</p><p>少しだけ、見せてね。</p></div>
       <div id="inspect-card" class="inspect-card">
-        <p class="eyebrow">観察手帖 / FIELD NOTE</p>
-        <div class="specimen-rule" aria-hidden="true"><span></span><span>観察</span></div>
         <h2 id="insect-name">野原の虫</h2>
         <button id="capture-battle-button" class="primary-button" type="button" aria-describedby="capture-battle-note" hidden>この虫でバトル</button>
         <p id="capture-battle-note" class="capture-battle-note"></p>
-        <p id="insect-size" class="insect-size"></p>
         <p id="insect-individual-size" class="individual-size" hidden></p>
-        <p id="insect-description" class="insect-description"></p>
-        <p id="insect-hint" class="insect-hint"></p>
+        <details class="help-details specimen-details"><summary>虫のこと・探し方</summary>
+          <p id="insect-size" class="insect-size"></p>
+          <p id="insect-description" class="insect-description"></p>
+          <p id="insect-hint" class="insect-hint"></p>
+        </details>
         <button id="keep-button" class="text-button" type="button" hidden>連れていくだけ</button>
-        <button id="release-button" class="primary-button" type="button">野原へかえす <span aria-hidden="true">↗</span></button>
-        <button id="inspect-journal-button" class="text-button inspect-journal-button" type="button">図鑑を見る · メモを書く（任意）</button>
-        <p class="release-note">図鑑は捕獲時に記録。対応する甲虫は、仲間として連れていけます。</p>
+        <button id="release-button" class="primary-button" type="button">放す <span aria-hidden="true">↗</span></button>
+        <button id="inspect-journal-button" class="text-button inspect-journal-button" type="button">図鑑・メモ</button>
       </div>
-      <p class="observation-controls">ドラッグして、いろいろな角度から観察</p>
+      <p class="observation-controls">ドラッグで回す</p>
     </section>
 
     <section id="companions-screen" class="screen companions-screen" role="dialog" aria-modal="true" aria-label="仲間と虫相撲" hidden>
       <div class="companions-card">
-        <p class="eyebrow">BEETLE SUMO / LOCAL PROTOTYPE</p><h2>仲間と虫相撲</h2>
+        <h2>仲間と虫相撲</h2>
         <p id="companion-save-status" role="status" aria-live="polite"></p>
-        <p id="companion-empty">カブトムシ・ノコギリクワガタ・ヘラクレス・メタリフェルを捕まえ、観察画面の「この虫でバトル」からすぐ対戦できます。「連れていくだけ」で後から対戦することもできます。</p>
-        <p class="companion-note">試作では4種類を1匹ずつ。虫と相手を選んだら、押し合いを見守るだけ。相撲はけがや別れのない練習試合です。図鑑の記録から仲間が増えることはありません。</p>
+        <p id="companion-empty">対象の甲虫を捕まえて「この虫でバトル」。</p>
+        <details class="help-details companion-help"><summary>虫相撲の遊び方</summary><p>虫とCOMを選び、押し合いを見守ります。勝敗で仲間はいなくなりません。場外で決着。約1分で決着しなければ引き分け。</p><p>仲間にできる虫：カブトムシ・ノコギリクワガタ・ヘラクレス・メタリフェル・アトラス。各1匹まで。</p></details>
         <label for="companion-select">連れている仲間</label><select id="companion-select"></select><p id="companion-role"></p>
         <label for="battle-opponent-select">練習相手（COM）</label><select id="battle-opponent-select"></select>
-        <button id="battle-start-button" class="primary-button" type="button">この仲間の虫相撲を見守る</button>
-        <button id="companion-release-button" class="text-button" type="button">選んだ仲間を元の生息地へ返す</button>
-        <button id="companions-close-button" class="text-button" type="button">散策の画面へ戻る · B / Esc</button>
+        <button id="battle-start-button" class="primary-button" type="button">虫相撲を始める</button>
+        <button id="companion-release-button" class="text-button" type="button">この仲間を放す</button>
+        <button id="companions-close-button" class="text-button" type="button">散策へ戻る · B / Esc</button>
       </div>
     </section>
     <section id="battle-screen" class="screen battle-screen" role="dialog" aria-modal="true" aria-label="COMとの虫相撲" hidden>
@@ -145,10 +138,10 @@
       </div>
     </section>
     <section id="error-screen" class="screen error-screen" role="alert" hidden>
-      <div class="error-card"><p class="eyebrow">FIELD NOTES</p><h2>野原を開けませんでした</h2><p id="error-message">このブラウザでは3D表示を開始できませんでした。WebGLに対応したブラウザで、もう一度お試しください。</p><p class="error-note">ページを再読み込みするか、別のブラウザでお試しください。</p></div>
+      <div class="error-card"><h2>野原を開けませんでした</h2><p id="error-message">このブラウザでは3D表示を開始できませんでした。WebGLに対応したブラウザで、もう一度お試しください。</p></div>
     </section>
   </main>
-  <script src="./assets/vendor/three.min.js?v=0.19.0&b=2b3a7a48ca63"></script>
-  <script type="module" src="./src/main.js?v=0.19.0&b=2b3a7a48ca63"></script>
+  <script src="./assets/vendor/three.min.js?v=0.21.0&b=80addd8ed820"></script>
+  <script type="module" src="./src/main.js?v=0.21.0&b=80addd8ed820"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 /** Brief-1 trial samples with the original wind/footstep/action fallbacks.
  * Gains/radii are game tuning, not a claim of measured listening comfort.
  */
-import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.19.0&b=2b3a7a48ca63';
+import { AUDIO_ASSETS as ASSETS } from './audio-assets.js?v=0.21.0&b=80addd8ed820';
 export function createAudio({assetBaseURL}={}){
  const MAX_SHOTS=6,LOAD_PARALLELISM=3;
  let ctx,master,windGain,lastStep=0,level=.25,active=false,observing=false,ready=false,disposed=false,contextBusy=false,contextRunning=false,lifecycle=0,soundEpoch=0;
- let battling=false,battleExchangeNumber=0,battleResultPlayed=false;
+ let battling=false,battleExchangeNumber=0,battleContactNumber=0,battleResultPlayed=false;
  let habitat='meadow',fieldTime=0,nextCicada=12,cicada=null,bgm=null,bgmOffset=0,loading=false,loadAbort,pendingRelease=null;
  const timers=new Set(),oneShots=new Set(),loops=new Set(),buffers=new Map(),previous=new Map(),walkers=new Map();
  const playable=()=>!!ctx&&active&&ready&&!disposed&&level>0;
@@ -81,7 +81,7 @@ export function createAudio({assetBaseURL}={}){
    ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0;contextRunning=ctx.state===undefined||ctx.state==='running';master.connect(ctx.destination);
    const noise=ctx.createBufferSource();noise.buffer=makeNoise();noise.loop=true;const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=700;windGain=ctx.createGain();windGain.gain.value=.08;noise.connect(filter);filter.connect(windGain);windGain.connect(master);noise.start();loops.add({source:noise,nodes:[noise,filter,windGain]});
   }
-  if(battling)clearSounds();battling=false;battleExchangeNumber=0;battleResultPlayed=false;
+  if(battling)clearSounds();battling=false;battleExchangeNumber=0;battleContactNumber=0;battleResultPlayed=false;
   observing=false;active=true;lifecycle++;windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);reconcileContext();loadAssets();
  }
  function tone(f,d=.14,vol=.06,type='sine',end=f*1.2,delay=0){if(!playable()||oneShots.size>=MAX_SHOTS)return;const at=ctx.currentTime+delay,o=ctx.createOscillator(),g=ctx.createGain();const record=track(o,[o,g]);o.type=type;o.frequency.setValueAtTime(f,at);o.frequency.exponentialRampToValueAtTime(end,at+d);g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(vol,at+.015);g.gain.exponentialRampToValueAtTime(.0001,at+d);o.connect(g);g.connect(master);try{o.start(at);o.stop(at+d+.02);}catch{stop(record);}}
@@ -119,24 +119,38 @@ export function createAudio({assetBaseURL}={}){
  // repeated render/focus calls; fresh:true starts a new match, never a resume.
  function battle({fresh=false}={}){
   if(disposed)return;if(!ctx)start();
-  if(!battling||fresh){clearSounds();battleExchangeNumber=0;battleResultPlayed=false;}
+  if(!battling||fresh){clearSounds();battleExchangeNumber=0;battleContactNumber=0;battleResultPlayed=false;}
   battling=true;observing=false;active=true;lifecycle++;
   windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(0,ctx.currentTime);
   reconcileContext();loadAssets();
  }
- function battleExchange(exchange){
-  if(!battling||disposed||!exchange||!Number.isInteger(exchange.number)||exchange.number<1||exchange.number>12||exchange.number<=battleExchangeNumber||
-   !['push','brace','evade'].includes(exchange.playerAction)||!['push','brace','evade'].includes(exchange.opponentAction)||!Number.isFinite(exchange.delta))return;
-  battleExchangeNumber=exchange.number;
-  if(!playable())return; // muted/hidden/resume-delayed history is not replayed
-  const name=ASSETS.net[(exchange.number-1)%ASSETS.net.length];
-  if(buffers.has(name))sample(name,.25,{duration:.35});else noiseBurst(.14,.13,1200);
-  const pushing=exchange.playerAction==='push'||exchange.opponentAction==='push';
-  // AudioContext scheduling, not an orphan timeout: every scheduled source is
-  // tracked and stopped by pause/mute/dispose before its .18s impact can fire.
-  noiseBurst(pushing?.13:.09,pushing?.14:.08,650,.18);
-  tone(pushing?145:180,.14,pushing?.045:.025,'triangle',85,.18);
+ function validBattleExchange(exchange){
+  return battling&&!disposed&&exchange&&Number.isInteger(exchange.number)&&exchange.number>=1&&exchange.number<=12&&
+   ['push','brace','evade'].includes(exchange.playerAction)&&['push','brace','evade'].includes(exchange.opponentAction)&&Number.isFinite(exchange.delta);
  }
+ function battleWindup(exchange,{silent=false}={}){
+  if(!validBattleExchange(exchange)||exchange.number<=battleExchangeNumber)return false;
+  battleExchangeNumber=exchange.number;
+  if(playable()&&!silent){
+   const name=ASSETS.net[(exchange.number-1)%ASSETS.net.length];
+   if(buffers.has(name))sample(name,.25,{duration:.35});else noiseBurst(.14,.13,1200);
+  }
+  return true; // even muted/paused history is consumed, never queued to replay
+ }
+ function contact(exchange,delay=0){
+  if(!validBattleExchange(exchange)||exchange.number!==battleExchangeNumber||exchange.number<=battleContactNumber)return;
+  battleContactNumber=exchange.number;
+  if(!playable())return;
+  const pushing=exchange.playerAction==='push'||exchange.opponentAction==='push';
+  noiseBurst(pushing?.13:.09,pushing?.14:.08,650,delay);
+  tone(pushing?145:180,.14,pushing?.045:.025,'triangle',85,delay);
+ }
+ // The presentation owns contact timing. No timeout or pre-scheduled impact can
+ // run ahead while a held/hidden frame has stopped the visible move.
+ function battleContact(exchange){contact(exchange);}
+ // Compatibility for callers without a presentation timeline. New main uses
+ // the two explicit events; legacy sources remain tracked/cancelled on pause.
+ function battleExchange(exchange){if(battleWindup(exchange))contact(exchange,.18);}
  function battleResult(winner){
   if(!battling||disposed||battleResultPlayed||!['player','opponent','draw'].includes(winner))return;
   battleResultPlayed=true;if(!playable())return;
@@ -147,8 +161,8 @@ export function createAudio({assetBaseURL}={}){
  }
  function pause(){if(disposed)return;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();reconcileContext();}
  return {
-  start,battle,battleExchange,battleResult,
-  resetField(next){if(disposed)return;battling=false;battleExchangeNumber=0;battleResultPlayed=false;observing=false;clearSounds();stopBGM();bgmOffset=0;habitat=next==='meadow'?'meadow':null;fieldTime=0;nextCicada=12;lastStep=0;previous.clear();syncBGM();},
+  start,battle,battleWindup,battleContact,battleExchange,battleResult,
+  resetField(next){if(disposed)return;battling=false;battleExchangeNumber=0;battleContactNumber=0;battleResultPlayed=false;observing=false;clearSounds();stopBGM();bgmOffset=0;habitat=next==='meadow'?'meadow':null;fieldTime=0;nextCicada=12;lastStep=0;previous.clear();syncBGM();},
   setVolume(v){if(disposed||!Number.isFinite(Number(v)))return;level=Math.max(0,Math.min(1,Number(v)));gain(active&&ready?level:0);if(level===0){clearSounds();stopBGM();}else syncBGM();},
   pause,
   inspect(){
@@ -156,7 +170,7 @@ export function createAudio({assetBaseURL}={}){
    // This is an explicit caller-owned transition, including return from a
    // journal/pause. No DOM/visibility listener or automatic hidden-tab resume.
    // Preserve the same BGM source/offset, wind graph and naturally ending SFX.
-   if(battling){clearSounds();battling=false;battleExchangeNumber=0;battleResultPlayed=false;windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);}
+   if(battling){clearSounds();battling=false;battleExchangeNumber=0;battleContactNumber=0;battleResultPlayed=false;windGain.gain.cancelScheduledValues?.(ctx.currentTime);windGain.gain.setValueAtTime(.08,ctx.currentTime);}
    observing=true;active=true;lifecycle++;reconcileContext();
   },
   dispose(){if(disposed)return;disposed=true;battling=false;active=false;ready=false;lifecycle++;gain(0);clearSounds();stopBGM();loadAbort?.abort();buffers.clear();previous.clear();for(const record of loops){try{record.source.stop();}catch{}disconnect(record.nodes);}loops.clear();master?.disconnect?.();try{ctx?.close?.()?.catch?.(()=>{});}catch{}},

@@ -1,4 +1,4 @@
-import {sampleRhinoPose,RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import {sampleRhinoPose,RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.21.0&b=80addd8ed820';
 /** Original closed-wing male display rig; flight and feeding mouth contact are not simulated. */
 const T=window.THREE;
 function ellipsoid(parent,p,s,material){const m=new T.Mesh(new T.SphereGeometry(1,8,6),material);m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}
@@ -14,10 +14,10 @@ function tube(parent,points,radii,mat){const p=[],idx=[],N=7;for(let i=0;i<point
 export function createRhinoModel({inspection=false}={}){
  const root=new T.Group();root.name=`rhino-${inspection?'inspection':'lab'}`;
  const dark=new T.MeshStandardMaterial({color:'#342a22',roughness:.48}),shellMat=new T.MeshStandardMaterial({color:'#4a3226',roughness:.44,side:T.DoubleSide}),membrane=new T.MeshStandardMaterial({color:'#8b7353',roughness:.8,side:T.DoubleSide}),eyeMat=new T.MeshStandardMaterial({color:'#171916',roughness:.35});
- const body=new T.Group();root.add(body);body.add(abdomen(dark));ellipsoid(body,[0,.006,.035],[.045,.029,.038],dark);ellipsoid(body,[0,.012,.07],[.025,.018,.020],dark);const bodyHeadVertexCount=body.children.reduce((n,m)=>n+(m.geometry.index?.count??m.geometry.attributes.position.count),0);
+ const body=new T.Group();root.add(body);body.add(abdomen(dark));ellipsoid(body,[0,.006,.035],[.045,.029,.038],dark);const battleHeadStart=body.children.reduce((n,m)=>n+(m.geometry.index?.count??m.geometry.attributes.position.count),0);ellipsoid(body,[0,.012,.07],[.025,.018,.020],dark);const battleHeadCount=body.children.at(-1).geometry.index?.count??body.children.at(-1).geometry.attributes.position.count;const bodyHeadVertexCount=body.children.reduce((n,m)=>n+(m.geometry.index?.count??m.geometry.attributes.position.count),0);
  for(const side of[-1,1])for(const z of[.045,0,-.045])ellipsoid(body,[side*.028,-.012,z],[.010,.010,.014],dark);
  for(const side of[-1,1])ellipsoid(body,[side*.009,-.001,-.008],[.003,.004,.006],dark);
- const bodyMesh=merge(body,'rhino-body-head',dark);bodyMesh.userData={bodyHeadVertexCount,role:'body'};
+ const bodyMesh=merge(body,'rhino-body-head',dark);bodyMesh.userData={bodyHeadVertexCount,role:'body',battleHead:{start:battleHeadStart,count:battleHeadCount,pivot:[0,.012,.055]}};
  // Display silhouette informed by the normal male in Morita et al. 2019 Fig.3; not traced or measured natural ratios.
  // Total length is abdomen-to-headhorn-tip along local Z, not the horn's curved arc.
  const horns=new T.Group();root.add(horns);const headRoot=[0,.020,.075],thoraxRoot=[0,.027,.027];tube(horns,[headRoot,[0,.052,.11],[0,.083,.155],[0,.096,.169]],[.011,.009,.007,.006],dark);
@@ -29,4 +29,16 @@ export function createRhinoModel({inspection=false}={}){
  const elytra=[],hindwings=[];for(const side of[-1,1]){const e=elytron(side,shellMat);root.add(e);elytra.push(e);const p=[side*.009,.002,-.008,side*.022,.002,-.014,side*.024,.002,-.055,side*.010,.002,-.064];const w=meshFrom(p,[0,1,2,0,2,3],membrane,`rhino-stored-hindwing-${side}`);w.userData={role:'hindwing',side,stored:true};root.add(w);hindwings.push(w);}
  const pose=sampleRhinoPose(),legs=pose.legs.map(l=>createLeg(root,l,dark));root.userData={species:'rhino-study',inspection,legs,elytra,hindwings,bodyMesh,hornMesh,rootAboveSupport:D.rootAboveSupport,antennaCount:2};for(let i=0;i<6;i++)updateLeg(legs[i],pose.legs[i]);root.updateMatrixWorld(true);return root;
 }
-export function updateRhinoModel(root,state={}){if(root.userData.inspection)return root;const p=sampleRhinoPose(state);root.position.set(p.body.position.x,p.body.position.y,p.body.position.z);root.rotation.order='YXZ';root.rotation.set(0,p.body.heading,0);for(let i=0;i<6;i++)updateLeg(root.userData.legs[i],p.legs[i]);root.updateMatrixWorld(true);return root;}
+// Field-only warning moves the head and its own horn/eyes/antennae together.
+// The abdomen, thorax horn and all supported feet keep their original geometry.
+function updateWarningHead(root,blend){
+ const amount=Math.max(0,Math.min(1,Number.isFinite(blend)?blend:0));
+ let rig=root.userData.fieldWarningHead;if(!rig&&!amount)return;
+ if(!rig){const data=root.userData,range=data.bodyMesh.userData.battleHead;rig={pivot:new T.Vector3(...range.pivot),q:new T.Quaternion(),p:new T.Vector3(),amount:0,parts:[]};
+  for(const[mesh,start,count]of[[data.bodyMesh,range.start,range.count],[data.hornMesh,0,data.hornMesh.userData.headHornVertexCount],[root.getObjectByName('rhino-eyes'),0,null],[root.getObjectByName('rhino-two-short-antennae'),0,null]])rig.parts.push({mesh,start,count:count??mesh.geometry.attributes.position.count,positions:new Float32Array(mesh.geometry.attributes.position.array),normals:new Float32Array(mesh.geometry.attributes.normal.array)});
+  root.userData.fieldWarningHead=rig;
+ }
+ if(amount===rig.amount)return;rig.amount=amount;rig.q.setFromAxisAngle(new T.Vector3(1,0,0),-.13*amount);
+ for(const part of rig.parts){const a=part.mesh.geometry.attributes.position,n=part.mesh.geometry.attributes.normal;for(let i=part.start;i<part.start+part.count;i++){rig.p.fromArray(part.positions,i*3).sub(rig.pivot).applyQuaternion(rig.q).add(rig.pivot);a.setXYZ(i,rig.p.x,rig.p.y,rig.p.z);rig.p.fromArray(part.normals,i*3).applyQuaternion(rig.q);n.setXYZ(i,rig.p.x,rig.p.y,rig.p.z);}a.needsUpdate=true;n.needsUpdate=true;part.mesh.geometry.computeBoundingBox();part.mesh.geometry.computeBoundingSphere();}
+}
+export function updateRhinoModel(root,state={}){if(root.userData.inspection)return root;updateWarningHead(root,state.caught?0:state.warningBlend);const p=sampleRhinoPose(state);root.position.set(p.body.position.x,p.body.position.y,p.body.position.z);root.rotation.order='YXZ';root.rotation.set(0,p.body.heading,0);for(let i=0;i<6;i++)updateLeg(root.userData.legs[i],p.legs[i]);root.updateMatrixWorld(true);return root;}

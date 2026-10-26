@@ -1,6 +1,6 @@
 /** Unregistered fixed bark-plane study. Distances, speed and waits are game
  * tuning, not measured natural activity or an intelligent escape response. */
-import {LONGHORN_DIMENSIONS as D} from './longhorn-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import {LONGHORN_DIMENSIONS as D} from './longhorn-kinematics.js?v=0.21.0&b=80addd8ed820';
 const TAU=2*Math.PI,length=.06,speed=.018,rampTime=.5,halfStep=D.cycleDistance/2;
 const smooth=t=>t*t*(3-2*t);
 export function createLonghornStudy(support){

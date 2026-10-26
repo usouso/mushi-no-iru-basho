@@ -1,4 +1,4 @@
-import { NOTE_LIMIT } from './journal.js?v=0.19.0&b=2b3a7a48ca63';
+import { NOTE_LIMIT } from './journal.js?v=0.21.0&b=80addd8ed820';
 
 const LEGACY_SPECIES_IDS = ['butterfly', 'dragonfly', 'cicada'];
 let instance = 0;
@@ -90,13 +90,13 @@ function mountJournalUI({ journal, species, onClose }) {
   const headingBlock = make('div');
   const title = make('h2', '', '出会いの図鑑');
   title.id = `${prefix}-title`;
-  headingBlock.append(make('p', 'fj-eyebrow', 'FIELD NOTES / HABITAT STUDIES'), title);
+  headingBlock.append(make('p', 'fj-eyebrow', '図鑑'), title);
   const closeButton = make('button', 'fj-close', '閉じる');
   closeButton.type = 'button';
   header.append(headingBlock, closeButton);
-  const intro = make('p', 'fj-intro', '捕まえた種類を、このブラウザに記録。');
+  const intro = make('p', 'fj-intro', '捕まえた虫の記録');
   intro.id = `${prefix}-intro`;
-  const subtitle = make('p', 'fj-subtitle', '捕獲した場所は自動で記録されます。目で見ただけでは登録されません。覚えておきたいことがあれば、ひと言だけ。');
+  const subtitle = make('p', 'fj-subtitle', '捕まえると登録。場所は自動、メモは任意。');
   const cards = make('div', 'fj-cards');
   const status = make('p', 'fj-status');
   status.setAttribute('role', 'status');
@@ -117,7 +117,7 @@ function mountJournalUI({ journal, species, onClose }) {
       ? 'このブラウザに保存中です。ページを閉じると、未保存の記録が失われることがあります。'
       : unsaved
         ? '今はこのブラウザに保存できません。今回の未保存の変更は、このページを閉じると失われます。'
-        : '記録は自動で保存されます。メモは空欄のままでも大丈夫です。';
+        : '自動保存';
     if (status.textContent !== message) status.textContent = message;
   }
 
@@ -133,7 +133,7 @@ function mountJournalUI({ journal, species, onClose }) {
       const card = make('article', entry ? 'fj-card' : 'fj-card fj-unseen');
       if (!entry) {
         // Do not disclose a name, image, location, checklist number, or target.
-        card.append(make('h3', '', 'まだ図鑑に記録されていない虫'), make('p', '', 'いつか、どこかで。'));
+        card.append(make('h3', '', '未登録'), make('p', '', 'いつか、どこかで。'));
       } else {
         const name = typeof species[id]?.name === 'string' ? species[id].name : '野原で出会った虫';
         card.append(make('h3', '', name));

@@ -82,3 +82,20 @@ test('direct arena initialization and non-winning endings are finite, quiet and 
   assert.equal(f.assetShots().length,0);f.audio.battleResult(winner);assert.equal(f.liveShots().length,1);f.advance(1);assert.equal(f.liveShots().length,0);
  }
 });
+
+test('presentation windup and contact are separate, immediate, deduplicated and never use wall-clock timers',async t=>{
+ const f=fixture(t);await f.ready();f.audio.battle({fresh:true});await flush();
+ const before=f.ctx.sources.length;f.audio.battleWindup(exchange(1));const windup=f.ctx.sources.slice(before);assert.equal(windup.length,1);assert.equal(windup[0].buffer.file,ASSETS.net[0]+'.ogg');
+ f.advance(.46);assert.equal(f.ctx.sources.length,before+1,'waiting cannot generate the impact');const at=f.ctx.currentTime;f.audio.battleContact(exchange(1));const impact=f.ctx.sources.slice(before+1);assert.equal(impact.length,2);assert.ok(impact.every(n=>n.starts[0][0]===at&&n.stops[0]<=at+.16+1e-9));
+ for(let i=0;i<8;i++){f.audio.battleWindup(exchange(1));f.audio.battleContact(exchange(1));f.audio.battleExchange(exchange(1));f.audio.battle();}assert.equal(f.ctx.sources.length,before+3);assert.equal(f.timers.size,0);
+ f.audio.battleContact(exchange(2));assert.equal(f.ctx.sources.length,before+3,'contact cannot invent a windup');
+ f.audio.battleWindup(exchange(2));const newer=f.ctx.sources.length;f.audio.battleContact(exchange(1));assert.equal(f.ctx.sources.length,newer,'an old contact cannot attach to a newer technique');f.audio.battleContact(exchange(2));assert.ok(f.liveShots().length<=6);
+});
+
+test('split events remain silent through mute/pause, resume only new contacts, and cannot leak after leaving or disposal',async t=>{
+ const f=fixture(t);await f.ready();f.audio.battle({fresh:true});await flush();f.audio.battleWindup(exchange(1));f.audio.pause();await flush();const paused=f.ctx.sources.length;f.advance(2);f.fireTimers();assert.equal(f.ctx.sources.length,paused);assert.equal(f.liveShots().length,0);
+ f.audio.battle();await flush();const resumed=f.ctx.sources.length;f.audio.battleWindup(exchange(1));assert.equal(f.ctx.sources.length,resumed,'resuming a held pose must not replay its windup');f.audio.battleContact(exchange(1));assert.equal(f.ctx.sources.length,resumed+2,'a not-yet-presented contact may occur after resume');
+ f.audio.setVolume(0);const muted=f.ctx.sources.length;f.audio.battleWindup(exchange(2));f.audio.battleContact(exchange(2));assert.equal(f.ctx.sources.length,muted);f.audio.setVolume(.25);const unmuted=f.ctx.sources.length;f.audio.battleWindup(exchange(2));f.audio.battleContact(exchange(2));assert.equal(f.ctx.sources.length,unmuted,'already-presented silent events are not replayed');
+ f.audio.battleWindup(exchange(3));f.audio.start();const left=f.ctx.sources.length;f.audio.battleContact(exchange(3));assert.equal(f.ctx.sources.length,left);f.audio.battle({fresh:true});f.audio.battleWindup(exchange(1));f.audio.inspect();const inspected=f.ctx.sources.length;f.audio.battleContact(exchange(1));assert.equal(f.ctx.sources.length,inspected);
+ f.audio.battle({fresh:true});f.audio.battleWindup(exchange(1));f.audio.dispose();const disposed=f.ctx.sources.length;f.audio.battleContact(exchange(1));assert.equal(f.ctx.sources.length,disposed);assert.equal(f.liveShots().length,0);
+});

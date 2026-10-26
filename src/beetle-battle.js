@@ -10,12 +10,13 @@ const rounded=value=>Math.round(value*1e9)/1e9;
 const integer=(value,min,max)=>Number.isInteger(value)&&value>=min&&value<=max;
 const finite=(value,min,max)=>Number.isFinite(value)&&value>=min&&value<=max;
 const motions=new Set(['push','brace','evade']);
-export const BATTLE_LIMITS=freeze({energy:4,ring:4,turns:12,introSeconds:2,exchangeSeconds:1.6,maxSeconds:21.2,maxStep:.45});
+export const BATTLE_LIMITS=freeze({energy:4,ring:4,turns:36,introSeconds:2,exchangeSeconds:1.6,maxSeconds:59.6,maxStep:.45});
 export const BATTLE_SPECIES=freeze({
  hercules:{label:'ヘラクレスオオカブト',role:'長い角で出だしを作る',help:'角を合わせた直後の押し合いが少し得意。'},
  rhino:{label:'カブトムシ',role:'踏ん張って押し直す',help:'踏ん張った後の押し直しが少し得意。'},
  stag:{label:'ノコギリクワガタ',role:'端で踏みとどまる',help:'端に近づいたときの踏ん張りが少し得意。'},
- metallifer:{label:'メタリフェルホソアカクワガタ',role:'長い顎を掛け直す',help:'顎を掛け直した後の押し合いが少し得意。'}
+ metallifer:{label:'メタリフェルホソアカクワガタ',role:'長い顎を掛け直す',help:'顎を掛け直した後の押し合いが少し得意。'},
+ atlas:{label:'アトラスオオカブト',role:'三本の角で掛かりを保つ',help:'押した直後の踏ん張りが少し得意。'}
 });
 // Integer mixing is deliberately independent of Math.random and wall time.
 // Domain-separated slots give a repeatable temperament and exchange variation.
@@ -28,6 +29,7 @@ function roleBonus(species,number,ownPosition,action,previous){
  if(species==='rhino'&&action==='push'&&previous==='brace')return .10;
  if(species==='stag'&&ownPosition<=-1.5)return .10;
  if(species==='metallifer'&&action==='push'&&previous==='evade')return .10;
+ if(species==='atlas'&&action==='brace'&&previous==='push')return .08;
  return 0;
 }
 function effort(s,side,action,t){
@@ -43,18 +45,20 @@ function effort(s,side,action,t){
 const nextTime=s=>rounded(BATTLE_LIMITS.introSeconds+(s.exchanges+1)*BATTLE_LIMITS.exchangeSeconds);
 function validLast(s){
  const last=s.lastExchange;if(s.exchanges===0)return last===null;
- return last&&typeof last==='object'&&last.number===s.exchanges&&motions.has(last.playerAction)&&motions.has(last.opponentAction)&&finite(last.positionBefore,-4,4)&&Math.abs(last.positionBefore)<4&&last.positionAfter===s.position&&finite(last.delta,-.450000001,.450000001)&&Math.abs(last.delta-(last.positionAfter-last.positionBefore))<1e-8&&typeof last.reason==='string'&&last.reason.length>0&&last.reason.length<=200;
+ return last&&typeof last==='object'&&last.number===s.exchanges&&motions.has(last.playerAction)&&motions.has(last.opponentAction)&&finite(last.positionBefore,-BATTLE_LIMITS.ring,BATTLE_LIMITS.ring)&&Math.abs(last.positionBefore)<BATTLE_LIMITS.ring&&last.positionAfter===s.position&&finite(last.delta,-BATTLE_LIMITS.maxStep-1e-9,BATTLE_LIMITS.maxStep+1e-9)&&Math.abs(last.delta-(last.positionAfter-last.positionBefore))<1e-8&&typeof last.reason==='string'&&last.reason.length>0&&last.reason.length<=200;
 }
 function assertState(s){
- if(!s||typeof s!=='object'||!own(BATTLE_SPECIES,s.playerSpecies)||!own(BATTLE_SPECIES,s.opponentSpecies)||!integer(s.seed,0,0xffffffff)||!integer(s.playerEnergy,0,4)||!integer(s.opponentEnergy,0,4)||!finite(s.position,-4,4)||!integer(s.exchanges,0,12)||s.turn!==Math.min(12,s.exchanges+1)||!finite(s.elapsed,0,21.2)||!['watching','finished','cancelled'].includes(s.phase)||!validLast(s))throw new TypeError('Invalid automatic battle state');
- if(s.exchanges>0&&s.elapsed<rounded(2+s.exchanges*1.6))throw new TypeError('Battle history is ahead of its clock');
+ if(!s||typeof s!=='object'||!own(BATTLE_SPECIES,s.playerSpecies)||!own(BATTLE_SPECIES,s.opponentSpecies)||!integer(s.seed,0,0xffffffff)||!integer(s.playerEnergy,0,4)||!integer(s.opponentEnergy,0,4)||!finite(s.position,-BATTLE_LIMITS.ring,BATTLE_LIMITS.ring)||!integer(s.exchanges,0,BATTLE_LIMITS.turns)||s.turn!==Math.min(BATTLE_LIMITS.turns,s.exchanges+1)||!finite(s.elapsed,0,BATTLE_LIMITS.maxSeconds)||!['watching','finished','cancelled'].includes(s.phase)||!validLast(s))throw new TypeError('Invalid automatic battle state');
+ if(s.exchanges>0&&s.elapsed<rounded(BATTLE_LIMITS.introSeconds+s.exchanges*BATTLE_LIMITS.exchangeSeconds))throw new TypeError('Battle history is ahead of its clock');
+ if(s.phase!=='finished'&&(s.exchanges>=BATTLE_LIMITS.turns||Math.abs(s.position)>=BATTLE_LIMITS.ring||s.elapsed>=nextTime(s)||s.winner!==null||s.finishReason!==null))throw new TypeError('Unfinished battle cannot have a result or terminal position');
  if(s.phase==='watching'){
-  if(s.exchanges>=12||Math.abs(s.position)>=4||s.elapsed>=nextTime(s)||s.winner!==null||s.finishReason!==null||!motions.has(s.intent)||typeof s.cue!=='string')throw new TypeError('Invalid watching battle state');
+  if(!motions.has(s.intent)||typeof s.cue!=='string')throw new TypeError('Invalid watching battle state');
  }else if(s.intent!==null||s.cue!=='')throw new TypeError('Terminal battle cannot carry a motion');
- if(s.phase==='cancelled'&&(s.winner!==null||s.finishReason!==null))throw new TypeError('Cancelled battle cannot have a result');
  if(s.phase==='finished'){
-  const winner=s.position>0?'player':s.position<0?'opponent':'draw';
-  if(s.exchanges<9||s.elapsed!==rounded(2+s.exchanges*1.6)||s.winner!==winner||(s.finishReason==='ring-out'?Math.abs(s.position)!==4:s.finishReason!=='turn-limit'||s.exchanges!==12))throw new TypeError('Invalid automatic battle result');
+  const ringOut=Math.abs(s.position)===BATTLE_LIMITS.ring;
+  const winner=ringOut?(s.position>0?'player':'opponent'):'draw';
+  const validEnd=ringOut?s.finishReason==='ring-out'&&s.exchanges>=Math.ceil(BATTLE_LIMITS.ring/BATTLE_LIMITS.maxStep):s.finishReason==='time-limit'&&s.exchanges===BATTLE_LIMITS.turns;
+  if(!validEnd||s.elapsed!==rounded(BATTLE_LIMITS.introSeconds+s.exchanges*BATTLE_LIMITS.exchangeSeconds)||s.winner!==winner)throw new TypeError('Invalid automatic battle result');
  }
 }
 function copy(s){return{phase:s.phase,playerSpecies:s.playerSpecies,opponentSpecies:s.opponentSpecies,seed:s.seed,playerEnergy:s.playerEnergy,opponentEnergy:s.opponentEnergy,position:s.position,turn:s.turn,exchanges:s.exchanges,elapsed:s.elapsed,intent:s.intent,cue:s.cue,lastExchange:s.lastExchange?{...s.lastExchange}:null,winner:s.winner,finishReason:s.finishReason};}
@@ -67,23 +71,25 @@ export function createBattle({playerSpecies,opponentSpecies,seed=1}={}){
 function exchange(s){
  const p=traits(s.seed,0),o=traits(s.seed,1),number=s.exchanges+1;
  const playerAction=motion(s.playerEnergy,number,p.tempo),opponentAction=motion(s.opponentEnergy,number,o.tempo);
- let delta=rounded(clamp((effort(s,0,playerAction,p)-effort(s,1,opponentAction,o))*1.8,-.45,.45));
+ let delta=rounded(clamp((effort(s,0,playerAction,p)-effort(s,1,opponentAction,o))*1.8,-BATTLE_LIMITS.maxStep,BATTLE_LIMITS.maxStep));
  // Negligible shifts read as a held position rather than flickering decimal wins.
  if(Math.abs(delta)<.025)delta=0;
- const position=rounded(clamp(s.position+delta,-4,4));delta=rounded(position-s.position);
+ const position=rounded(clamp(s.position+delta,-BATTLE_LIMITS.ring,BATTLE_LIMITS.ring));delta=rounded(position-s.position);
  let reason=delta===0?'互いに踏みとどまり、足場を整えました。':delta>0?'こちらがじわりと押し込みました。':'相手にじわりと押し込まれました。';
  if(playerAction==='evade'||opponentAction==='evade')reason+=' 角や顎の掛かりを直しています。';
  else if(playerAction==='brace'||opponentAction==='brace')reason+=' 脚を踏ん張って支えています。';
- s.playerEnergy=nextEnergy(s.playerEnergy,playerAction);s.opponentEnergy=nextEnergy(s.opponentEnergy,opponentAction);s.position=position;s.exchanges=number;s.turn=Math.min(12,number+1);
+ s.playerEnergy=nextEnergy(s.playerEnergy,playerAction);s.opponentEnergy=nextEnergy(s.opponentEnergy,opponentAction);s.position=position;s.exchanges=number;s.turn=Math.min(BATTLE_LIMITS.turns,number+1);
  s.lastExchange={number,playerAction,opponentAction,positionBefore:rounded(position-delta),positionAfter:position,delta,reason};
- if(Math.abs(position)===4||number===12){s.phase='finished';s.intent=null;s.cue='';s.winner=position>0?'player':position<0?'opponent':'draw';s.finishReason=Math.abs(position)===4?'ring-out':'turn-limit';}
+ // Only crossing the visible ring boundary wins. The safety limit is a draw,
+ // never a hidden points decision, force-win, sudden death or shrinking ring.
+ if(Math.abs(position)===BATTLE_LIMITS.ring||number===BATTLE_LIMITS.turns){const ringOut=Math.abs(position)===BATTLE_LIMITS.ring;s.phase='finished';s.intent=null;s.cue='';s.winner=ringOut?(position>0?'player':'opponent'):'draw';s.finishReason=ringOut?'ring-out':'time-limit';}
  else describe(s);
 }
 export function advanceBattle(s,dt){
  assertState(s);
  if(s.phase!=='watching'||!Number.isFinite(dt)||dt<=0)return s;
  const next=copy(s);let target=rounded(Math.min(BATTLE_LIMITS.maxSeconds,s.elapsed+Math.min(dt,BATTLE_LIMITS.maxSeconds)));
- // At most twelve events, even for Number.MAX_VALUE. Time is snapped only to
+ // At most BATTLE_LIMITS.turns events, even for Number.MAX_VALUE. Time is snapped only to
  // nanosecond precision to remove ordinary decimal-sum noise, not to frames.
  // Snap a sub-microsecond sum error at a scheduled boundary. This keeps 30/60
  // Hz subdivisions on the same exchange rather than one frame late.

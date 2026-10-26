@@ -1,5 +1,6 @@
-/** Two-species encounter tuning, not measured biological reaction distances. */
+/** Per-species encounter tuning, not measured biological reaction distances. */
 export const CAPTURE_AWARENESS = Object.freeze({
+  butterfly: Object.freeze({ walkRadius: 3.2, dashRadius: 4.2, quietRadius: .95 }),
   dragonfly: Object.freeze({ walkRadius: 3.3, dashRadius: 4.4, quietRadius: 1.05 }),
   cicada: Object.freeze({ walkRadius: 3.5, dashRadius: 4.6, quietRadius: 1.15 })
 });

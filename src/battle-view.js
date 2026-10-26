@@ -1,123 +1,68 @@
-import {createInsectModel} from './insect-models.js?v=0.19.0&b=2b3a7a48ca63';
-
-/** Small presentation-only sumo table. Automatic exchanges are supplied
- * by the pure watching/finished/cancelled battle snapshot. This is a restrained push/stance illustration,
- * with close framing and brief contact accents. No battle rules, renderer or audio owned.
- */
-const T=window.THREE;
-const ELIGIBLE=new Set(['rhino','stag','hercules','metallifer']);
-const finite=(value,fallback=0)=>Number.isFinite(value)?value:fallback;
-const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
-
+import {createInsectModel} from './insect-models.js?v=0.21.0&b=80addd8ed820';
+import {createBattleRig} from './battle-pose.js?v=0.21.0&b=80addd8ed820';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.21.0&b=80addd8ed820';
+/** Paired original sumo presentation, not battle rules or a licensed technique.
+ * Contact is one constrained timeline shared by attacker and receiver. */
+const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas']);
+const finite=(n,f=0)=>Number.isFinite(n)?n:f,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function createBattleView({playerSpecies,opponentSpecies,playerSizePermille=null,opponentSizePermille=null,aspect=1}={}){
  if(!ELIGIBLE.has(playerSpecies)||!ELIGIBLE.has(opponentSpecies))throw new TypeError('Battle view requires supported beetles');
- const scene=new T.Scene();scene.background=new T.Color('#647368');
- scene.add(new T.HemisphereLight('#f7f1db','#475640',1.15));
- const sun=new T.DirectionalLight('#ffe9c8',1.2);sun.position.set(-2,4,3);scene.add(sun);
- const fill=new T.DirectionalLight('#cce2e4',.5);fill.position.set(3,2,-2);scene.add(fill);
+ const scene=new T.Scene();scene.background=new T.Color('#647368');scene.add(new T.HemisphereLight('#f7f1db','#475640',1.15));const sun=new T.DirectionalLight('#ffe9c8',1.2);sun.position.set(-2,4,3);scene.add(sun);const fill=new T.DirectionalLight('#cce2e4',.5);fill.position.set(3,2,-2);scene.add(fill);
  const camera=new T.OrthographicCamera(-1,1,1,-1,.01,20);camera.position.set(0,1.25,2);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
- const scratch=new T.Box3(),fit=new T.Box3(),otherBox=new T.Box3(),corner=new T.Vector3();
- function beetle(species,name,heading,sizePermille){
-  const anchor=new T.Group();anchor.name=name;
-  const model=createInsectModel(species,{inspection:true,sizePermille});anchor.add(model);scene.add(anchor);
-  model.updateMatrixWorld(true);scratch.setFromObject(model);
-  const front=scratch.max.z,height=scratch.max.y-scratch.min.y;
-  const bodyBounds=model.userData.visual?.userData.bodyBounds;
-  if(bodyBounds)scratch.copy(bodyBounds).applyMatrix4(model.userData.visual.matrixWorld);else if(model.userData.bodyMesh)scratch.setFromObject(model.userData.bodyMesh);
-  const bodyCenter=scratch.getCenter(new T.Vector3());
-  const jaws=(model.userData.jaws||[]).map(jaw=>{const pivot=jaw.pivot||jaw;return{pivot,angle:pivot.rotation.y,side:jaw.side||Math.sign(pivot.position.x)};});
-  anchor.rotation.y=heading;return{anchor,model,front,height,bodyCenter,jaws,baseX:0};
- }
- const player=beetle(playerSpecies,'battle-player',Math.PI/2,playerSizePermille),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2,opponentSizePermille);
- // Heads point toward the centre (+Z in each existing model). Keep horn/jaw
- // fronts separated; do not scale each body to the same fictional size.
+ const scratch=new T.Box3(),fit=new T.Box3(),corner=new T.Vector3(),target=new T.Vector3(),weapon=new T.Vector3();
+ function beetle(species,name,heading,sizePermille){const anchor=new T.Group();anchor.name=name;const model=createInsectModel(species,{inspection:true,sizePermille});anchor.add(model);scene.add(anchor);model.updateMatrixWorld(true);scratch.setFromObject(model);const front=scratch.max.z,height=scratch.max.y-scratch.min.y;const body=model.userData.visual?.userData.bodyBounds;if(body)scratch.copy(body).applyMatrix4(model.userData.visual.matrixWorld);else scratch.setFromObject(model.userData.bodyMesh);const bodyCenter=scratch.getCenter(new T.Vector3());anchor.rotation.y=heading;return{species,anchor,model,front,height,bodyCenter,heading,baseX:0,restY:0,rig:null};}
+ const player=beetle(playerSpecies,'battle-player',Math.PI/2,playerSizePermille),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2,opponentSizePermille),entries={player,opponent};
  player.baseX=-.01-player.front;opponent.baseX=.01+opponent.front;
- function place(entry,x,yaw,lean,z=0){
-  entry.anchor.position.set(x,0,z);entry.anchor.rotation.set(0,yaw,lean,'ZYX');
-  entry.anchor.updateMatrixWorld(true);scratch.setFromObject(entry.anchor);
-  entry.anchor.position.y=-scratch.min.y;entry.anchor.updateMatrixWorld(true);
- }
- place(player,player.baseX,Math.PI/2,0);place(opponent,opponent.baseX,-Math.PI/2,0);
- scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);
- const radius=Math.max(.65,Math.abs(fit.min.x),Math.abs(fit.max.x))+.36;
- const side=new T.MeshStandardMaterial({color:'#695344',roughness:.96});
- const top=new T.MeshStandardMaterial({color:'#a18766',roughness:.92});
- const stump=new T.Mesh(new T.CylinderGeometry(radius,radius*1.015,.14,48),[side,top,top]);stump.name='battle-stump';stump.position.y=-.07;scene.add(stump);
+ function place(e,x,y,z=0,pitch=0,roll=0){e.anchor.position.set(x,y,z);e.anchor.rotation.set(pitch,e.heading,roll,'YXZ');e.anchor.updateMatrixWorld(true);}
+ for(const e of[player,opponent]){place(e,e.baseX,0);scratch.setFromObject(e.anchor);e.restY=-scratch.min.y;place(e,e.baseX,e.restY);e.rig=createBattleRig(e.model,e.species);e.rig.resetFeet();}
+ scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);const radius=Math.max(.65,Math.abs(fit.min.x),Math.abs(fit.max.x))+.36;
  const ringRadius=radius*.78;
- const ring=new T.Mesh(new T.TorusGeometry(ringRadius,.003,6,64),new T.MeshStandardMaterial({color:'#d5bf96',roughness:1}));ring.name='battle-ring';ring.rotation.x=Math.PI/2;ring.position.y=.001;scene.add(ring);
- const positiveEnd=ringRadius-corner.copy(opponent.bodyCenter).applyMatrix4(opponent.anchor.matrixWorld).x;
- const negativeEnd=-ringRadius-corner.copy(player.bodyCenter).applyMatrix4(player.anchor.matrixWorld).x;
- const mapPosition=value=>{const p=clamp(finite(value),-4,4);return p>=0?p/4*positiveEnd:-p/4*negativeEnd;};
- // Keep a constant close scale based on the insects, not the whole stump.
- // The stump may leave the viewport, like ground in a close arena shot. Both
- // complete beetles are fitted every stance, including long jaws and portrait.
- scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);
- const closeSize=fit.getSize(new T.Vector3()).addScalar(.20);
- const dust=new T.Group();dust.name='battle-contact-dust';scene.add(dust);
- const dustGeometry=new T.SphereGeometry(.009,5,3),dustMaterial=new T.MeshBasicMaterial({color:'#bfa67e',transparent:true,opacity:0,depthWrite:false});
- for(let i=0;i<6;i++){const mote=new T.Mesh(dustGeometry,dustMaterial);dust.add(mote);}dust.visible=false;
- let disposed=false,displayPosition=0,exchangeAge=1,exchangeKey=null,viewAspect=1;
- function frameBeetles(){
-  scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);
-  const centre=fit.getCenter(new T.Vector3()),safe=fit.clone().expandByScalar(.035),stable=new T.Box3().setFromCenterAndSize(centre,closeSize);safe.union(stable);
-  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
-  camera.updateMatrixWorld(true);
-  for(const x of[safe.min.x,safe.max.x])for(const y of[safe.min.y,safe.max.y])for(const z of[safe.min.z,safe.max.z]){
-   corner.set(x,y,z).applyMatrix4(camera.matrixWorldInverse);minX=Math.min(minX,corner.x);maxX=Math.max(maxX,corner.x);minY=Math.min(minY,corner.y);maxY=Math.max(maxY,corner.y);
+ const positiveEnd=ringRadius-corner.copy(opponent.bodyCenter).applyMatrix4(opponent.anchor.matrixWorld).x,negativeEnd=-ringRadius-corner.copy(player.bodyCenter).applyMatrix4(player.anchor.matrixWorld).x;
+ function outwardEnd(e,sign){const box=e.rig.torsoBox(new T.Box3()),feet=e.rig.legs.map(l=>l.foot.clone().applyMatrix4(l.mesh.matrixWorld).x);return sign>0?Math.max(ringRadius+.035-box.min.x,ringRadius+.025-Math.min(...feet)):Math.min(-ringRadius-.035-box.max.x,-ringRadius-.025-Math.max(...feet));}
+ const positiveOutEnd=outwardEnd(opponent,1),negativeOutEnd=outwardEnd(player,-1);
+ // Preserve the winning line; add only a safe floor beyond it, never a fall.
+ let platformRadius=radius;for(const offset of[positiveOutEnd,negativeOutEnd])for(const e of[player,opponent]){scratch.setFromObject(e.anchor);for(const x of[scratch.min.x,scratch.max.x])for(const z of[scratch.min.z,scratch.max.z])platformRadius=Math.max(platformRadius,Math.hypot(x+offset,z)+.08);}
+ const side=new T.MeshStandardMaterial({color:'#695344',roughness:.96}),top=new T.MeshStandardMaterial({color:'#a18766',roughness:.92});const stump=new T.Mesh(new T.CylinderGeometry(platformRadius,platformRadius*1.015,.14,48),[side,top,top]);stump.name='battle-stump';stump.position.y=-.07;scene.add(stump);
+ const ring=new T.Mesh(new T.TorusGeometry(ringRadius,.003,6,64),new T.MeshStandardMaterial({color:'#f1eddf',roughness:1}));ring.name='battle-ring';ring.rotation.x=Math.PI/2;ring.position.y=.001;scene.add(ring);
+ const mapPosition=value=>{const p=clamp(finite(value),-4,4);return p>=0?p/4*positiveEnd:-p/4*negativeEnd;},closeSize=fit.getSize(new T.Vector3()).addScalar(.20);
+ const dust=new T.Group();dust.name='battle-contact-dust';scene.add(dust);const dustGeometry=new T.SphereGeometry(.006,5,3),dustMaterial=new T.MeshBasicMaterial({color:'#bfa67e',transparent:true,opacity:0,depthWrite:false});for(let i=0;i<4;i++)dust.add(new T.Mesh(dustGeometry,dustMaterial));dust.visible=false;
+ let hasRendered=false,lastReduced=false,lastPosition=null,lastOutcomeKey=null,ringFocusSide=null,disposed=false,viewAspect=1,exchangeKey=null,age=0,started=false,contactSent=false,settledSent=false,lastPresentation={events:[],finished:false,age:0,stage:'settled',settled:true,contactActive:false,exchangeNumber:0,actor:null,family:null,ringOutVisible:false,ringOutSide:null};
+ function frameBeetles(){scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);const centre=fit.getCenter(new T.Vector3()),safe=fit.clone().expandByScalar(.035),stable=new T.Box3().setFromCenterAndSize(centre,closeSize);safe.union(stable);if(ringFocusSide){const sign=ringFocusSide==='opponent'?1:-1;for(const z of[-.18,0,.18])safe.expandByPoint(new T.Vector3(sign*Math.sqrt(ringRadius*ringRadius-z*z),.001,z));}let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;camera.updateMatrixWorld(true);for(const x of[safe.min.x,safe.max.x])for(const y of[safe.min.y,safe.max.y])for(const z of[safe.min.z,safe.max.z]){corner.set(x,y,z).applyMatrix4(camera.matrixWorldInverse);minX=Math.min(minX,corner.x);maxX=Math.max(maxX,corner.x);minY=Math.min(minY,corner.y);maxY=Math.max(maxY,corner.y);}const span=Math.max((maxX-minX)/(.88*viewAspect),(maxY-minY)/.58),cx=(minX+maxX)/2,cy=(minY+maxY)/2;camera.left=cx-span*viewAspect/2;camera.right=cx+span*viewAspect/2;camera.top=cy+span/2;camera.bottom=cy-span/2;camera.updateProjectionMatrix();}
+ function resize(next){if(disposed)return;viewAspect=clamp(finite(next,1),.1,10);frameBeetles();}
+ function reset(){if(disposed)return;hasRendered=false;ringFocusSide=null;lastOutcomeKey=null;scene.userData.battleRingOut=null;exchangeKey=null;age=0;started=false;contactSent=false;settledSent=false;for(const e of[player,opponent]){e.rig.restore();place(e,e.baseX,e.restY);e.rig.resetFeet();}dust.visible=false;lastPresentation={events:[],finished:false,age:0,stage:'settled',settled:true,contactActive:false,exchangeNumber:0,actor:null,family:null,ringOutVisible:false,ringOutSide:null};}
+ function getPresentation(){return{...lastPresentation,events:[]};}
+ function update(snapshot={},dt=0,{reducedMotion=false,clipAge=null}={}){
+  if(disposed)return{...getPresentation(),events:[]};const step=clamp(finite(dt),0,.1),last=snapshot.phase==='cancelled'?null:snapshot.lastExchange,key=last?`${last.number??snapshot.exchanges}:${finite(last.positionBefore)}:${finite(last.positionAfter)}`:null,events=[];
+  const declaredWinner=snapshot.winner==='player'||snapshot.winner==='opponent',ringOut=snapshot.phase==='finished'&&declaredWinner&&snapshot.finishReason==='ring-out'&&(snapshot.winner==='player'?snapshot.position===4:snapshot.position===-4),ringOutSide=ringOut?(snapshot.winner==='player'?'opponent':'player'):null,settleAt=ringOut?RING_OUT_CHOREOGRAPHY.settledSeconds:BATTLE_CHOREOGRAPHY.settledSeconds,outcomeKey=`${snapshot.phase}:${snapshot.winner}:${snapshot.finishReason}`;
+  if(hasRendered&&step===0&&key===exchangeKey&&lastReduced===reducedMotion&&lastPosition===snapshot.position&&lastOutcomeKey===outcomeKey)return{...getPresentation(),events:[]};
+  hasRendered=true;lastReduced=reducedMotion;lastPosition=snapshot.position;lastOutcomeKey=outcomeKey;ringFocusSide=ringOutSide;
+  if(key!==exchangeKey){exchangeKey=key;age=0;started=false;contactSent=false;settledSent=false;for(const e of[player,opponent])e.rig.resetFeet();}
+  if(last&&step>0){if(!started){started=true;events.push({type:'started',key,exchange:last});}else age=Math.min(settleAt,age+step);if(Number.isFinite(clipAge))age=Math.max(age,Math.min(settleAt,clipAge));if(age>=BATTLE_CHOREOGRAPHY.contactSeconds&&!contactSent){contactSent=true;events.push({type:'contact',key,exchange:last});}if(age>=settleAt-1e-10&&!settledSent){age=settleAt;settledSent=true;events.push({type:'settled',key,exchange:last});}}
+  const choreography=sampleBattleChoreography(last,age,{playerSpecies,opponentSpecies,reducedMotion,ringOut}),position=ringOut?(ringOutSide==='opponent'?positiveOutEnd:negativeOutEnd):mapPosition(snapshot.position),before=last?mapPosition(last.positionBefore):position,display=before+(position-before)*choreography.translation;
+  const attack=entries[choreography.actor]||player,receive=attack===player?opponent:player,sign=attack===player?1:-1;
+  if(!choreography.active||reducedMotion){for(const e of[player,opponent]){e.rig.restore();place(e,e.baseX+position,e.restY);e.rig.resetFeet();}}
+  else{
+   const c=choreography.contact,lift=choreography.drive,prepare=choreography.crouch,jaw=choreography.family==='jaw',defPitch=ringOut?-.03*c-.04*lift:-.05*c-.10*lift,defRoll=jaw?(ringOut?.025:.07)*lift:0;
+   const rear=new T.Vector3(0,-receive.restY,-.065*receive.rig.scale).applyEuler(new T.Euler(defPitch,0,defRoll,'YXZ'));
+   place(receive,receive.baseX+display,-rear.y,0,defPitch,defRoll);receive.rig.setJaws(.04*c+.06*lift);receive.rig.setWeaponPitch(0);
+   const pitch=(attack.species==='atlas'?.08:attack.species==='rhino'?.12:attack.species==='stag'?0:jaw?.10:.20)*prepare-(jaw?.10:['rhino','atlas'].includes(attack.species)?.04:.15)*lift;
+   place(attack,attack.baseX+display,attack.restY-.006*prepare,0,pitch,jaw?-.025*lift:0);attack.rig.setJaws(.20*prepare-.16*c+.035*lift);attack.rig.setWeaponPitch(.65*prepare-.08*lift);
+   receive.rig.contactWorld(target);attack.rig.weaponWorld(weapon);const offset=target.clone().sub(weapon);attack.anchor.position.x+=offset.x*c*.5;receive.anchor.position.x-=offset.x*c*.5;attack.anchor.position.z+=offset.z*c*.5;receive.anchor.position.z-=offset.z*c*.5;attack.anchor.position.y+=offset.y*c;attack.anchor.updateMatrixWorld(true);receive.anchor.updateMatrixWorld(true);
+   // Keep the rigid abdomen/head above the stage; the receiver follows the same
+   // tiny vertical correction so designated weapon contact cannot separate.
+   const low=attack.rig.torsoBox(scratch).min.y;if(low<.002){const correction=.002-low;attack.anchor.position.y+=correction;if(c>.999)receive.anchor.position.y+=correction;attack.anchor.updateMatrixWorld(true);receive.anchor.updateMatrixWorld(true);}
+   // A final horizontal shove advances by real steps; do not keep the hind
+   // feet pinned to the earlier contact point while the torso crosses the line.
+   const footStage=ringOut&&age>=.62&&choreography.stage==='drive'?'release':choreography.stage;
+   for(const e of[player,opponent])e.rig.updateFeet({dt:step,age,yaw:e.heading,stage:footStage,lift:e===receive&&!ringOut?lift:0,attacker:e===attack,recovery:choreography.footRecovery});
   }
-  // Insects occupy the central arena; only compact edge UI is reserved.
-  const span=Math.max((maxX-minX)/(.88*viewAspect),(maxY-minY)/.58),cy=(minY+maxY)/2,cx=(minX+maxX)/2;
-  camera.left=cx-span*viewAspect/2;camera.right=cx+span*viewAspect/2;camera.top=cy+span/2;camera.bottom=cy-span/2;camera.updateProjectionMatrix();
+  attack.rig.weaponWorld(weapon);receive.rig.contactWorld(target);
+  const contactInfo={actor:choreography.actor,family:choreography.family,stage:choreography.stage,active:choreography.contactActive,weaponPoint:weapon.clone(),bodyPoint:target.clone(),distance:weapon.distanceTo(target),weaponMesh:attack.rig.weapon.mesh,bodyMesh:receive.rig.contactPatch.mesh};scene.userData.battleContact=contactInfo;
+  dust.visible=!reducedMotion&&choreography.contactActive&&age<.70;if(dust.visible){dust.position.copy(target);const p=(age-.46)/.24;dustMaterial.opacity=.28*(1-p);dust.children.forEach((m,i)=>{const a=i*Math.PI/2;m.position.set(Math.cos(a)*(.004+p*.04),.004+Math.sin(p*Math.PI)*.008,Math.sin(a)*(.004+p*.03));});}
+  let ringOutVisible=false;if(ringOutSide){const loser=entries[ringOutSide],sign=ringOutSide==='opponent'?1:-1,body=loser.rig.torsoBox(new T.Box3()),inner=sign>0?body.min.x:-body.max.x;let outsideSupport=0;for(const leg of loser.rig.legs){const p=leg.foot.clone().applyMatrix4(leg.mesh.matrixWorld);if(sign*p.x>ringRadius+.012&&Math.abs(p.y)<2e-5)outsideSupport++;}ringOutVisible=inner>ringRadius+.012&&outsideSupport>=3;scene.userData.battleRingOut={side:ringOutSide,ringRadius,innerBodyEdge:inner,outsideSupport,visible:ringOutVisible};}else scene.userData.battleRingOut=null;
+  const finished=snapshot.phase==='finished'&&choreography.settled&&(!declaredWinner||ringOut&&ringOutVisible);
+  lastPresentation={events,finished,ringOutVisible,ringOutSide,exchangeNumber:last?.number??snapshot.exchanges??0,age,stage:choreography.stage,contactActive:choreography.contactActive,settled:choreography.settled,actor:last?choreography.actor:null,family:last?choreography.family:null};frameBeetles();return{...lastPresentation};
  }
- function resize(nextAspect){if(disposed)return;viewAspect=clamp(finite(nextAspect,1),.1,10);frameBeetles();}
- function update(snapshot={},dt=0,{reducedMotion=false}={}){
-  if(disposed)return;
-  const step=clamp(finite(dt),0,.1),position=mapPosition(snapshot.position);
-  const last=snapshot.lastExchange,key=last?`${finite(snapshot.exchanges)}:${finite(last.positionBefore)}:${finite(last.positionAfter)}:${finite(last.delta)}`:null;
-  if(key!==exchangeKey){exchangeKey=key;exchangeAge=0;}
-  exchangeAge=Math.min(1,exchangeAge+step);
-  const resolving=!!last&&exchangeAge<.85;
-  // A 70ms contact hold is presentation only: simulation time/results are not paused.
-  const clipTime=exchangeAge<=.18?exchangeAge:exchangeAge<.25?.18:exchangeAge-.07;
-  const progress=clamp((clipTime-.18)/.60,0,1),ease=progress*progress*(3-2*progress);
-  displayPosition=reducedMotion?position:resolving?mapPosition(last.positionBefore)+(position-mapPosition(last.positionBefore))*ease:position;
-  // Show BOTH automatic resolved actions; never preview a future decision. Under
-  // reduced motion this is one fixed action pose, not an oscillating clip.
-  const attack=clamp(clipTime/.18,0,1),decay=clamp((clipTime-.18)/.60,0,1);
-  const amount=resolving&&!reducedMotion?(clipTime<.18?attack*attack*(3-2*attack):1-decay*decay*(3-2*decay)):0;
-  function actionPose(entry,sign,action){
-   const push=action==='push',evade=action==='evade',brace=action==='brace';
-   const reaction=last&&last.delta*sign<0?-.025:0;
-   const approach=((push?.055:brace?-.015:0)+reaction)*amount*sign;
-   // Stay on all six feet: horizontal drive, sidestep and jaw grip, not a
-   // whole-model airborne tilt. This is a short illustration, not new gait AI.
-   for(const jaw of entry.jaws)jaw.pivot.rotation.y=jaw.angle+jaw.side*(push?.065:brace?.025:0)*amount;
-   place(entry,entry.baseX+displayPosition+approach,sign*Math.PI/2+(evade?.22*amount*sign:0),0,evade?.105*amount*sign:0);
-  }
-  actionPose(player,1,resolving?last.playerAction:null);
-  actionPose(opponent,-1,resolving?last.opponentAction:null);
-  // The illustrative approach must never drive real horn/jaw geometry through
-  // its opponent. Correct only the pair's separation, independently of rules.
-  scratch.setFromObject(player.anchor);otherBox.setFromObject(opponent.anchor);
-  const overlap=.004-(otherBox.min.x-scratch.max.x);
-  if(overlap>0){player.anchor.position.x-=overlap/2;opponent.anchor.position.x+=overlap/2;player.anchor.updateMatrixWorld(true);opponent.anchor.updateMatrixWorld(true);}
-  const puff=clamp((exchangeAge-.18)/.35,0,1);
-  dust.visible=!reducedMotion&&resolving&&exchangeAge>=.18&&exchangeAge<.53&&(last.playerAction==='push'||last.opponentAction==='push');
-  if(dust.visible){
-   scratch.setFromObject(player.anchor);otherBox.setFromObject(opponent.anchor);dust.position.set((scratch.max.x+otherBox.min.x)/2,.006,(player.anchor.position.z+opponent.anchor.position.z)/2);
-   dustMaterial.opacity=.42*(1-puff);
-   dust.children.forEach((mote,i)=>{const a=i*Math.PI/3;mote.position.set(Math.cos(a)*(.015+puff*.12),Math.sin(puff*Math.PI)*(.012+i%2*.012),Math.sin(a)*(.015+puff*.08));mote.scale.setScalar(.7+puff*.9);});
-  }
-  frameBeetles();
- }
- function dispose(){
-  if(disposed)return;disposed=true;const geometries=new Set(),materials=new Set();
-  scene.traverse(node=>{if(node.geometry)geometries.add(node.geometry);if(node.material)for(const mat of Array.isArray(node.material)?node.material:[node.material])materials.add(mat);});
-  for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();
-  // The existing Hercules texture is shared by field and inspection models.
-  // Never dispose texture maps or call a field-world disposal helper here.
-  scene.clear();
- }
- resize(aspect);update({position:0,phase:'watching',lastExchange:null},0,{reducedMotion:true});
- return{scene,camera,update,resize,dispose};
+ function dispose(){if(disposed)return;disposed=true;for(const e of[player,opponent])e.rig.dispose();const geometries=new Set(),materials=new Set();scene.traverse(n=>{if(n.geometry)geometries.add(n.geometry);if(n.material)for(const m of Array.isArray(n.material)?n.material:[n.material])materials.add(m);});for(const g of geometries)g.dispose();for(const m of materials)m.dispose();scene.clear();}
+ resize(aspect);update({phase:'watching',position:0,lastExchange:null},0,{reducedMotion:true});return{scene,camera,update,resize,dispose,reset,getPresentation};
 }

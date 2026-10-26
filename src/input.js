@@ -11,7 +11,7 @@ export function createInput(canvas, callbacks) {
   const blockedPadModifiers = new Set();
   const movement = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowLeft','ArrowDown','ArrowRight','ShiftLeft','ShiftRight']);
   const controls = new Set([...movement, 'Space']);
-  const elementIsControl = e => /^(INPUT|BUTTON|TEXTAREA|SELECT)$/.test(e.target?.tagName || '') || e.target?.isContentEditable;
+  const elementIsControl = e => /^(INPUT|BUTTON|TEXTAREA|SELECT|SUMMARY)$/.test(e.target?.tagName || '') || !!e.target?.closest?.('summary') || e.target?.isContentEditable;
   const editableMenuTarget = target => /^(INPUT|TEXTAREA|SELECT)$/.test(target?.tagName || '') || target?.isContentEditable || !!target?.closest?.('input, textarea, select');
   const inspectionMenuTarget = target => target === canvas || target?.id === 'inspect-screen' || !!target?.closest?.('#inspect-screen');
   const currentPad = () => Array.from(navigator.getGamepads?.() || []).find(p => p?.connected);

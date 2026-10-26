@@ -1,0 +1,71 @@
+/** Battle-only adapter over independently owned inspection geometry. Field and
+ * journal models keep their ordinary rig. Feet stay world-planted while the
+ * real torso/horns lean; only swing/recovery feet move to a new support point. */
+import {sampleRhinoPose} from './rhino-kinematics.js?v=0.21.0&b=80addd8ed820';
+import {sampleStagPose} from './stag-kinematics.js?v=0.21.0&b=80addd8ed820';
+const T=window.THREE;
+const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
+const vec=p=>new T.Vector3(p.x,p.y,p.z);
+function basis(a,b){const axis=b.clone().sub(a).normalize(),u=new T.Vector3(0,1,0);if(Math.abs(axis.dot(u))>.95)u.set(1,0,0);const v=new T.Vector3().crossVectors(axis,u).normalize();u.crossVectors(v,axis).normalize();return{axis,u,v};}
+function sliceMesh(source,ranges){
+ const g=new T.BufferGeometry(),selected=[];for(const r of ranges)for(let i=r.start;i<r.start+r.count;i++)selected.push(source.geometry.index?source.geometry.index.getX(i):i);
+ for(const [name,a]of Object.entries(source.geometry.attributes)){const values=new Float32Array(selected.length*a.itemSize);for(let i=0;i<selected.length;i++)for(let k=0;k<a.itemSize;k++)values[i*a.itemSize+k]=a.array[selected[i]*a.itemSize+k];g.setAttribute(name,new T.BufferAttribute(values,a.itemSize));}
+ g.computeBoundingBox();g.computeBoundingSphere();const m=new T.Mesh(g,source.material);m.name='battle-torso-surface';m.matrixAutoUpdate=false;m.userData.source=source;return m;
+}
+export function createBattleRig(model,species){
+ const data=model.userData,sourceLegs=data.legs||data.visual?.userData.legs,proxies=[],torsoMeshes=[];
+ if(data.bodyMesh)torsoMeshes.push(data.bodyMesh);else data.visual.traverse(m=>{if(!m.isMesh)return;const ranges=m.userData.battleParts?.filter(p=>p.role==='torso');if(ranges?.length){const proxy=sliceMesh(m,ranges);proxies.push(proxy);torsoMeshes.push(proxy);}else if(m.userData.battleRole==='torso')torsoMeshes.push(m);});
+ const baseline=species==='rhino'?sampleRhinoPose().legs:species==='stag'?sampleStagPose().legs:null;
+ const legs=sourceLegs.map((leg,i)=>{
+  const info=baseline?.[i]||leg,points=[vec(info.hip),vec(info.knee),...(info.ankle?[vec(info.ankle)]:[]),vec(info.foot)],geometry=leg.mesh.geometry,original=new Float32Array(geometry.attributes.position.array),normals=new Float32Array(geometry.attributes.normal.array),bindings=[];
+  const frames=points.slice(0,-1).map((a,k)=>basis(a,points[k+1]));
+  for(let n=0;n<geometry.attributes.position.count;n++){const p=new T.Vector3().fromBufferAttribute(geometry.attributes.position,n);let chosen=0,nearest=Infinity;for(let k=0;k<points.length-1;k++){const q=new T.Line3(points[k],points[k+1]).closestPointToPoint(p,true,new T.Vector3()),d=p.distanceToSquared(q);if(d<nearest-1e-15){nearest=d;chosen=k;}}const f=frames[chosen],r=p.sub(points[chosen]);bindings.push({bone:chosen,t:r.dot(f.axis)/points[chosen].distanceTo(points[chosen+1]),u:r.dot(f.u),v:r.dot(f.v)});}
+  return{mesh:leg.mesh,index:i,side:info.side??leg.side??leg.mesh.userData.side,role:info.legRole||leg.mesh.userData.legRole||(info.role!=='leg'?info.role:null)||['front','middle','hind'][leg.index],points,frames,original,normals,bindings,upper:points[0].distanceTo(points[1]),lower:points[1].distanceTo(points[2]),toe:points.length===4?points[3].clone().sub(points[2]):null,foot:points.at(-1).clone(),worldFoot:new T.Vector3(),anchor:new T.Vector3(),swingStart:new T.Vector3(),target:new T.Vector3(),wasSwing:false,contact:true,reachError:0};
+ });
+ const jaws=(data.jaws||[]).map(j=>({pivot:j.pivot||j,side:j.side||Math.sign((j.pivot||j).position.x),base:(j.pivot||j).rotation.y}));
+ const desired=species==='atlas'?new T.Vector3(0,.100,.280):species==='rhino'?new T.Vector3(-.014,.119,.21):species==='hercules'?new T.Vector3(0,.041,.265):species==='stag'?new T.Vector3(-.014,-.010,.210):new T.Vector3(-.026,.063,.177);
+ const weaponMeshes=species==='atlas'?[data.horns.find(h=>h.role==='head-horn').mesh]:species==='rhino'?[data.hornMesh]:species==='hercules'?data.visual.children.filter(m=>m.isMesh&&m.userData.battleParts?.some(p=>p.role==='head-horn')):[jaws.find(j=>j.side<0).pivot];
+ let weaponMesh=null,weaponIndex=0,best=Infinity;model.updateMatrixWorld(true);const inverse=model.matrixWorld.clone().invert();
+ for(const group of weaponMeshes)group.traverse(m=>{if(!m.isMesh)return;const a=m.geometry.attributes.position;for(let i=0;i<a.count;i++){const p=new T.Vector3().fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld).applyMatrix4(inverse),d=p.distanceToSquared(desired);if(d<best){best=d;weaponMesh=m;weaponIndex=i;}}});
+ function syncSurfaces(){model.updateWorldMatrix(true,true);for(const p of proxies){p.matrix.copy(p.userData.source.matrixWorld);p.matrixWorld.copy(p.matrix);}}
+ syncSurfaces();const initialBox=new T.Box3();for(const m of torsoMeshes)initialBox.union(new T.Box3().setFromObject(m));
+ const bodyLocal=initialBox.clone().applyMatrix4(inverse),contactX=bodyLocal.max.x*.25,contactZ=bodyLocal.max.z*.65,ray=new T.Raycaster();const from=new T.Vector3(contactX,-1,contactZ).applyMatrix4(model.matrixWorld),direction=new T.Vector3(0,1,0).transformDirection(model.matrixWorld);ray.set(from,direction);let hit=null;const va=new T.Vector3(),vb=new T.Vector3(),vc=new T.Vector3(),intersection=new T.Vector3();
+ for(const mesh of torsoMeshes){const attr=mesh.geometry.attributes.position,index=mesh.geometry.index;for(let i=0;i<(index?.count??attr.count);i+=3){va.fromBufferAttribute(attr,index?index.getX(i):i).applyMatrix4(mesh.matrixWorld);vb.fromBufferAttribute(attr,index?index.getX(i+1):i+1).applyMatrix4(mesh.matrixWorld);vc.fromBufferAttribute(attr,index?index.getX(i+2):i+2).applyMatrix4(mesh.matrixWorld);if(ray.ray.intersectTriangle(va,vb,vc,false,intersection)){const distance=intersection.distanceTo(from);if(!hit||distance<hit.distance)hit={object:mesh,point:intersection.clone(),faceIndex:i/3,distance};}}}
+ if(!hit)throw new Error(`Missing ${species} underside contact surface`);
+ const contactMesh=hit.object,contactLocal=hit.point.clone().applyMatrix4(contactMesh.matrixWorld.clone().invert());
+ const headParts=[];
+ if(species==='rhino'){const range=data.bodyMesh.userData.battleHead;for(const [mesh,start,count]of [[data.hornMesh,0,data.hornMesh.userData.headHornVertexCount],[data.bodyMesh,range.start,range.count],[model.getObjectByName('rhino-eyes'),0,null],[model.getObjectByName('rhino-two-short-antennae'),0,null]])headParts.push({mesh,start,count:count??mesh.geometry.attributes.position.count,original:new Float32Array(mesh.geometry.attributes.position.array),normals:new Float32Array(mesh.geometry.attributes.normal.array)});}
+ const atlasHeadBase=species==='atlas'?data.headPivot.rotation.x:0;
+ function setWeaponPitch(angle=0){if(species==='atlas'){data.headPivot.rotation.x=atlasHeadBase+angle*.70;syncSurfaces();return;}if(!headParts.length)return;const root=new T.Vector3(...data.bodyMesh.userData.battleHead.pivot),q=new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),angle),p=new T.Vector3();for(const part of headParts){const{mesh,start,count,original,normals}=part,a=mesh.geometry.attributes.position,n=mesh.geometry.attributes.normal;for(let i=start;i<start+count;i++){p.fromArray(original,i*3).sub(root).applyQuaternion(q).add(root);a.setXYZ(i,p.x,p.y,p.z);p.fromArray(normals,i*3).applyQuaternion(q);n.setXYZ(i,p.x,p.y,p.z);}a.needsUpdate=true;n.needsUpdate=true;mesh.geometry.computeBoundingBox();mesh.geometry.computeBoundingSphere();}}
+
+ let ready=false,originX=0,originZ=0,travel=0,lastPosition=new T.Vector3(),recoveryStarts=null;
+ const rig={species,model,legs,jaws,torsoMeshes,weapon:{mesh:weaponMesh,index:weaponIndex},contactPatch:{mesh:contactMesh,localPoint:contactLocal.clone(),triangleIndex:hit.faceIndex},bodyLocal,groundHeight:-new T.Box3().setFromObject(model).min.y,scale:data.individualScale||1,
+  syncSurfaces,setWeaponPitch,
+  setJaws(amount){for(const j of jaws)j.pivot.rotation.y=j.base+j.side*amount;syncSurfaces();},
+  weaponWorld(out=new T.Vector3()){model.updateWorldMatrix(true,true);return out.fromBufferAttribute(weaponMesh.geometry.attributes.position,weaponIndex).applyMatrix4(weaponMesh.matrixWorld);},
+  contactWorld(out=new T.Vector3()){syncSurfaces();return out.copy(contactLocal).applyMatrix4(contactMesh.matrixWorld);},
+  torsoBox(out=new T.Box3()){syncSurfaces();out.makeEmpty();const p=new T.Vector3();for(const m of torsoMeshes){const a=m.geometry.attributes.position,index=m.geometry.index;for(let i=0;i<(index?.count??a.count);i++)out.expandByPoint(p.fromBufferAttribute(a,index?index.getX(i):i).applyMatrix4(m.matrixWorld));}return out;},
+  resetFeet(){model.updateWorldMatrix(true,true);for(const l of legs){l.worldFoot.copy(l.points.at(-1)).applyMatrix4(l.mesh.parent.matrixWorld);l.worldFoot.y=0;l.anchor.copy(l.worldFoot);l.target.copy(l.worldFoot);l.restWorldFoot=l.worldFoot.clone();l.braceFoot=null;l.wasSwing=false;l.contact=true;l.foot.copy(l.points.at(-1));l.mesh.userData.foot={x:l.foot.x,y:l.foot.y,z:l.foot.z};l.reachError=0;}lastPosition.setFromMatrixPosition(model.matrixWorld);originX=lastPosition.x;originZ=lastPosition.z;travel=0;ready=true;recoveryStarts=null;},
+  restore(){setWeaponPitch(0);for(const l of legs){l.mesh.geometry.attributes.position.array.set(l.original);l.mesh.geometry.attributes.normal.array.set(l.normals);l.mesh.geometry.attributes.position.needsUpdate=true;l.mesh.geometry.attributes.normal.needsUpdate=true;l.mesh.geometry.computeBoundingSphere();l.mesh.geometry.computeBoundingBox();}for(const j of jaws)j.pivot.rotation.y=j.base;ready=false;recoveryStarts=null;},
+  updateFeet({dt=0,age=0,yaw=0,stage='settled',lift=0,attacker=false,recovery=0}={}){
+   if(!ready)this.resetFeet();model.updateWorldMatrix(true,true);const position=new T.Vector3().setFromMatrixPosition(model.matrixWorld),delta=position.clone().sub(lastPosition);delta.y=0;travel+=delta.length();lastPosition.copy(position);
+   if(stage==='recover'&&!recoveryStarts)recoveryStarts=legs.map(l=>l.worldFoot.clone());else if(stage!=='recover')recoveryStarts=null;
+   for(const l of legs){
+    const base=l.points.at(-1).clone().multiplyScalar(rig.scale).applyAxisAngle(new T.Vector3(0,1,0),yaw).add(position);base.y=0;
+    const offset=l.index%3===1?(l.side<0?0:.5):(l.side<0?.5:0),cycleDistance=.04*rig.scale,distance=position.x-originX,phase=distance/cycleDistance,raw=((phase+offset)%1+1)%1,q=Math.abs(raw-.5)<1e-10?.5:raw<1e-10||raw>1-1e-10?0:raw,contact=q<=.5,initial=offset===0?.25:-.25,footTravel=((contact?.25-q:-.25+.5*smooth((q-.5)*2))-initial)*cycleDistance,brace=['contact','drive'].includes(stage)&&l.role==='hind';
+    l.worldFoot.copy(l.restWorldFoot);l.worldFoot.x+=distance+footTravel;l.worldFoot.z+=(position.z-originZ)*(Math.abs(distance)>1e-6?1+footTravel/distance:1);l.worldFoot.y=contact?0:.010*rig.scale*Math.sin(Math.PI*(q-.5)*2)**2;l.contact=contact;
+    if(age<.18){l.worldFoot.y=0;l.contact=true;}
+    const prepGroup=offset===0?0:.09,prep=smooth((age-prepGroup)/.09),gather=l.points[0].clone().sub(l.points.at(-1)).multiplyScalar(.28*rig.scale*prep);gather.y=0;l.worldFoot.add(gather.applyAxisAngle(new T.Vector3(0,1,0),yaw));if(age>prepGroup&&age<prepGroup+.09){l.worldFoot.y+=.006*rig.scale*Math.sin(Math.PI*(age-prepGroup)/.09)**2;l.contact=false;}
+    if(stage==='recover'){l.worldFoot.lerp(base,smooth(recovery));l.contact=contact||recovery>=1;}
+    if(brace){if(!l.braceFoot)l.braceFoot=l.worldFoot.clone();l.worldFoot.copy(l.braceFoot);l.worldFoot.y=0;l.contact=true;}else l.braceFoot=null;
+    if(!attacker&&lift>0&&l.role==='front'){l.worldFoot.y+=.020*rig.scale*lift;l.contact=false;}
+    const parent=l.mesh.parent,inv=parent.matrixWorld.clone().invert(),foot=l.worldFoot.clone().applyMatrix4(inv),hip=l.points[0],ankle=l.toe?l.worldFoot.clone().add(new T.Vector3(-l.toe.x*rig.scale,.005*rig.scale,-l.toe.z*rig.scale).applyAxisAngle(new T.Vector3(0,1,0),yaw)).applyMatrix4(inv):foot;
+    const direction=ankle.clone().sub(hip),length=direction.length(),axis=direction.clone().normalize(),reach=l.upper+l.lower;l.reachError=Math.max(0,length-reach);const a=(l.upper*l.upper-l.lower*l.lower+length*length)/(2*Math.max(1e-8,length)),h=Math.sqrt(Math.max(0,l.upper*l.upper-a*a)),oldAxis=l.points[2].clone().sub(hip).normalize(),up=l.points[1].clone().sub(hip);up.addScaledVector(oldAxis,-up.dot(oldAxis)).normalize().applyQuaternion(new T.Quaternion().setFromUnitVectors(oldAxis,axis));const knee=hip.clone().addScaledVector(axis,a).addScaledVector(up,h),points=[hip,knee,ankle,...(l.toe?[foot]:[])],frames=points.slice(0,-1).map((p,k)=>{const axis=points[k+1].clone().sub(p).normalize(),q=new T.Quaternion().setFromUnitVectors(l.frames[k].axis,axis);return{axis,u:l.frames[k].u.clone().applyQuaternion(q),v:l.frames[k].v.clone().applyQuaternion(q)};}),attr=l.mesh.geometry.attributes.position;
+    for(let i=0;i<l.bindings.length;i++){const b=l.bindings[i],f=frames[b.bone],p=points[b.bone].clone().addScaledVector(f.axis,b.t*points[b.bone].distanceTo(points[b.bone+1])).addScaledVector(f.u,b.u).addScaledVector(f.v,b.v);p.applyMatrix4(parent.matrixWorld);if(p.y<0)p.y=0;p.applyMatrix4(inv);attr.setXYZ(i,p.x,p.y,p.z);}
+    // Exact endpoint centres are part of the existing leg topology. The affine
+    // skin keeps them on the solved joints; tapered radii never pierce the table.
+    attr.needsUpdate=true;l.mesh.geometry.computeVertexNormals();l.mesh.geometry.computeBoundingSphere();l.mesh.geometry.computeBoundingBox();l.foot.copy(foot);l.mesh.userData.foot={x:foot.x,y:foot.y,z:foot.z};l.mesh.userData.battleContact=l.contact;
+   }
+  },dispose(){for(const p of proxies)p.geometry.dispose();ready=false;}};
+ model.userData.battleRig=rig;return rig;
+}

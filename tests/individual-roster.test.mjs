@@ -1,7 +1,8 @@
 /** In-memory storage and explicit Web Locks doubles, not actual browser storage. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {COMPANION_KEY,COMPANION_VERSION,LEGACY_COMPANION_KEY,COMPANION_SPECIES,isCompanionSpecies,createCompanionRoster} from '../src/individual-roster.js';
+import {COMPANION_KEY,COMPANION_VERSION,LEGACY_COMPANION_KEY,isCompanionSpecies,createCompanionRoster} from '../src/individual-roster.js';
+import {COMPANION_SPECIES as V1_SPECIES} from '../src/companion-roster.js';
 const habitats={hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory'};
 const capture=(species='rhino',outing=1,sizePermille=1000)=>({species,originHabitat:habitats[species],originIndividualId:'insect-4',originKind:'expedition',originEncounterId:`g1-1234abcd-o${outing}-${habitats[species]}-${species==='hercules'?'hercules-a':species}`,sizePermille,measureVersion:1});
 const payload=entries=>JSON.stringify({version:2,legacyImportDone:true,entries});
@@ -16,7 +17,7 @@ const make=f=>createCompanionRoster(f.storage,f);
 
 test('v2 four-species API keeps individual measurements and detached copies; only explicit release removes one',async()=>{
  const f=fixture(),r=make(f);assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);assert.equal(r.saved,true);assert.equal(f.writes.length,0);
- for(const species of COMPANION_SPECIES){assert.ok(isCompanionSpecies(species));const result=r.add(capture(species));assert.equal(result.ok,true);assert.equal(result.entry.id,result.entry.originEncounterId);result.entry.sizePermille=9999;}
+ for(const species of V1_SPECIES){assert.ok(isCompanionSpecies(species));const result=r.add(capture(species));assert.equal(result.ok,true);assert.equal(result.entry.id,result.entry.originEncounterId);result.entry.sizePermille=9999;}
  assert.equal(r.entries.length,4);assert.equal(r.pending,true);assert.equal(r.saved,false);r.entries.pop();assert.equal(r.entries.length,4);assert.equal(r.entries[0].sizePermille,1000);
  assert.equal(await r.flush(),true);assert.deepEqual(make(f).entries,r.entries);assert.equal(JSON.parse(f.values.get(COMPANION_KEY)).legacyImportDone,true);
  assert.deepEqual(r.add(capture('rhino',2)),{ok:false,reason:'already-owned'});
