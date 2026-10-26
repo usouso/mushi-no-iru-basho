@@ -1,6 +1,6 @@
-import {createInsectModel} from './insect-models.js?v=0.25.0&b=1bc3118dbd0d';
-import {createBattleRig} from './battle-pose.js?v=0.25.0&b=1bc3118dbd0d';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.25.0&b=1bc3118dbd0d';
+import {createInsectModel} from './insect-models.js?v=0.26.0&b=b8d401c0400d';
+import {createBattleRig} from './battle-pose.js?v=0.26.0&b=b8d401c0400d';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.26.0&b=b8d401c0400d';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
 const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant']);
@@ -12,9 +12,10 @@ export function createBattleView({playerSpecies,opponentSpecies,playerSizePermil
  const scratch=new T.Box3(),fit=new T.Box3(),corner=new T.Vector3(),target=new T.Vector3(),weapon=new T.Vector3();
  function beetle(species,name,heading,sizePermille){const anchor=new T.Group();anchor.name=name;const model=createInsectModel(species,{inspection:true,sizePermille});anchor.add(model);scene.add(anchor);model.updateMatrixWorld(true);scratch.setFromObject(model);const front=scratch.max.z,height=scratch.max.y-scratch.min.y;const body=model.userData.visual?.userData.bodyBounds;if(body)scratch.copy(body).applyMatrix4(model.userData.visual.matrixWorld);else scratch.setFromObject(model.userData.bodyMesh);const bodyCenter=scratch.getCenter(new T.Vector3());anchor.rotation.y=heading;return{species,anchor,model,front,height,bodyCenter,heading,baseX:0,restY:0,rig:null};}
  const player=beetle(playerSpecies,'battle-player',Math.PI/2,playerSizePermille),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2,opponentSizePermille),entries={player,opponent};
+ const scaledGiantPair=[player,opponent].some(e=>e.species==='giantstag'&&e.model.userData.individualScale>1);
  player.baseX=-.01-player.front;opponent.baseX=.01+opponent.front;
  function place(e,x,y,z=0,pitch=0,roll=0){e.anchor.position.set(x,y,z);e.anchor.rotation.set(pitch,e.heading,roll,'YXZ');e.anchor.updateMatrixWorld(true);}
- for(const e of[player,opponent]){place(e,e.baseX,0);scratch.setFromObject(e.anchor);e.restY=-scratch.min.y;place(e,e.baseX,e.restY);e.rig=createBattleRig(e.model,e.species);e.rig.resetFeet();}
+ for(const e of[player,opponent]){place(e,e.baseX,0);scratch.setFromObject(e.anchor);e.restY=-scratch.min.y;place(e,e.baseX,e.restY);e.rig=createBattleRig(e.model,e.species,{groundedKnees:scaledGiantPair&&e.species==='giantstag'});e.rig.resetFeet();}
  scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);const radius=Math.max(.65,Math.abs(fit.min.x),Math.abs(fit.max.x))+.36;
  const ringRadius=radius*.78;
  const positiveEnd=ringRadius-corner.copy(opponent.bodyCenter).applyMatrix4(opponent.anchor.matrixWorld).x,negativeEnd=-ringRadius-corner.copy(player.bodyCenter).applyMatrix4(player.anchor.matrixWorld).x;

@@ -42,7 +42,7 @@ function selected(f,sizePermille,siteIndex){
  return encounters.map(e=>{const row=rows[Number(e.runtimeSlotId.slice(7))-1],support=options[e.species+'Supports'].find(s=>Math.abs(s.home.x-row[1])<1e-8&&Math.abs(s.home.z-row[2])<1e-8);return{...e,home:support.home,heading:support.axis?Math.atan2(support.axis[1].x-support.axis[0].x,support.axis[1].z-support.axis[0].z):support.heading};});
 }
 
-test('only four eligible species scale; native geometry/defaults and external inspection framing survive updates',()=>{
+test('the original four measured species retain scaling, native geometry/defaults and external inspection framing',()=>{
  for(const id of species)for(const inspection of[false,true]){
   const normal=createInsectModel(id,{inspection}),reference=signature(normal),base=new T.Box3().setFromObject(normal).getSize(new T.Vector3());
   for(const sizePermille of[null,undefined,999,1151,NaN,Infinity,1000,1075,1150]){

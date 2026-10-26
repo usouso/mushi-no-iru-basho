@@ -1,6 +1,6 @@
 /** Two original broad leaves, additive to the existing meadow. No RNG or old-world mutation. */
-import {LADYBIRD_LEAF_SITES as SITES,LADYBIRD_LEAF_SHAPE as SHAPE} from './ladybird-layout.js?v=0.25.0&b=1bc3118dbd0d';
-import {LADYBIRD_DIMENSIONS as D} from './ladybird-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
+import {LADYBIRD_LEAF_SITES as SITES,LADYBIRD_LEAF_SHAPE as SHAPE} from './ladybird-layout.js?v=0.26.0&b=b8d401c0400d';
+import {LADYBIRD_DIMENSIONS as D} from './ladybird-kinematics.js?v=0.26.0&b=b8d401c0400d';
 const T=window.THREE;
 export function createLadybirdHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];

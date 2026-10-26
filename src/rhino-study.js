@@ -1,8 +1,8 @@
 /** Registered branch study: the original short walk stays the default; an
  * opt-in supported field response receives threat position and safe limits.
  * Distances, speeds and waits are game tuning, not measured wild behaviour. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.25.0&b=1bc3118dbd0d';
-import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.26.0&b=b8d401c0400d';
+import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.26.0&b=b8d401c0400d';
 const TAU=2*Math.PI,rampTime=.5;
 const smooth=t=>t*t*(3-2*t);
 export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null,retreatBounds=undefined}={}){

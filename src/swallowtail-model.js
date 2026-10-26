@@ -1,4 +1,4 @@
-import {sampleSwallowtailPose,SWALLOWTAIL_DIMENSIONS as D} from './swallowtail-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
+import {sampleSwallowtailPose,SWALLOWTAIL_DIMENSIONS as D} from './swallowtail-kinematics.js?v=0.26.0&b=b8d401c0400d';
 /** Original summer-male silhouette; ventral fine markings unverified. Wet-ground rest, not feeding contact. */
 const T=window.THREE;
 function ellipsoid(parent,p,s,material){const m=new T.Mesh(new T.SphereGeometry(1,8,6),material);m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}

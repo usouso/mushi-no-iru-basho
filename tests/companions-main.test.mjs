@@ -7,18 +7,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 const root=path.resolve(import.meta.dirname,'..');
-const JOURNAL_KEY='mushi-journal-v2',ROSTER_KEY='mushi-companions-v2',LEGACY_ROSTER_KEY='mushi-companions-v1',EXPEDITION_KEY='mushi-expedition-v1';
+const JOURNAL_KEY='mushi-journal-v2',ROSTER_KEY='mushi-companions-v2',LEGACY_ROSTER_KEY='mushi-companions-v1',EXPEDITION_KEY='mushi-expedition-v2',LEGACY_EXPEDITION_KEY='mushi-expedition-v1';
 let nonce=0;
-function testLocks(){const tails=new Map();return {request(key,options,callback){assert.ok([JOURNAL_KEY,ROSTER_KEY,LEGACY_ROSTER_KEY,EXPEDITION_KEY].includes(key));assert.equal(options.mode,'exclusive');const next=(tails.get(key)||Promise.resolve()).then(callback);tails.set(key,next.catch(()=>{}));return next;}};}
+function testLocks(){const tails=new Map();return {request(key,options,callback){assert.ok([JOURNAL_KEY,ROSTER_KEY,LEGACY_ROSTER_KEY,LEGACY_EXPEDITION_KEY,EXPEDITION_KEY].includes(key));assert.equal(options.mode,'exclusive');const next=(tails.get(key)||Promise.resolve()).then(callback);tails.set(key,next.catch(()=>{}));return next;}};}
 async function app(t,{entries=[],battleSeed=0,locks=testLocks(),blockWrite=()=>false,expeditionEnabled=false,extraExports='roster,battle,models,keepCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,leaveBattle,returnFromBattle,applyCompanionPresence'}={}){
  const config={entries,battleSeed,locks,blockWrite,expeditionEnabled,writes:[]};Object.defineProperty(globalThis,'__companionsMainConfig',{configurable:true,value:config});
  const existing=fs.readFileSync(path.join(root,'tests/direct-habitat-switch.test.mjs'),'utf8'),marker="\nconst select=()=>elements.get('travel-habitat-select');";assert.ok(existing.includes(marker));
  let source=existing.slice(0,existing.indexOf(marker));
  source=source.replace("from './fixtures/journal-locks.mjs'",`from ${JSON.stringify(pathToFileURL(path.join(root,'tests/fixtures/journal-locks.mjs')).href)}`).replace("const root=path.resolve(import.meta.dirname,'..');",`const root=${JSON.stringify(root)};\nconst companionConfig=globalThis.__companionsMainConfig;`);
  source=source.replace('const savedSettings=new Map();','const savedSettings=new Map(companionConfig.entries);');
- // Legacy scenarios explicitly make only the new outing key unavailable.
+ // Legacy scenarios explicitly make both outing keys unavailable.
  // New individual scenarios enable the real production store and Web Locks.
- source=source.replace("getItem:key=>{if(blockStorage)throw Error('Storage blocked');return savedSettings.get(key)??null;}","getItem:key=>{if(blockStorage||(!companionConfig.expeditionEnabled&&key==='mushi-expedition-v1'))throw Error('Storage blocked');return savedSettings.get(key)??null;}");
+ source=source.replace("getItem:key=>{if(blockStorage)throw Error('Storage blocked');return savedSettings.get(key)??null;}","getItem:key=>{if(blockStorage||(!companionConfig.expeditionEnabled&&['mushi-expedition-v1','mushi-expedition-v2'].includes(key)))throw Error('Storage blocked');return savedSettings.get(key)??null;}");
  source=source.replace("setItem:(key,value)=>{if(blockStorage)throw Error('Storage blocked');savedSettings.set(key,String(value));}","setItem:(key,value)=>{if(blockStorage||companionConfig.blockWrite(key))throw Error('Storage blocked');companionConfig.writes.push([key,String(value)]);savedSettings.set(key,String(value));}");
  source=source.replace('navigator:{locks:createTestLocks(),','navigator:{locks:companionConfig.locks,');
  source=source.replace('const globals={window,', 'const globals={crypto:{getRandomValues(array){array[0]=companionConfig.battleSeed;return array;}},window,');

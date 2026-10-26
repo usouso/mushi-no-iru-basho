@@ -1,19 +1,19 @@
-import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.25.0&b=1bc3118dbd0d';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
-import {applyInsectReadability} from './insect-readability.js?v=0.25.0&b=1bc3118dbd0d';
+import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.26.0&b=b8d401c0400d';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.26.0&b=b8d401c0400d';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.26.0&b=b8d401c0400d';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.26.0&b=b8d401c0400d';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.26.0&b=b8d401c0400d';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.26.0&b=b8d401c0400d';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.26.0&b=b8d401c0400d';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.26.0&b=b8d401c0400d';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.26.0&b=b8d401c0400d';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.26.0&b=b8d401c0400d';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.26.0&b=b8d401c0400d';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.26.0&b=b8d401c0400d';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.26.0&b=b8d401c0400d';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.26.0&b=b8d401c0400d';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.26.0&b=b8d401c0400d';
+import {applyInsectReadability} from './insect-readability.js?v=0.26.0&b=b8d401c0400d';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -743,7 +743,7 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
   const root = buildInsectModel(species, { inspection });
   // Individual size is fixed at creation. Inspection framing may scale its root
   // further; animation must never replace that transform or redraw native art.
-  const eligible=['hercules','rhino','stag','metallifer'].includes(species);
+  const eligible=['hercules','rhino','stag','metallifer','giantstag'].includes(species);
   const factor=eligible&&Number.isInteger(sizePermille)&&sizePermille>=1000&&sizePermille<=1150?sizePermille/1000:1;
   root.userData.individualScale=factor;root.scale.setScalar(factor);
   return applyInsectReadability(root, { inspection, species });

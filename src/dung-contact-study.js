@@ -1,5 +1,5 @@
 /** One beetle and its original ball; independent of the game's simulation/UI. */
-import {DUNG_DIMENSIONS as D,sampleDungPose} from './dung-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
+import {DUNG_DIMENSIONS as D,sampleDungPose} from './dung-kinematics.js?v=0.26.0&b=b8d401c0400d';
 const duration=1.5*D.pathLength/.035,rampTime=.6;
 export function createDungContactStudy(){
  let elapsed=0,distance=0,speed=0,caught=false,finished=false,ramp=rampTime;

@@ -1,18 +1,22 @@
 /** Browser-local outings. This key is independent of journals and companions:
- * no migration, deletion, reset, network, natural millimetres or battle stats.
+ * v1 bytes are never changed/deleted. Once v2 exists, later old-tab v1 writes
+ * are not imported again. No reset, network, natural millimetres or battle stats.
  * Generation happens only for initial persistence or an explicit next outing.
  * A changed outing is exposed only after its complete write/readback succeeds.
  */
-export const EXPEDITION_KEY='mushi-expedition-v1';
-export const EXPEDITION_VERSION=1;
+export const LEGACY_EXPEDITION_KEY='mushi-expedition-v1';
+export const EXPEDITION_KEY='mushi-expedition-v2';
+export const EXPEDITION_VERSION=2;
 export const EXPEDITION_SLOTS=Object.freeze([
  {populationSlotId:'hercules-a',species:'hercules',habitat:'tropical',runtimeSlotId:'insect-5'},
  {populationSlotId:'hercules-b',species:'hercules',habitat:'tropical',runtimeSlotId:'insect-6'},
  {populationSlotId:'rhino',species:'rhino',habitat:'night',runtimeSlotId:'insect-4'},
  {populationSlotId:'stag',species:'stag',habitat:'night',runtimeSlotId:'insect-5'},
- {populationSlotId:'metallifer',species:'metallifer',habitat:'understory',runtimeSlotId:'insect-4'}
+ {populationSlotId:'metallifer',species:'metallifer',habitat:'understory',runtimeSlotId:'insect-4'},
+ {populationSlotId:'giantstag',species:'giantstag',habitat:'night',runtimeSlotId:'insect-6'}
 ].map(Object.freeze));
-const species=new Set(EXPEDITION_SLOTS.map(s=>s.species));
+const legacySlots=EXPEDITION_SLOTS.slice(0,5);
+const slotsFor=version=>version===1?legacySlots:EXPEDITION_SLOTS;
 const topFields=['version','generatorVersion','worldSeed','outingCounter','encounters','measuredEncounterIds','best'];
 const encounterFields=['encounterId','species','habitat','runtimeSlotId','populationSlotId','sizePermille','motionSeed','siteIndex','measureVersion'];
 const bestFields=['species','sizePermille','encounterId','capturedAt','measureVersion'];
@@ -26,17 +30,17 @@ function browserLocks(){try{return globalThis.navigator?.locks??null;}catch{retu
 function hasLocks(locks){try{return typeof locks?.request==='function';}catch{return false;}}
 function browserSeed(){const bytes=new Uint32Array(1);globalThis.crypto.getRandomValues(bytes);return bytes[0];}
 const seedHex=seed=>seed.toString(16).padStart(8,'0');
-function idFor(seed,counter,slot){return`g1-${seedHex(seed)}-o${counter}-${slot.habitat}-${slot.populationSlotId}`;}
+function idFor(seed,counter,slot){return`g${slot.species==='giantstag'?2:1}-${seedHex(seed)}-o${counter}-${slot.habitat}-${slot.populationSlotId}`;}
 function idValid(id,seed,counter,speciesId){
  if(typeof id!=='string')return false;
- const match=/^g1-([0-9a-f]{8})-o([1-9][0-9]{0,15})-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.exec(id);
- if(!match||match[1]!==seedHex(seed)||!integer(Number(match[2]),1,counter))return false;
- return EXPEDITION_SLOTS.some(slot=>slot.species===speciesId&&slot.habitat===match[3]&&slot.populationSlotId===match[4]);
+ const match=/^g([12])-([0-9a-f]{8})-o([1-9][0-9]{0,15})-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer|giantstag)$/.exec(id);
+ if(!match||match[2]!==seedHex(seed)||!integer(Number(match[3]),1,counter))return false;
+ return EXPEDITION_SLOTS.some(slot=>slot.species===speciesId&&slot.habitat===match[4]&&slot.populationSlotId===match[5]&&Number(match[1])===(slot.species==='giantstag'?2:1));
 }
 // Explicit purpose strings isolate site, size band/value, and motion. A change
 // in how many values rendering consumes cannot consume another purpose's draw.
 function draw(seed,counter,slot,purpose){
- const input=`g1/${seedHex(seed)}/${counter}/${slot}/${purpose}`;let h=0x811c9dc5;
+ const input=`g${slot==='giantstag'?2:1}/${seedHex(seed)}/${counter}/${slot}/${purpose}`;let h=0x811c9dc5;
  for(let i=0;i<input.length;i++){h^=input.charCodeAt(i);h=Math.imul(h,0x01000193);}
  h^=h>>>16;h=Math.imul(h,0x7feb352d);h^=h>>>15;h=Math.imul(h,0x846ca68b);return(h^(h>>>16))>>>0;
 }
@@ -47,12 +51,14 @@ function generate(seed,counter,best=[]){
   const n=draw(seed,counter,slot.populationSlotId,'size-value');
   return{encounterId:idFor(seed,counter,slot),species:slot.species,habitat:slot.habitat,runtimeSlotId:slot.runtimeSlotId,populationSlotId:slot.populationSlotId,sizePermille:tail?1126+n%25:1000+n%126,motionSeed:draw(seed,counter,slot.populationSlotId,'motion'),siteIndex:draw(seed,counter,slot.populationSlotId,'site')%3,measureVersion:1};
  });
- return{version:1,generatorVersion:1,worldSeed:seed,outingCounter:counter,encounters,measuredEncounterIds:[],best:clone(best)};
+ return{version:2,legacyImportDone:true,generatorVersion:2,worldSeed:seed,outingCounter:counter,encounters,measuredEncounterIds:[],best:clone(best)};
 }
-function valid(data){
- if(!fields(data,topFields)||data.version!==1||data.generatorVersion!==1||!uint(data.worldSeed)||!integer(data.outingCounter,1)||!Array.isArray(data.encounters)||data.encounters.length!==5||!Array.isArray(data.measuredEncounterIds)||data.measuredEncounterIds.length>5||!Array.isArray(data.best)||data.best.length>4)return false;
+function valid(data,legacy=false){
+ if(!fields(data,legacy?topFields:[...topFields,'legacyImportDone'])||data.version!==(legacy?1:2)||(!legacy&&data.legacyImportDone!==true)||![1,2].includes(data.generatorVersion)||(legacy&&data.generatorVersion!==1)||!uint(data.worldSeed)||!integer(data.outingCounter,1))return false;
+ const slots=slotsFor(data.generatorVersion),species=new Set(slots.map(s=>s.species));
+ if(!Array.isArray(data.encounters)||data.encounters.length!==slots.length||!Array.isArray(data.measuredEncounterIds)||data.measuredEncounterIds.length>slots.length||!Array.isArray(data.best)||data.best.length>species.size)return false;
  if(!data.encounters.every((entry,i)=>{
-  const slot=EXPEDITION_SLOTS[i];return fields(entry,encounterFields)&&Object.keys(slot).every(k=>entry[k]===slot[k])&&entry.encounterId===idFor(data.worldSeed,data.outingCounter,slot)&&size(entry.sizePermille)&&uint(entry.motionSeed)&&integer(entry.siteIndex,0,2)&&entry.measureVersion===1;
+  const slot=slots[i];return fields(entry,encounterFields)&&Object.keys(slot).every(k=>entry[k]===slot[k])&&entry.encounterId===idFor(data.worldSeed,data.outingCounter,slot)&&size(entry.sizePermille)&&uint(entry.motionSeed)&&integer(entry.siteIndex,0,2)&&entry.measureVersion===1;
  }))return false;
  const measured=new Set(data.measuredEncounterIds);
  if(measured.size!==data.measuredEncounterIds.length||data.measuredEncounterIds.some(id=>!data.encounters.some(e=>e.encounterId===id)))return false;
@@ -65,8 +71,18 @@ function valid(data){
  // A measured current individual cannot have disappeared from the maximum.
  return data.encounters.filter(e=>measured.has(e.encounterId)).every(e=>data.best.some(b=>b.species===e.species&&b.sizePermille>=e.sizePermille));
 }
-function parse(raw){try{if(typeof raw!=='string'||raw.length>16384)return null;const data=JSON.parse(raw);return valid(data)?data:null;}catch{return null;}}
-function read(storage){try{if(!storage)return{kind:'unavailable',raw:undefined,data:null};const raw=storage.getItem(EXPEDITION_KEY);if(raw===null)return{kind:'empty',raw,data:null};const data=parse(raw);return{kind:data?'valid':'invalid',raw,data};}catch{return{kind:'unavailable',raw:undefined,data:null};}}
+function parse(raw,legacy=false){try{if(typeof raw!=='string'||raw.length>16384)return null;const data=JSON.parse(raw);return valid(data,legacy)?data:null;}catch{return null;}}
+function read(storage){
+ try{
+  if(!storage)return{kind:'unavailable',raw:undefined,data:null};
+  const raw=storage.getItem(EXPEDITION_KEY);
+  if(raw!==null){const data=parse(raw);return{mode:'v2',kind:data?'valid':'invalid',raw,data};}
+  const legacyRaw=storage.getItem(LEGACY_EXPEDITION_KEY);
+  if(legacyRaw===null)return{mode:'legacy',kind:'empty',raw:null,legacyRaw:null,data:null};
+  const old=parse(legacyRaw,true),data=old?{...old,version:2,legacyImportDone:true}:null;
+  return{mode:'legacy',kind:data?'valid':'invalid',raw:null,legacyRaw,data};
+ }catch{return{kind:'unavailable',raw:undefined,data:null};}
+}
 
 /** snapshot is detached; null means caller must use the legacy fixed world.
  * measure(id) changes memory once; flush() waits/retries safe persistence only.
@@ -74,9 +90,9 @@ function read(storage){try{if(!storage)return{kind:'unavailable',raw:undefined,d
  * No storage event automatically changes the currently visible outing.
  */
 export function createExpedition(storage=browserStorage(),{locks=browserLocks(),seedSource=browserSeed,now=Date.now}={}){
- const initial=read(storage);let data=clone(initial.data),baselineRaw=initial.raw,initialCandidate=null;
+ const initial=read(storage);let baseline=initial;let data=clone(initial.data),baselineRaw=initial.raw,initialCandidate=null;
  let revision=0,persistedRevision=0,readOnly=initial.kind==='invalid';
- let saved=initial.kind==='valid'&&hasLocks(locks),reason=initial.kind==='invalid'?'invalid-data':initial.kind==='unavailable'?'storage-unavailable':!hasLocks(locks)?'missing-locks':saved?null:'pending';
+ let saved=initial.kind==='valid'&&initial.mode==='v2'&&hasLocks(locks),reason=initial.kind==='invalid'?'invalid-data':initial.kind==='unavailable'?'storage-unavailable':!hasLocks(locks)?'missing-locks':saved?null:'pending';
  let task=null,transitionTask=null,transitioning=false,requested=false,lastResult={ok:saved,reason,revision:0};
  const listeners=new Set();
  const pending=()=>!!task||transitioning;
@@ -97,7 +113,19 @@ export function createExpedition(storage=browserStorage(),{locks=browserLocks(),
  }
  function attempt(){
   const why=blocked();if(why)return{ok:false,reason:why};
+  // Recover an unreadable initial state under both locks, never infer empty.
+  if(baseline.kind==='unavailable'){
+   const recovered=read(storage);
+   if(recovered.kind==='unavailable')return{ok:false,reason:'storage-unavailable'};
+   if(recovered.kind==='invalid')return protection('invalid-data');
+   baseline=recovered;baselineRaw=recovered.raw;
+   if(recovered.data){data=clone(recovered.data);}
+  }
   let found;try{found=storage.getItem(EXPEDITION_KEY);}catch{return{ok:false,reason:'storage-unavailable'};}
+  if(baseline.mode==='legacy'){
+   let old;try{old=storage.getItem(LEGACY_EXPEDITION_KEY);}catch{return{ok:false,reason:'storage-unavailable'};}
+   if(old!==baseline.legacyRaw)return protection('conflict');
+  }
   if(data===null){
    // Only an unexposed initial instance can adopt an already-saved other tab.
    if(found!==null){const accepted=parse(found);if(!accepted)return protection('invalid-data');return{ok:true,revision,initialData:clone(accepted),raw:found};}
@@ -108,9 +136,9 @@ export function createExpedition(storage=browserStorage(),{locks=browserLocks(),
    return{ok:true,revision,initialData:clone(initialCandidate),raw:result.raw};
   }
   if(found!==baselineRaw)return protection('conflict');
-  if(revision===persistedRevision)return{ok:true,revision};
+  if(baseline.mode==='v2'&&revision===persistedRevision)return{ok:true,revision};
   const atRevision=revision,candidate=clone(data),result=write(candidate);
-  if(result.ok)baselineRaw=result.raw;
+  if(result.ok){baselineRaw=result.raw;baseline={mode:'v2',kind:'valid',raw:result.raw};}
   return result.ok?{ok:true,revision:atRevision}:result;
  }
  function schedule(){
@@ -121,9 +149,9 @@ export function createExpedition(storage=browserStorage(),{locks=browserLocks(),
   task=Promise.resolve().then(async()=>{
    do{
     requested=false;
-    try{lastResult=await locks.request(EXPEDITION_KEY,{mode:'exclusive'},attempt);if(!lastResult||typeof lastResult.ok!=='boolean')lastResult={ok:false,reason:'lock-error'};}
+    try{const locked=()=>locks.request(EXPEDITION_KEY,{mode:'exclusive'},attempt);lastResult=baseline.mode==='v2'?await locked():await locks.request(LEGACY_EXPEDITION_KEY,{mode:'exclusive'},locked);if(!lastResult||typeof lastResult.ok!=='boolean')lastResult={ok:false,reason:'lock-error'};}
     catch{lastResult={ok:false,reason:'lock-error'};}
-    if(lastResult.ok){if(lastResult.initialData){data=lastResult.initialData;baselineRaw=lastResult.raw;initialCandidate=null;}persistedRevision=lastResult.revision;}
+    if(lastResult.ok){if(lastResult.initialData){data=lastResult.initialData;baselineRaw=lastResult.raw;baseline={mode:'v2',kind:'valid',raw:lastResult.raw};initialCandidate=null;}persistedRevision=lastResult.revision;}
    }while(requested&&!readOnly);
   }).catch(()=>{lastResult={ok:false,reason:'storage-error'};}).finally(()=>{
    task=null;
@@ -176,6 +204,6 @@ export function createExpedition(storage=browserStorage(),{locks=browserLocks(),
    return transitionTask;
   }
  };
- if(initial.kind==='empty'&&storage&&hasLocks(locks))schedule();
+ if(['empty','valid'].includes(initial.kind)&&initial.mode==='legacy'&&storage&&hasLocks(locks))schedule();
  return api;
 }
