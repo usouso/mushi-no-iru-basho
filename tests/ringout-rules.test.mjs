@@ -1,6 +1,7 @@
 /** Ring-out-only result regression. Pure game rules, not a rendered playtest. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {createBattle,advanceBattle,cancelBattle,BATTLE_LIMITS,BATTLE_SPECIES} from '../src/beetle-battle.js';
 const fresh=seed=>createBattle({playerSpecies:'rhino',opponentSpecies:'stag',seed});
@@ -35,7 +36,7 @@ test('safety limit is an explicit draw even at a nonzero position, and a retry s
 });
 
 test('only exact ring endpoints win, including a ring-out on the last permitted exchange',()=>{
- for(const [seed,expectedWinner,expectedCount] of [[0,'opponent',15],[1,'player',36],[9,'player',12]]){
+ for(const [seed,expectedWinner,expectedCount] of [[0,'opponent',15],[1,'player',27],[9,'player',11],[49,'player',36]]){
   let s=fresh(seed),before=s;
   while(s.phase==='watching'){before=s;s=atExchange(s,s.exchanges+1);}
   assert.equal(s.exchanges,expectedCount);assert.equal(s.finishReason,'ring-out');assert.equal(s.winner,expectedWinner);
@@ -48,15 +49,22 @@ test('only exact ring endpoints win, including a ring-out on the last permitted 
  }
 });
 
-test('the first twelve exchange motions, energy, role effects and positions are unchanged from the previous rules',()=>{
+test('the hash-verified 0.23 reference retains its first twelve exchanges; current non-stag motions remain identical',async()=>{
+ const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
+ const referenceSource=source.replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
+ assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b','only the single edge coefficient may differ from 0.23');
+ const reference=await import('data:text/javascript;base64,'+Buffer.from(referenceSource).toString('base64'));
+
  // Reference: 25 matchups × seeds 0/17/1234 from the pre-change rules.
  // Stops at an earlier ring-out; excludes only the deliberately changed end/turn metadata.
  const rows=[];
  const legacySpecies=['hercules','rhino','stag','metallifer','atlas'];
  for(const p of legacySpecies)for(const o of legacySpecies)for(const seed of [0,17,1234]){
-  let s=createBattle({playerSpecies:p,opponentSpecies:o,seed});
+  let s=reference.createBattle({playerSpecies:p,opponentSpecies:o,seed}),current=createBattle({playerSpecies:p,opponentSpecies:o,seed});
   for(let i=1;i<=12&&s.phase==='watching';i++){
-   s=atExchange(s,i);rows.push([p,o,seed,s.exchanges,s.position,s.playerEnergy,s.opponentEnergy,s.lastExchange]);
+   s=reference.advanceBattle(s,BATTLE_LIMITS.introSeconds+i*BATTLE_LIMITS.exchangeSeconds-s.elapsed);
+   if(p!=='stag'&&o!=='stag'){current=atExchange(current,i);assert.deepEqual(current,s);}
+   rows.push([p,o,seed,s.exchanges,s.position,s.playerEnergy,s.opponentEnergy,s.lastExchange]);
   }
  }
  assert.equal(rows.length,836);

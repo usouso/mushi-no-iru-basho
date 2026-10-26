@@ -1,4 +1,4 @@
-import {sampleDivingPose,DIVING_DIMENSIONS as D} from './diving-kinematics.js?v=0.23.0&b=6eab031e296e';
+import {sampleDivingPose,DIVING_DIMENSIONS as D} from './diving-kinematics.js?v=0.24.0&b=8d4c904e2377';
 /** Original low-poly female C. chinensis study. Not imported by the game.
  * Positions from sampleDivingPose are applied ONCE to the field root. Inspection
  * is static, local, and does not overwrite caller drag/position/scale.

@@ -40,15 +40,20 @@ test('Atlas addition does not weaken v2 future/corrupt/conflict/quota safeguards
  f.values.set(LEGACY_COMPANION_KEY,JSON.stringify({version:1,entries:[oldEntry]}));const c=make(f);assert.deepEqual(c.entries.map(e=>e.species),['atlas']);f.failWrite=true;c.release('understory/insect-5');assert.equal(await c.flush(),false);assert.equal(c.reason,'storage-error');assert.equal(f.values.get(COMPANION_KEY),winning);assert.equal(make(f).entries[0].species,'atlas');f.failWrite=false;assert.equal(await c.flush(),true);assert.deepEqual(make(f).entries,[]);
 });
 
-test('all 36 ordered matchups use ring-out-only wins or explicit safety draws; both sides can win and sizes do not decide results',()=>{
+test('all 36 ordered matchups use ring-out-only wins or explicit safety draws; both sides can win and sizes do not decide results',async()=>{
+ const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
+ const referenceSource=source.replace("if(species==='stag'&&ownPosition<=-1.5)return .05;","if(species==='stag'&&ownPosition<=-1.5)return .10;");
+ assert.equal(createHash('sha256').update(referenceSource).digest('hex'),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b','only the single edge coefficient may differ from 0.23');
+ const reference=await import('data:text/javascript;base64,'+Buffer.from(referenceSource).toString('base64'));
+
  const ids=Object.keys(BATTLE_SPECIES);assert.deepEqual(ids,[...oldSpecies,'atlas','giantstag']);assert.equal(BATTLE_SPECIES.atlas.label,'アトラスオオカブト');assert.equal(BATTLE_LIMITS.maxSeconds,59.6);assert.equal(BATTLE_LIMITS.turns,36);assert.equal(BATTLE_LIMITS.ring,4);assert.equal(BATTLE_LIMITS.maxStep,.45);
  function result(s){
   assert.equal(s.phase,'finished');assert.ok(s.elapsed>=16.4&&s.elapsed<=59.6);assert.ok(s.exchanges>=9&&s.exchanges<=36);assert.ok(Number.isFinite(s.position)&&Math.abs(s.position)<=4);
   if(s.winner==='draw'){assert.equal(s.finishReason,'time-limit');assert.ok(Math.abs(s.position)<4);assert.equal(s.exchanges,36);assert.equal(s.elapsed,59.6);}
   else{assert.ok(['player','opponent'].includes(s.winner));assert.equal(s.finishReason,'ring-out');assert.equal(s.position,s.winner==='player'?4:-4);}
  }
- const outcomeHash=createHash('sha256');for(const p of oldSpecies)for(const o of oldSpecies)for(let seed=0;seed<32;seed++){const s=end(p,o,seed);result(s);outcomeHash.update(JSON.stringify(s));}
- // Fixed 4-species × 32-seed results for the requested ring-out-only rule.
+ const outcomeHash=createHash('sha256');for(const p of oldSpecies)for(const o of oldSpecies)for(let seed=0;seed<32;seed++){const s=reference.advanceBattle(reference.createBattle({playerSpecies:p,opponentSpecies:o,seed}),100);result(s);outcomeHash.update(JSON.stringify(s));if(p!=='stag'&&o!=='stag')assert.deepEqual(end(p,o,seed),s);}
+ // Pinned 0.23 reference: fixed 4-species × 32-seed results. No new hash hides the intended stag-only difference.
  // The unchanged first 12 exchanges are separately pinned in ringout-rules.test.mjs.
  assert.equal(outcomeHash.digest('hex'),'9d71f96ad1ebf4187d95c7164e03d5fd9f75dbee816b7f5369691b2e3f966453');
  const counts=[];for(const p of ids)for(const o of ids){const wins={player:0,opponent:0,draw:0};for(let seed=0;seed<128;seed++){const s=end(p,o,seed);result(s);wins[s.winner]++;}assert.ok(wins.player>0&&wins.opponent>0,`${p}/${o} permits both ring-out winners`);assert.ok(wins.draw>0,`${p}/${o} retains a real safety draw rather than forcing a winner`);counts.push({player:p,opponent:o,...wins});

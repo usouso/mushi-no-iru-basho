@@ -1,27 +1,27 @@
-import {createGiantStagStudy} from './giant-stag-study.js?v=0.23.0&b=6eab031e296e';
-import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.23.0&b=6eab031e296e';
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.23.0&b=6eab031e296e';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.23.0&b=6eab031e296e';
-import { individualScale } from './individual-layout.js?v=0.23.0&b=6eab031e296e';
+import {createGiantStagStudy} from './giant-stag-study.js?v=0.24.0&b=8d4c904e2377';
+import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.24.0&b=8d4c904e2377';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import { individualScale } from './individual-layout.js?v=0.24.0&b=8d4c904e2377';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.23.0&b=6eab031e296e';
-import { createLonghornStudy } from './longhorn-study.js?v=0.23.0&b=6eab031e296e';
-import { createJewelStudy } from './jewel-study.js?v=0.23.0&b=6eab031e296e';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.23.0&b=6eab031e296e';
-import { createBeeStudy } from './bee-study.js?v=0.23.0&b=6eab031e296e';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.23.0&b=6eab031e296e';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.23.0&b=6eab031e296e';
-import { createStagStudy } from './stag-study.js?v=0.23.0&b=6eab031e296e';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.23.0&b=6eab031e296e';
-import { createRhinoStudy } from './rhino-study.js?v=0.23.0&b=6eab031e296e';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.23.0&b=6eab031e296e';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.23.0&b=6eab031e296e';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.23.0&b=6eab031e296e';
-import { createMantisStudy } from './mantis-study.js?v=0.23.0&b=6eab031e296e';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.23.0&b=6eab031e296e';
-import { createDivingStudy } from './diving-study.js?v=0.23.0&b=6eab031e296e';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.23.0&b=6eab031e296e';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.23.0&b=6eab031e296e';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.24.0&b=8d4c904e2377';
+import { createLonghornStudy } from './longhorn-study.js?v=0.24.0&b=8d4c904e2377';
+import { createJewelStudy } from './jewel-study.js?v=0.24.0&b=8d4c904e2377';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.24.0&b=8d4c904e2377';
+import { createBeeStudy } from './bee-study.js?v=0.24.0&b=8d4c904e2377';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.24.0&b=8d4c904e2377';
+import { createStagStudy } from './stag-study.js?v=0.24.0&b=8d4c904e2377';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import { createRhinoStudy } from './rhino-study.js?v=0.24.0&b=8d4c904e2377';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.24.0&b=8d4c904e2377';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import { createMantisStudy } from './mantis-study.js?v=0.24.0&b=8d4c904e2377';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.24.0&b=8d4c904e2377';
+import { createDivingStudy } from './diving-study.js?v=0.24.0&b=8d4c904e2377';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.24.0&b=8d4c904e2377';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.24.0&b=8d4c904e2377';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
