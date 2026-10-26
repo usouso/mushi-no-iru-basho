@@ -1,14 +1,18 @@
 /** Unregistered horizontal-branch study. Distances, speed and waits are game
  * tuning, not measured natural activity or an intelligent escape response. */
-import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-const TAU=2*Math.PI,length=.12,speed=.02,rampTime=.5,halfStep=D.cycleDistance/2;
+import {RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+const TAU=2*Math.PI,rampTime=.5;
 const smooth=t=>t*t*(3-2*t);
-export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0}={}){
+export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null}={}){
  if(!position||![Object.prototype,null].includes(Object.getPrototypeOf(position))||Reflect.ownKeys(position).length!==3||!['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(position,k)&&'value'in Object.getOwnPropertyDescriptor(position,k)&&Number.isFinite(position[k])&&Math.abs(position[k])<=1e4)||!Number.isFinite(heading)||Math.abs(heading)>1e4)throw new TypeError('Invalid rhino support');
- const origin={...position};let distance=0,direction=1,phase='resting',wait=10,target=length,time=0,caught=false,ramp=rampTime,stopping=false,disturbed=false;
- function snapshot(){return{id:'rhino-study-1',position:{x:origin.x+Math.sin(heading)*distance,y:origin.y,z:origin.z+Math.cos(heading)*distance},heading,pitch:0,walkPhase:distance/D.cycleDistance*TAU,walkSpeed:phase==='walking'&&!caught&&ramp>0?direction*speed*smooth(ramp/rampTime):0,phase,direction,caught,time};}
+ if(!Number.isFinite(scale)||scale<1||scale>1.15||motionSeed!==null&&(!Number.isInteger(motionSeed)||motionSeed<0||motionSeed>0xffffffff))throw new TypeError('Invalid individual motion');
+ const length=.12*scale,speed=.02*scale,cycleDistance=D.cycleDistance*scale,halfStep=cycleDistance/2;
+ let restNumber=0;const rest=(initial=false)=>motionSeed===null?(initial?10:6):3+(((Math.imul(motionSeed^++restNumber,1664525)+1013904223)>>>0)%700)/100;
+ const initialWait=rest(true);
+ const origin={...position};let distance=0,direction=1,phase='resting',wait=initialWait,target=length,time=0,caught=false,ramp=rampTime,stopping=false,disturbed=false;
+ function snapshot(){return{id:'rhino-study-1',position:{x:origin.x+Math.sin(heading)*distance,y:origin.y,z:origin.z+Math.cos(heading)*distance},heading,pitch:0,walkPhase:distance/cycleDistance*TAU,walkSpeed:phase==='walking'&&!caught&&ramp>0?direction*speed*smooth(ramp/rampTime):0,phase,direction,caught,time};}
  function begin(){phase='walking';target=direction>0?length:0;ramp=0;disturbed=false;}
- function stop(){phase='resting';wait=stopping?2:6;direction=distance<=1e-12?1:distance>=length-1e-12?-1:-direction;stopping=false;}
+ function stop(){phase='resting';wait=stopping?2:rest();direction=distance<=1e-12?1:distance>=length-1e-12?-1:-direction;stopping=false;}
  function update(dt){
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;if(!dt||caught)return;
   time+=dt;let left=dt;
@@ -30,5 +34,5 @@ export function createRhinoStudy({position={x:0,y:D.rootAboveSupport,z:0},headin
   target=Math.max(0,Math.min(length,n*halfStep));stopping=true;
   if(Math.abs(target-distance)<1e-12){distance=target;stop();}return true;
  }
- return{update,disturb,capture(){if(caught)return false;caught=true;return true;},release(){if(!caught)return false;caught=false;if(phase==='resting')begin();ramp=0;return true;},reset(){distance=0;direction=1;phase='resting';wait=10;target=length;time=0;caught=false;ramp=rampTime;stopping=false;disturbed=false;},get state(){return snapshot();}};
+ return{update,disturb,capture(){if(caught)return false;caught=true;return true;},release(){if(!caught)return false;caught=false;if(phase==='resting')begin();ramp=0;return true;},reset(){distance=0;direction=1;phase='resting';restNumber=1;wait=initialWait;target=length;time=0;caught=false;ramp=rampTime;stopping=false;disturbed=false;},get state(){return snapshot();}};
 }

@@ -1,16 +1,16 @@
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.18.1&b=0f85c9d0b1ba';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-import {applyInsectReadability} from './insect-readability.js?v=0.18.1&b=0f85c9d0b1ba';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.19.0&b=2b3a7a48ca63';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import {applyInsectReadability} from './insect-readability.js?v=0.19.0&b=2b3a7a48ca63';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -734,8 +734,13 @@ function batchBody(root) {
   }
 }
 
-export function createInsectModel(species, { inspection = false } = {}) {
+export function createInsectModel(species, { inspection = false, sizePermille = null } = {}) {
   const root = buildInsectModel(species, { inspection });
+  // Individual size is fixed at creation. Inspection framing may scale its root
+  // further; animation must never replace that transform or redraw native art.
+  const eligible=['hercules','rhino','stag','metallifer'].includes(species);
+  const factor=eligible&&Number.isInteger(sizePermille)&&sizePermille>=1000&&sizePermille<=1150?sizePermille/1000:1;
+  root.userData.individualScale=factor;root.scale.setScalar(factor);
   return applyInsectReadability(root, { inspection, species });
 }
 
@@ -848,11 +853,11 @@ export function updateInsectModel(group, item, time = 0, support = null) {
   if(species==='hercules') {
     const phase=inspection?0:(Number.isFinite(item.walkPhase)?item.walkPhase:0),turning=!inspection&&!item.caught&&item.state==='turning';
     const progress=turning?Math.min(1,Math.max(0,item.turnProgress||0)):0,cycle=phase/(Math.PI*2)+(turning?progress*6:0);
-    const gait=group.userData.herculesGait;
+    const gait=group.userData.herculesGait,factor=group.userData.individualScale??1;
     // Per-model rendering anchors, never simulation state. Teleports, capture,
     // or discontinuous test poses reset safely instead of stretching a leg.
     const cycleDelta=cycle-gait.cycle,phaseDelta=cycleDelta-Math.round(cycleDelta);
-    const reset=inspection||!gait.ready||item.caught||gait.position.distanceToSquared(group.position)>.0025||gait.rotation.angleTo(group.quaternion)>.25||Math.abs(phaseDelta)>.4;
+    const reset=inspection||!gait.ready||item.caught||gait.position.distanceToSquared(group.position)>.0025*factor*factor||gait.rotation.angleTo(group.quaternion)>.25||Math.abs(phaseDelta)>.4;
     gait.inverse.copy(group.quaternion).invert();
     for(const leg of visual.userData.legs){
       const q=((cycle+leg.offset)%1+1)%1,swing=q>.6?(q-.6)/.4:0,isSwing=q>.6;
@@ -860,19 +865,29 @@ export function updateInsectModel(group, item, time = 0, support = null) {
       const stride=baseQ<=.6?.015-.05*baseQ:-.015+.03*baseSwing*baseSwing*(3-2*baseSwing);
       // Swing targets tuck inward 6mm during turns; planted feet never slide.
       leg.target.set(leg.side*(turning?.099:.105),-.06,leg.baseZ+(turning?stride:isSwing?.015:stride));
-      leg.target.applyQuaternion(group.quaternion).add(group.position);
+      leg.target.multiplyScalar(factor).applyQuaternion(group.quaternion).add(group.position);
       if(reset){
         leg.foot.set(leg.side*.105,-.06+.012*Math.sin(Math.PI*swing)**2,leg.baseZ+stride);
-        leg.worldFoot.copy(leg.foot).applyQuaternion(group.quaternion).add(group.position);
-        leg.anchor.copy(leg.worldFoot);leg.anchor.y=group.position.y-.06;leg.swingStart.copy(leg.anchor);
+        leg.worldFoot.copy(leg.foot).multiplyScalar(factor).applyQuaternion(group.quaternion).add(group.position);
+        leg.anchor.copy(leg.worldFoot);leg.anchor.y=group.position.y-.06*factor;leg.swingStart.copy(leg.anchor);
       } else if(isSwing){
         if(!leg.wasSwing)leg.swingStart.copy(leg.worldFoot);
         const blend=swing*swing*(3-2*swing);
-        leg.worldFoot.copy(leg.swingStart).lerp(leg.target,blend);leg.worldFoot.y=group.position.y-.06+.012*Math.sin(Math.PI*swing)**2;
-        leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse);
+        leg.worldFoot.copy(leg.swingStart).lerp(leg.target,blend);leg.worldFoot.y=group.position.y+factor*(-.06+.012*Math.sin(Math.PI*swing)**2);
+        leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse).divideScalar(factor);
       } else {
         if(leg.wasSwing)leg.anchor.copy(leg.target);
-        leg.worldFoot.copy(leg.anchor);leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse);
+        leg.worldFoot.copy(leg.anchor);leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse).divideScalar(factor);
+      }
+      // The largest individuals can reach the adjoining sloped octagonal bark
+      // while turning. Conform each planted tip instead of floating above it.
+      if(!inspection&&typeof support?.footHeightAt==='function'){
+        const woodY=support.footHeightAt(leg.worldFoot.x,leg.worldFoot.z);
+        if(Number.isFinite(woodY)){
+          const lift=isSwing?.012*factor*Math.sin(Math.PI*swing)**2:0;
+          leg.worldFoot.y=woodY+lift;if(!isSwing)leg.anchor.y=woodY;
+          leg.foot.copy(leg.worldFoot).sub(group.position).applyQuaternion(gait.inverse).divideScalar(factor);
+        }
       }
       leg.wasSwing=isSwing;updateHerculesLeg(leg);
     }
@@ -919,6 +934,11 @@ export function updateInsectModel(group, item, time = 0, support = null) {
     }
     if(proboscis)proboscis.visible=feeding;
   }
+  // Restrained game-readable preparation, not a measured pre-flight behaviour.
+  // Only a genuinely perched, uncaught field insect may add the small hinge
+  // motion; body/support placement and all existing flight poses stay unchanged.
+  const warning=!inspection&&!item.caught&&item.resting===true&&flight<.01&&item.awarenessStage==='warning'
+    ?Math.max(0,Math.min(1,Number.isFinite(item.alertBlend)?item.alertBlend:0)):0;
   const wings=group.userData.wings||[];
   for(const pivot of wings) {
     const side=pivot.userData.side;
@@ -935,13 +955,13 @@ export function updateInsectModel(group, item, time = 0, support = null) {
     } else if(species==='dragonfly') {
       const restAngle=.16+Math.sin(time*2.2+(item.phase||0)+(pivot.userData.back?.5:0))*.035;
       const flightAngle=Math.sin(phase+(pivot.userData.back?1.2:0))*.238;
-      pivot.rotation.z=side*(inspection?Math.sin(time*1.1)*.015:restAngle*(1-flight)+flightAngle*flight);
+      pivot.rotation.z=side*(inspection?Math.sin(time*1.1)*.015:restAngle*(1-flight)+flightAngle*flight+warning*.08);
       // A fixed, shallow opposite incidence on fore/hind wings avoids four
       // edge-on planes from the front. This is display geometry, not steering.
       if (!inspection) pivot.rotation.x=(pivot.userData.back?-.18:.18)*(1-flight);
     } else {
       const restMotion=Math.sin(time*1.7+(item.phase||0))*.028;
-      pivot.rotation.z=-side*(.32+(inspection?Math.sin(time)*.018:restMotion*(1-flight)+flight*.2*Math.sin(phase)));
+      pivot.rotation.z=-side*(.32+(inspection?Math.sin(time)*.018:restMotion*(1-flight)+flight*.2*Math.sin(phase)+(species==='cicada'?warning*.08:0)));
       if(pivot.userData.wingType==='hindwing')pivot.rotation.y=inspection?0:-side*.55*flight;
     }
   }

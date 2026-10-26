@@ -1,21 +1,23 @@
+import { individualScale } from './individual-layout.js?v=0.19.0&b=2b3a7a48ca63';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { createLonghornStudy } from './longhorn-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createJewelStudy } from './jewel-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createBeeStudy } from './bee-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createStagStudy } from './stag-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createRhinoStudy } from './rhino-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createMantisStudy } from './mantis-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createDivingStudy } from './diving-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.18.1&b=0f85c9d0b1ba';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.19.0&b=2b3a7a48ca63';
+import { createLonghornStudy } from './longhorn-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { createJewelStudy } from './jewel-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { createBeeStudy } from './bee-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { createStagStudy } from './stag-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import { createRhinoStudy } from './rhino-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import { createMantisStudy } from './mantis-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+import { createDivingStudy } from './diving-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.19.0&b=2b3a7a48ca63';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
@@ -53,12 +55,19 @@ const homes = [
   ['butterfly', -6.8, 8.4, 1.2]
 ];
 
-export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes, extraHomes = [], grasshopperSupports = [], herculesSupports = [], leafSupports = [], striderSupports = [], antSupports = [], fireflySupports = [], dungSupports = [], divingSupports = [], mantisSupports = [], ladybirdSupports = [], rhinoSupports = [], stagSupports = [], metalliferSupports = [], beeSupports = [], swallowtailSupports = [], jewelSupports = [], longhornSupports = [], logFruitStation = null, bounds = 75, hasLineOfSight = () => true } = {}) {
+export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes, extraHomes = [], individuals = [], grasshopperSupports = [], herculesSupports = [], leafSupports = [], striderSupports = [], antSupports = [], fireflySupports = [], dungSupports = [], divingSupports = [], mantisSupports = [], ladybirdSupports = [], rhinoSupports = [], stagSupports = [], metalliferSupports = [], beeSupports = [], swallowtailSupports = [], jewelSupports = [], longhornSupports = [], logFruitStation = null, bounds = 75, hasLineOfSight = () => true } = {}) {
   // Optional geometry adapter: the pure simulation never reads renderer meshes.
   if (typeof hasLineOfSight !== 'function') throw new TypeError('Invalid line-of-sight adapter');
   const validHomes = rows => Array.isArray(rows) && rows.every(row => Array.isArray(row) && typeof row[0] === 'string' && Object.prototype.hasOwnProperty.call(SPECIES,row[0]) && row.length === 4 && [row[1],row[2],row[3]].every(Number.isFinite));
   if (!validHomes(habitatHomes) || !habitatHomes.length || !validHomes(extraHomes)) throw new TypeError('Invalid habitat homes');
   const initialHomes = [...habitatHomes,...extraHomes].map(row=>[...row]);
+  const profiles=new Map();
+  if(!Array.isArray(individuals)||individuals.length>5)throw new TypeError('Invalid individual profiles');
+  for(const e of individuals){
+    const index=Number(e?.runtimeSlotId?.replace('insect-',''))-1;
+    if(!e||!/^insect-[1-9]\d{0,5}$/.test(e.runtimeSlotId)||!['hercules','rhino','stag','metallifer'].includes(e.species)||initialHomes[index]?.[0]!==e.species||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||typeof e.encounterId!=='string'||!/^g1-[0-9a-f]{8}-o[1-9][0-9]{0,15}-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.test(e.encounterId))throw new TypeError('Individual profile does not match home');
+    profiles.set(e.runtimeSlotId,{...e});
+  }
   const flightBounds = Number.isFinite(bounds) && bounds > 6 ? Math.min(75, bounds) : 75;
   const hopperSupports = new Map(), hoppers = new Map();
   try {
@@ -378,6 +387,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         fleeX: x, fleeZ: z, age: 0, beginner: index === 0,
         homeHeading: species === 'cicada' ? Math.atan2(x + 10, z + 8) + Math.PI : index * 2.399,
         alert: 0, nextScareAt: 0, settleUntil: 0, departures: 0, excursion: null });
+      const profile=profiles.get(`insect-${index+1}`);
+      if(profile){const item=items[items.length-1];Object.assign(item,{encounterId:profile.encounterId,sizePermille:profile.sizePermille,measureVersion:1,motionSeed:profile.motionSeed,populationSlotId:profile.populationSlotId});item.phase=item.wingPhase=profile.motionSeed/4294967296*TAU;}
+      if (CAPTURE_AWARENESS[species]) clearAwareness(items[items.length - 1]);
       if (species === 'grasshopper') {
         const item=items[items.length-1];item.airborne=false;item.jumpProgress=0;item.jumpStart=null;item.jumpEnd=null;
         hoppers.set(item.id,{points:hopperSupports.get(index),perchIndex:0,jump:null});
@@ -385,7 +397,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (species === 'hercules') {
         const item=items[items.length-1],support=beetleSupports.get(index);
         item.heading=item.homeHeading=Math.atan2(support.ux,support.uz);item.walkPhase=0;item.walkSpeed=0;item.turnProgress=0;
-        beetles.set(item.id,{support,s:support.homeS,move:null,nextMoveAt:30+5*(1+Math.sin(item.phase)),reactAfter:0,near:false});
+        beetles.set(item.id,{support,s:support.homeS,move:null,nextMoveAt:item.encounterId?3+(item.motionSeed%700)/100:30+5*(1+Math.sin(item.phase)),reactAfter:0,near:false});
       }
       if (species === 'leafinsect') {
         const item=items[items.length-1],support=leafGroups.get(index);
@@ -418,15 +430,15 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       }
       if (species === 'rhino') {
         const item=items[items.length-1],support=rhinoGroups.get(index);
-        rhinos.set(item.id,{study:createRhinoStudy({position:support.home,heading:support.heading}),near:false});syncRhino(item);item.homeHeading=item.heading;
+        rhinos.set(item.id,{study:createRhinoStudy({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null}),near:false});syncRhino(item);item.homeHeading=item.heading;
       }
       if (species === 'stag') {
         const item=items[items.length-1],support=stagGroups.get(index);
-        stags.set(item.id,{study:createStagStudy({position:support.home,heading:support.heading}),near:false});syncStag(item);item.homeHeading=item.heading;
+        stags.set(item.id,{study:createStagStudy({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null}),near:false});syncStag(item);item.homeHeading=item.heading;
       }
       if (species === 'metallifer') {
         const item=items[items.length-1],support=metalliferGroups.get(index);
-        metallifers.set(item.id,{study:createMetalliferStudy({position:support.home,heading:support.heading}),near:false});syncMetallifer(item);item.homeHeading=item.heading;
+        metallifers.set(item.id,{study:createMetalliferStudy({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null}),near:false});syncMetallifer(item);item.homeHeading=item.heading;
       }
       if (species === 'ladybird') {
         const item=items[items.length-1],support=ladybirdGroups.get(index);
@@ -667,6 +679,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const c2 = boundedControl(item, { x: item.home.x + dx * reach * 1.1 + sideX * turn * .65, y: item.home.y + style.lift * 1.15, z: item.home.z + dz * reach * 1.1 + sideZ * turn * .65 });
     item.excursion = { reason, startedAt: time, duration, start, c1, c2, sideX, sideZ, turn };
     item.state = reason; item.resting = false; item.alert = 0;
+    if (CAPTURE_AWARENESS[item.species]) {
+      item.awarenessStage = 'fleeing'; item.warningElapsed = 0; item.netStartleOrigin = null;
+    }
     item.nextScareAt = time + (reason === 'released' ? .85 : 2.0);
     item.fleeUntil = reason === 'startled' ? time + duration : 0;
     // This is a flight deadline, not immunity and not a stationary seven-second hold.
@@ -686,7 +701,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       // Complete the current foot-stepping turn before changing destination.
       move.distance=0;move.end={x:item.x,y:item.y,z:item.z};move.endS=beetle.s;move.targetPhase=item.walkPhase;return;
     }
-    const targetHalf=Math.ceil(item.walkPhase/Math.PI-1e-9),left=Math.max(0,(targetHalf-item.walkPhase/Math.PI)*.025);
+    const targetHalf=Math.ceil(item.walkPhase/Math.PI-1e-9),left=Math.max(0,(targetHalf-item.walkPhase/Math.PI)*.025*individualScale(item));
     if(left<1e-8){restBeetle(item);return;}
     const total=Math.min(move.distance,move.travelled+left),ratio=total/move.distance;
     move.end={x:move.start.x+(move.end.x-move.start.x)*ratio,y:move.start.y,z:move.start.z+(move.end.z-move.start.z)*ratio};move.endS=move.startS+(move.endS-move.startS)*ratio;move.distance=total;move.targetPhase=targetHalf*Math.PI;
@@ -817,7 +832,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   // Daytime beetles stay on one horizontal support; optional log visits never fly.
   // Stop distances are shortened by <25mm to retain a both-tripods-grounded phase.
   function restBeetle(item) {
-    const beetle=beetles.get(item.id);beetle.move=null;beetle.nextMoveAt=time+30+5*(1+Math.sin(item.phase+item.departures*1.3));beetle.reactAfter=time+10;
+    const beetle=beetles.get(item.id);beetle.move=null;beetle.nextMoveAt=time+(item.encounterId?4+3*(1+Math.sin(item.phase+item.departures*1.3)):30+5*(1+Math.sin(item.phase+item.departures*1.3)));beetle.reactAfter=time+10;
     item.state='resting';item.resting=true;item.walkSpeed=0;item.turnProgress=0;
   }
   function beginBeetleWalk(item,reason,player,targetS=null,targetHeading=null) {
@@ -826,12 +841,12 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     let direction=targetS!==null?(targetS>=beetle.s?1:-1):p?(beetle.s>=projected?1:-1):(item.departures%2?-1:1);
     let available=direction>0?support.length-beetle.s:beetle.s;
     if(reason==='spontaneous' && available<.25){direction=-direction;available=direction>0?support.length-beetle.s:beetle.s;}
-    const half=item.walkPhase/Math.PI,desired=Math.min(available,targetS===null?.25+.05*(item.departures%5):Math.abs(targetS-beetle.s));
-    let targetHalf=Math.floor(half+desired/.025+1e-9),distance=Math.max(0,(targetHalf-half)*.025);
+    const halfStep=.025*individualScale(item),half=item.walkPhase/Math.PI,desired=Math.min(available,targetS===null?.25+.05*(item.departures%5):Math.abs(targetS-beetle.s));
+    let targetHalf=Math.floor(half+desired/halfStep+1e-9),distance=Math.max(0,(targetHalf-half)*halfStep);
     if(distance<1e-8&&targetS===null){
       // After a mid-stride capture at an edge, at most 25mm in the other safe
       // direction can finish the foot placement; never reset the gait phase.
-      targetHalf=Math.ceil(half-1e-9);distance=Math.max(0,(targetHalf-half)*.025);
+      targetHalf=Math.ceil(half-1e-9);distance=Math.max(0,(targetHalf-half)*halfStep);
       const other=direction>0?beetle.s:support.length-beetle.s;
       if(distance<1e-8 || distance>other+1e-9){restBeetle(item);return false;}
       direction=-direction;
@@ -852,7 +867,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if(!guided && arrived && beetle.move?.reason==='spontaneous'){
       // A newly close observer interrupts an unprovoked walk at the next
       // grounded half-cycle, rather than making the beetle push into them.
-      const move=beetle.move,targetHalf=Math.ceil(item.walkPhase/Math.PI-1e-9),left=Math.max(0,(targetHalf-item.walkPhase/Math.PI)*.025);
+      const move=beetle.move,targetHalf=Math.ceil(item.walkPhase/Math.PI-1e-9),left=Math.max(0,(targetHalf-item.walkPhase/Math.PI)*.025*individualScale(item));
       if(left<1e-8)restBeetle(item);
       else{const total=Math.min(move.distance,move.travelled+left),ratio=total/move.distance;move.end={x:move.start.x+(move.end.x-move.start.x)*ratio,y:move.start.y,z:move.start.z+(move.end.z-move.start.z)*ratio};move.endS=move.startS+(move.endS-move.startS)*ratio;move.distance=total;move.targetPhase=targetHalf*Math.PI;}
     }
@@ -869,7 +884,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const advance=Math.min(move.speed*dt,Math.max(0,move.distance-move.travelled));
     move.travelled+=advance;const u=clamp(move.travelled/move.distance,0,1);
     item.x=move.start.x+(move.end.x-move.start.x)*u;item.y=move.start.y;item.z=move.start.z+(move.end.z-move.start.z)*u;
-    beetle.s=move.startS+(move.endS-move.startS)*u;item.walkPhase+=advance/.05*TAU;item.walkSpeed=dt>0?advance/dt:0;item.state='walking';item.resting=false;
+    beetle.s=move.startS+(move.endS-move.startS)*u;item.walkPhase+=advance/(.05*individualScale(item))*TAU;item.walkSpeed=dt>0?advance/dt:0;item.state='walking';item.resting=false;
     if(move.distance-move.travelled<1e-10){item.x=move.end.x;item.z=move.end.z;beetle.s=move.endS;item.walkPhase=move.targetPhase;restBeetle(item);}
   }
 
@@ -978,6 +993,40 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const u=clamp(travelled/move.distance,0,1);item.x=move.start.x+(move.end.x-move.start.x)*u;item.y=move.start.y;item.z=move.start.z+(move.end.z-move.start.z)*u;
     item.heading+=clamp(Math.atan2(Math.sin(move.heading-item.heading),Math.cos(move.heading-item.heading)),-dt*5.5,dt*5.5);item.skateSpeed=speedNow;item.resting=false;item.flightBlend=0;
     if(elapsed>=row+glide){item.x=move.end.x;item.y=move.end.y;item.z=move.end.z;restStrider(item);}
+  }
+
+  function encounterAlertRate(item, player, p, dt) {
+    if (!p) return 0;
+    const near = Math.hypot(item.x-p.x, item.z-p.z);
+    const verticalGap = Math.max(0, item.y-(p.y+.25), heightAt(p.x,p.z)+.15-item.y);
+    if (verticalGap > 1.5) return 0;
+    const intrusion = Math.hypot(near,verticalGap) < .36;
+    const speed = Number.isFinite(player.speed) ? Math.max(0,player.speed) : 0;
+    if (speed < .12 && !intrusion) return 0;
+    const profile = CAPTURE_AWARENESS[item.species], quiet = !!player.quiet;
+    let radius = quiet ? profile.quietRadius : speed > 4 ? profile.dashRadius : profile.walkRadius;
+    if (previousPlayer && dt > 0 && (Math.hypot(item.x-previousPlayer.x,item.z-previousPlayer.z)-near)/dt < -.15) radius *= .7;
+    if (near >= radius || hasLineOfSight(p,item) !== true) return 0;
+    if (intrusion) return 10;
+    return (quiet ? 1.8 : speed > 4 ? 4 : 2.5) * (1+(radius-near)/radius);
+  }
+
+  // Called by the input owner only AFTER an actual failed capture. One visible
+  // nearby insect can react; held, occluded and already airborne ones cannot.
+  function startleFromNet(origin, direction) {
+    const p = finitePlayer(origin);
+    if (held || !p || !Number.isFinite(p.y) || !direction ||
+        ![direction.x,direction.y,direction.z].every(Number.isFinite) ||
+        Math.hypot(direction.x,direction.y,direction.z) < .001) return null;
+    const list = candidates(p,direction).filter(({item,distance,dot}) =>
+      CAPTURE_AWARENESS[item.species] && !item.excursion && time >= item.settleUntil &&
+      time >= item.nextScareAt && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
+    list.sort((a,b) => a.distance-b.distance);
+    const item = list.find(candidate => hasLineOfSight(p,candidate.item) === true)?.item;
+    if (!item) return null;
+    item.netStartleOrigin ||= {...p};
+    item.alert = Math.max(.35,item.alert); item.awarenessStage = 'warning';
+    return item;
   }
 
   function alertRate(item, player, p, dt) {
@@ -1129,9 +1178,15 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (item.species === 'firefly') { if (!item.caught) updateFirefly(item,dt,player,p); continue; }
       item.wingPhase += dt * (item.species === 'morpho' ? 8.5 : item.species === 'butterfly' ? 12 : 70);
       if (item.caught) continue;
-      const rate = alertRate(item, player, p, dt);
-      item.alert = clamp(item.alert + dt * (rate || -3), 0, 1.2);
-      if (rate && item.alert >= 1 && time >= item.nextScareAt) depart(item, 'startled', player);
+      if (CAPTURE_AWARENESS[item.species]) {
+        const rate = item.excursion || time < item.settleUntil ? 0 : encounterAlertRate(item,player,p,dt);
+        const shouldFlee = advanceAwareness(item,dt,rate,!!item.excursion,time < item.settleUntil);
+        if (shouldFlee && time >= item.nextScareAt) depart(item,'startled',item.netStartleOrigin || player);
+      } else {
+        const rate = alertRate(item, player, p, dt);
+        item.alert = clamp(item.alert + dt * (rate || -3), 0, 1.2);
+        if (rate && item.alert >= 1 && time >= item.nextScareAt) depart(item, 'startled', player);
+      }
       let tx = item.home.x, ty = item.home.y, tz = item.home.z;
       let resting = true, flightStrength = 0, landing = false;
       if (item.excursion) {
@@ -1150,6 +1205,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
           flightStrength = landing ? clamp((1-u)/.22, .12, 1) : 1;
         } else {
           item.excursion = null; item.settleUntil = time + 3;
+          if (CAPTURE_AWARENESS[item.species]) item.awarenessStage = 'settling';
         }
       }
       const atBait = !item.excursion && bait?.visitorId === item.id;
@@ -1237,7 +1293,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       const target = findTarget(player, direction);
       return { ok: false, reason: target ? target.reason : '空振り。虫に向かって、もう少し近くで' };
     }
-    held = candidate.item; if (bait?.visitorId === held.id) detachVisitor(); held.caught = true; held.state = 'caught'; caughtFrom = eye(player); catches++;
+    held = candidate.item; if (CAPTURE_AWARENESS[held.species]) clearAwareness(held); if (bait?.visitorId === held.id) detachVisitor(); held.caught = true; held.state = 'caught'; caughtFrom = eye(player); catches++;
     if (held.species === 'swallowtail') { swallowtails.get(held.id).study.capture();syncSwallowtail(held); }
     if (held.species === 'bee') { bees.get(held.id).study.capture();syncBee(held); }
     if (held.species === 'stag') { stags.get(held.id).study.capture();syncStag(held); }
@@ -1294,5 +1350,5 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     return item;
   }
 
-  return { items, update, findTarget, swing, release, retain, setCompanions, reset, placeBait, removeBait, placeLogFruit, removeLogFruit, get logFruit() { return logFruit?{active:true,type:logFruit.type,remaining:Math.max(0,logFruit.expiresAt-time),visitorId:logFruit.visitorId,status:logFruit.status}:null; }, get dungBall() { return dungBall(); }, get bait() { return bait ? {active:true,type:bait.type,x:bait.x,y:bait.y,z:bait.z,remaining:Math.max(0,bait.expiresAt-time),visitorId:bait.visitorId,status:bait.status} : null; }, get caught() { return held; }, get time() { return time; }, get catches() { return catches; } };
+  return { items, update, findTarget, swing, startleFromNet, release, retain, setCompanions, reset, placeBait, removeBait, placeLogFruit, removeLogFruit, get logFruit() { return logFruit?{active:true,type:logFruit.type,remaining:Math.max(0,logFruit.expiresAt-time),visitorId:logFruit.visitorId,status:logFruit.status}:null; }, get dungBall() { return dungBall(); }, get bait() { return bait ? {active:true,type:bait.type,x:bait.x,y:bait.y,z:bait.z,remaining:Math.max(0,bait.expiresAt-time),visitorId:bait.visitorId,status:bait.status} : null; }, get caught() { return held; }, get time() { return time; }, get catches() { return catches; } };
 }

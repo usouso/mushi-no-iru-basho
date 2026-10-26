@@ -70,3 +70,5 @@
 @media(max-width:760px){#companions-button{font-size:13px}.battle-entry-hint{font-size:10px}.capture-battle-note{font-size:12px}}
 
 #battle-save-status{font-size:12px;line-height:1.5;background:#f4dfb9;color:#59401f;padding:6px 9px;margin:6px 0}
+
+.individual-size{font-size:16px;line-height:1.55;color:#f1dfaa;margin:10px 0}.expedition-status{font-size:14px;line-height:1.55;color:#d6ddc8;margin:10px 0}

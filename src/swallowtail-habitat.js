@@ -1,5 +1,5 @@
 /** Actual-terrain support adapter; owns no geometry, textures or colliders. */
-import {SWALLOWTAIL_SITES as SITES,SWALLOWTAIL_SUPPORT as D} from './swallowtail-layout.js?v=0.18.1&b=0f85c9d0b1ba';
+import {SWALLOWTAIL_SITES as SITES,SWALLOWTAIL_SUPPORT as D} from './swallowtail-layout.js?v=0.19.0&b=2b3a7a48ca63';
 const T=window.THREE,xyz=v=>({x:v.x,y:v.y,z:v.z});
 export function createSwallowtailHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];

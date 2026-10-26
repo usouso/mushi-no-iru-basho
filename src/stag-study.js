@@ -1,17 +1,21 @@
 /** Unregistered branch study: short steps and a restrained jaw response are
  * game tuning, not measured threat/escape behaviour. No combat or flight. */
-import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.18.1&b=0f85c9d0b1ba';
-const TAU=2*Math.PI,length=.12,speed=.02,rampTime=.5,halfStep=D.cycleDistance/2;
+import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.19.0&b=2b3a7a48ca63';
+const TAU=2*Math.PI,rampTime=.5;
 const smooth=t=>t*t*(3-2*t);
-export function createStagStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0}={}){
+export function createStagStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null}={}){
  if(!position||![Object.prototype,null].includes(Object.getPrototypeOf(position))||Reflect.ownKeys(position).length!==3||!['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(position,k)&&'value'in Object.getOwnPropertyDescriptor(position,k)&&Number.isFinite(position[k])&&Math.abs(position[k])<=1e4)||!Number.isFinite(heading)||Math.abs(heading)>1e4)throw new TypeError('Invalid stag support');
- const origin={...position};let distance=0,direction=1,phase='resting',wait=10,target=length,time=0,caught=false,ramp=rampTime,stopping=false,disturbed=false,jawOpen=D.restJawOpen,jaw=null;
- function snapshot(){return{id:'stag-study-1',position:{x:origin.x+Math.sin(heading)*distance,y:origin.y,z:origin.z+Math.cos(heading)*distance},heading,pitch:0,walkPhase:distance/D.cycleDistance*TAU,walkSpeed:phase==='walking'&&!caught&&ramp>0?direction*speed*smooth(ramp/rampTime):0,phase,direction,jawOpen,caught,time};}
+ if(!Number.isFinite(scale)||scale<1||scale>1.15||motionSeed!==null&&(!Number.isInteger(motionSeed)||motionSeed<0||motionSeed>0xffffffff))throw new TypeError('Invalid individual motion');
+ const length=.12*scale,speed=.02*scale,cycleDistance=D.cycleDistance*scale,halfStep=cycleDistance/2;
+ let restNumber=0;const rest=(initial=false)=>motionSeed===null?(initial?10:6):3+(((Math.imul(motionSeed^++restNumber,1664525)+1013904223)>>>0)%700)/100;
+ const initialWait=rest(true);
+ const origin={...position};let distance=0,direction=1,phase='resting',wait=initialWait,target=length,time=0,caught=false,ramp=rampTime,stopping=false,disturbed=false,jawOpen=D.restJawOpen,jaw=null;
+ function snapshot(){return{id:'stag-study-1',position:{x:origin.x+Math.sin(heading)*distance,y:origin.y,z:origin.z+Math.cos(heading)*distance},heading,pitch:0,walkPhase:distance/cycleDistance*TAU,walkSpeed:phase==='walking'&&!caught&&ramp>0?direction*speed*smooth(ramp/rampTime):0,phase,direction,jawOpen,caught,time};}
  function jawTo(target){jaw={start:jawOpen,target,elapsed:0};}
  function updateJaw(dt){if(!jaw)return;jaw.elapsed=Math.min(1,jaw.elapsed+dt);jawOpen=jaw.start+(jaw.target-jaw.start)*smooth(jaw.elapsed);if(jaw.elapsed===1){jawOpen=jaw.target;jaw=null;}}
  function begin(){phase='walking';target=direction>0?length:0;ramp=0;disturbed=false;stopping=false;jawTo(D.restJawOpen);}
  function react(){phase='reacting';wait=1;stopping=false;direction=distance<=1e-12?1:-1;jawTo(.7);}
- function stop(){if(stopping){react();return;}phase='resting';wait=6;direction=distance<=1e-12?1:-1;}
+ function stop(){if(stopping){react();return;}phase='resting';wait=rest();direction=distance<=1e-12?1:-1;}
  function update(dt){
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;if(!dt||caught)return;
   time+=dt;let left=dt;
@@ -31,5 +35,5 @@ export function createStagStudy({position={x:0,y:D.rootAboveSupport,z:0},heading
   target=Math.max(0,Math.min(length,n*halfStep));stopping=true;
   if(Math.abs(target-distance)<1e-12){distance=target;react();}return true;
  }
- return{update,disturb,capture(){if(caught)return false;caught=true;return true;},release(){if(!caught)return false;caught=false;if(phase!=='walking')begin();ramp=0;return true;},reset(){distance=0;direction=1;phase='resting';wait=10;target=length;time=0;caught=false;ramp=rampTime;stopping=false;disturbed=false;jawOpen=D.restJawOpen;jaw=null;},get state(){return snapshot();}};
+ return{update,disturb,capture(){if(caught)return false;caught=true;return true;},release(){if(!caught)return false;caught=false;if(phase!=='walking')begin();ramp=0;return true;},reset(){distance=0;direction=1;phase='resting';restNumber=1;wait=initialWait;target=length;time=0;caught=false;ramp=rampTime;stopping=false;disturbed=false;jawOpen=D.restJawOpen;jaw=null;},get state(){return snapshot();}};
 }

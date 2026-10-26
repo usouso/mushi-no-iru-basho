@@ -1,4 +1,4 @@
-import {createInsectModel} from './insect-models.js?v=0.18.1&b=0f85c9d0b1ba';
+import {createInsectModel} from './insect-models.js?v=0.19.0&b=2b3a7a48ca63';
 
 /** Small presentation-only sumo table. Automatic exchanges are supplied
  * by the pure watching/finished/cancelled battle snapshot. This is a restrained push/stance illustration,
@@ -9,7 +9,7 @@ const ELIGIBLE=new Set(['rhino','stag','hercules','metallifer']);
 const finite=(value,fallback=0)=>Number.isFinite(value)?value:fallback;
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
-export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
+export function createBattleView({playerSpecies,opponentSpecies,playerSizePermille=null,opponentSizePermille=null,aspect=1}={}){
  if(!ELIGIBLE.has(playerSpecies)||!ELIGIBLE.has(opponentSpecies))throw new TypeError('Battle view requires supported beetles');
  const scene=new T.Scene();scene.background=new T.Color('#647368');
  scene.add(new T.HemisphereLight('#f7f1db','#475640',1.15));
@@ -17,18 +17,18 @@ export function createBattleView({playerSpecies,opponentSpecies,aspect=1}={}){
  const fill=new T.DirectionalLight('#cce2e4',.5);fill.position.set(3,2,-2);scene.add(fill);
  const camera=new T.OrthographicCamera(-1,1,1,-1,.01,20);camera.position.set(0,1.25,2);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
  const scratch=new T.Box3(),fit=new T.Box3(),otherBox=new T.Box3(),corner=new T.Vector3();
- function beetle(species,name,heading){
+ function beetle(species,name,heading,sizePermille){
   const anchor=new T.Group();anchor.name=name;
-  const model=createInsectModel(species,{inspection:true});model.scale.setScalar(1);anchor.add(model);scene.add(anchor);
+  const model=createInsectModel(species,{inspection:true,sizePermille});anchor.add(model);scene.add(anchor);
   model.updateMatrixWorld(true);scratch.setFromObject(model);
   const front=scratch.max.z,height=scratch.max.y-scratch.min.y;
   const bodyBounds=model.userData.visual?.userData.bodyBounds;
-  if(bodyBounds)scratch.copy(bodyBounds);else if(model.userData.bodyMesh)scratch.setFromObject(model.userData.bodyMesh);
+  if(bodyBounds)scratch.copy(bodyBounds).applyMatrix4(model.userData.visual.matrixWorld);else if(model.userData.bodyMesh)scratch.setFromObject(model.userData.bodyMesh);
   const bodyCenter=scratch.getCenter(new T.Vector3());
   const jaws=(model.userData.jaws||[]).map(jaw=>{const pivot=jaw.pivot||jaw;return{pivot,angle:pivot.rotation.y,side:jaw.side||Math.sign(pivot.position.x)};});
   anchor.rotation.y=heading;return{anchor,model,front,height,bodyCenter,jaws,baseX:0};
  }
- const player=beetle(playerSpecies,'battle-player',Math.PI/2),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2);
+ const player=beetle(playerSpecies,'battle-player',Math.PI/2,playerSizePermille),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2,opponentSizePermille);
  // Heads point toward the centre (+Z in each existing model). Keep horn/jaw
  // fronts separated; do not scale each body to the same fictional size.
  player.baseX=-.01-player.front;opponent.baseX=.01+opponent.front;

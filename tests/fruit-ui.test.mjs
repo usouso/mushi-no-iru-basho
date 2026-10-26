@@ -17,10 +17,10 @@ test('fruit prompt is initially hidden in the existing stacked control group, wi
   assert.doesNotMatch(css,/\.interaction-hint\{[^}]*(?:position:absolute|border:|background:)/);
 });
 
-test('index version labels agree at 0.18.1 and existing habitat, journal and quiet controls remain',async()=>{
+test('index version labels agree at 0.19.0 and existing habitat, journal and quiet controls remain',async()=>{
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
-  assert.match(html,/<meta name="application-version" content="0\.18\.1">/);
-  assert.equal((html.match(/data-build-version>0\.18\.1</g)||[]).length,2);
+  assert.match(html,/<meta name="application-version" content="0\.19\.0">/);
+  assert.equal((html.match(/data-build-version>0\.19\.0</g)||[]).length,2);
   assert.match(html,/<button[^>]*id="title-button"[^>]*>表紙へ<\/button>/);
   for(const id of ['habitat-select','travel-habitat-select','travel-button','journal-button','pause-journal-button','inspect-journal-button','pause-button','quiet-label'])assert.ok(html.includes(`id="${id}"`),id);
   for(const text of ['Shift 保持','右クリック保持','Space</dt><dd>網をふる','左クリック：見回し中は網 · 停止中は見回し再開。','LB 保持','RB 保持','View 図鑑','Start ひと休み'])assert.ok(html.includes(text),text);

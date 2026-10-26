@@ -5,7 +5,7 @@ const root=path.resolve(import.meta.dirname,'..'),source=fs.readFileSync(path.jo
 const factory=source.slice(0,source.indexOf(marker)).replace("const root=path.resolve(import.meta.dirname,'..');",`const root=${JSON.stringify(root)};`)+'\nexport {app,finishWatching};';
 const {app,finishWatching}=await import('data:text/javascript;base64,'+Buffer.from(factory).toString('base64'));
 const extraExports='roster,battle,battleView,battleSuspended,models,keepCaptured,battleCaptured,openCompanions,closeCompanions,releaseCompanion,startBattle,leaveBattle,returnFromBattle,applyCompanionPresence';
-const click=(h,id)=>h.elements.get(id).click(),rosterKey='mushi-companions-v1';
+const click=(h,id)=>h.elements.get(id).click(),rosterKey='mushi-companions-v2';
 const viewPose=g=>['player','opponent'].map(side=>{const object=g.battleView.scene.getObjectByName('battle-'+side);return[...object.position.toArray(),...object.quaternion.toArray()];});
 
 test('automatic capture match freezes clock and model pose while hidden/unfocused, resumes without catch-up, and loss never removes the captured companion',async t=>{
