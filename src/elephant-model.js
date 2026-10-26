@@ -1,4 +1,4 @@
-import {sampleElephantPose,ELEPHANT_DIMENSIONS as D} from './elephant-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
+import {sampleElephantPose,ELEPHANT_DIMENSIONS as D} from './elephant-kinematics.js?v=0.26.0&b=b8d401c0400d';
 /** Original male Megasoma display: broad low pubescent torso, upward terminal
  * fork of head horn, its basal tooth, and two short outward pronotal horns.
  * Photo reference is not a tracing/texture. No feeding or flight is modeled. */

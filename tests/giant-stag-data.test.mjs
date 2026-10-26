@@ -9,7 +9,7 @@ import {createBattle,advanceBattle,cancelBattle} from '../src/beetle-battle.js';
 
 const giant={species:'giantstag',originHabitat:'night',originIndividualId:'insect-6',originKind:'legacy',originEncounterId:null,sizePermille:null,measureVersion:null};
 const entry=(capture,capturedAt=100)=>({id:capture.originKind==='legacy'?`${capture.originHabitat}/${capture.originIndividualId}`:capture.originEncounterId,...capture,capturedAt});
-const oldRoster=EXPEDITION_SLOTS.filter(s=>s.populationSlotId!=='hercules-b').map((s,i)=>entry({species:s.species,originHabitat:s.habitat,originIndividualId:s.runtimeSlotId,originKind:'expedition',originEncounterId:`g1-1234abcd-o1-${s.habitat}-${s.populationSlotId}`,sizePermille:1050+i,measureVersion:1},100+i));
+const oldRoster=EXPEDITION_SLOTS.slice(0,5).filter(s=>s.populationSlotId!=='hercules-b').map((s,i)=>entry({species:s.species,originHabitat:s.habitat,originIndividualId:s.runtimeSlotId,originKind:'expedition',originEncounterId:`g1-1234abcd-o1-${s.habitat}-${s.populationSlotId}`,sizePermille:1050+i,measureVersion:1},100+i));
 oldRoster.push(entry({species:'atlas',originHabitat:'understory',originIndividualId:'insect-5',originKind:'legacy',originEncounterId:null,sizePermille:null,measureVersion:null},104));
 const oldSpecies=['butterfly','dragonfly','cicada','morpho','grasshopper','hercules','leafinsect','waterstrider','leafcutterant','firefly','dungbeetle','divingbeetle','mantis','ladybird','rhino','stag','bee','swallowtail','jewel','longhorn','metallifer','atlas'];
 const oldJournal=oldSpecies.map((species,i)=>({species,firstSeen:100+i,lastSeen:200+i,location:`場所${i}`,x:i,z:-5-i,note:`残すメモ${species}`}));
@@ -60,7 +60,7 @@ test('giantstag is never adopted from v1 and cannot borrow older fixed IDs or an
   assert.deepEqual(q.add(bad),{ok:false,reason:'invalid-capture'});
  }
  assert.deepEqual(q.entries,oldRoster);assert.equal(good.writes.length,0);
- assert.deepEqual(EXPEDITION_SLOTS.map(s=>[s.populationSlotId,s.habitat,s.runtimeSlotId]),[
+ assert.deepEqual(EXPEDITION_SLOTS.slice(0,5).map(s=>[s.populationSlotId,s.habitat,s.runtimeSlotId]),[
   ['hercules-a','tropical','insect-5'],['hercules-b','tropical','insect-6'],['rhino','night','insect-4'],['stag','night','insect-5'],['metallifer','understory','insect-4']]);
 });
 

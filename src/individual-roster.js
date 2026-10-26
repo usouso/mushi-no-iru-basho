@@ -3,7 +3,7 @@
  * not imported again. Unknown data/conflicts stay read-only, with session edits
  * still available. Persistence needs Web Locks, not a promise of browser support.
  */
-import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.25.0&b=1bc3118dbd0d';
+import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.26.0&b=b8d401c0400d';
 export const COMPANION_KEY = 'mushi-companions-v2';
 export const COMPANION_VERSION = 2;
 export const LEGACY_COMPANION_KEY = V1_KEY;
@@ -20,6 +20,10 @@ function originValid(entry){return isCompanionSpecies(entry?.species) && entry.o
 function legacyValid(entry){return fields(entry,legacyFields) && V1_SPECIES.includes(entry.species) && originValid(entry) && entry.id === `${entry.originHabitat}/${entry.originIndividualId}` && timestamp(entry.capturedAt);}
 function encounterValid(entry){
  if(typeof entry.originEncounterId!=='string')return false;
+ if(entry.species==='giantstag'){
+  const giant=/^g2-[0-9a-f]{8}-o([1-9][0-9]{0,15})-night-giantstag$/.exec(entry.originEncounterId);
+  return !!giant&&Number.isSafeInteger(Number(giant[1]))&&entry.originHabitat==='night';
+ }
  const match=/^g1-([0-9a-f]{8})-o([1-9][0-9]{0,15})-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.exec(entry.originEncounterId);
  if(!match||!Number.isSafeInteger(Number(match[2]))||match[3]!==entry.originHabitat)return false;
  const species=match[4].startsWith('hercules-')?'hercules':match[4];

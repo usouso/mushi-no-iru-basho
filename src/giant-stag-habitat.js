@@ -1,8 +1,8 @@
 /** Additive western support and one low bark hood; existing night tree, terrain
  * and old beetle branches are neither cut nor edited. No food/visibility rule. */
-import {RHINO_TREE as TREE} from './rhino-layout.js?v=0.25.0&b=1bc3118dbd0d';
-import {GIANT_STAG_BRANCH as B,GIANT_STAG_ORIGIN as O,GIANT_STAG_RETREAT_BOUNDS as LIMITS,GIANT_STAG_COVER as C} from './giant-stag-layout.js?v=0.25.0&b=1bc3118dbd0d';
-import {GIANT_STAG_DIMENSIONS as D} from './giant-stag-kinematics.js?v=0.25.0&b=1bc3118dbd0d';
+import {RHINO_TREE as TREE} from './rhino-layout.js?v=0.26.0&b=b8d401c0400d';
+import {GIANT_STAG_BRANCH as B,GIANT_STAG_ORIGIN as O,GIANT_STAG_RETREAT_BOUNDS as LIMITS,GIANT_STAG_COVER as C} from './giant-stag-layout.js?v=0.26.0&b=b8d401c0400d';
+import {GIANT_STAG_DIMENSIONS as D} from './giant-stag-kinematics.js?v=0.26.0&b=b8d401c0400d';
 const T=window.THREE;
 function collector(){const p=[],c=[];return{add(g,m,color){const copy=g.index?g.toNonIndexed():g.clone();copy.applyMatrix4(m);p.push(...copy.attributes.position.array);const tint=new T.Color(color);for(let i=0;i<copy.attributes.position.count;i++)c.push(tint.r,tint.g,tint.b);copy.dispose();},finish(){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
 function box(batch,min,max,color){const size=new T.Vector3(...max).sub(new T.Vector3(...min)),center=new T.Vector3(...min).addScaledVector(size,.5),g=new T.BoxGeometry(size.x,size.y,size.z);batch.add(g,new T.Matrix4().makeTranslation(center.x,center.y,center.z),color);g.dispose();}

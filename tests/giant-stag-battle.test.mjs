@@ -107,8 +107,8 @@ test('11 ordered pairs / 22 endpoint clips touch actual jaw skins, support real 
 test('giant-stag poses do not mutate field/inspection models or outcome; paused, reduced and reset poses preserve lifecycle',()=>{
  const field=createInsectModel('giantstag'),inspection=createInsectModel('giantstag',{inspection:true}),original=[signature(field),signature(inspection)],reads=storageCalls.length;
  const s=advanceBattle(createBattle({playerSpecies:'giantstag',opponentSpecies:'hercules',seed:0}),100),bytes=JSON.stringify(s);
- const view=createBattleView({playerSpecies:'giantstag',opponentSpecies:'hercules',playerSizePermille:1150,opponentSizePermille:1150});
- assert.equal(model(view,'player').userData.battleRig.scale,1,'fixed giant-stag ignores measurement scale');
+ const view=createBattleView({playerSpecies:'giantstag',opponentSpecies:'hercules',playerSizePermille:null,opponentSizePermille:1150});
+ assert.equal(model(view,'player').userData.battleRig.scale,1,'legacy unmeasured giant-stag retains baseline scale');
  for(let n=0;n<18;n++)view.update(s,.02);const frozen=signature(view.scene),age=view.getPresentation().age;
  for(let n=0;n<8;n++){assert.deepEqual(view.update(s,0).events,[]);assert.equal(signature(view.scene),frozen);}assert.equal(view.getPresentation().age,age);
  for(let n=0;n<110;n++)view.update(s,.02);assert.equal(view.getPresentation().finished,true);assert.equal(JSON.stringify(s),bytes);
