@@ -12,9 +12,9 @@ function frozen(x){if(!x||typeof x!=='object')return;assert.ok(Object.isFrozen(x
 function play(p,o,seed){let s=fresh(p,o,seed);const history=[s];while(s.phase==='watching'){s=tick(s);history.push(s);}return history;}
 const audits=[];for(const p of priorSpecies)for(const o of priorSpecies)for(let seed=0;seed<128;seed++)audits.push({p,o,seed,history:play(p,o,seed)});
 
-test('eight eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
+test('ten eligible beetles and the automatic API remain; create fixes the uint32 seed',()=>{
  assert.deepEqual(Object.keys(rules).sort(),['BATTLE_LIMITS','BATTLE_SPECIES','advanceBattle','cancelBattle','createBattle'].sort());
- assert.deepEqual(species,[...priorSpecies,'goliath']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
+ assert.deepEqual(species,[...priorSpecies,'goliath','fivehorn','miyama']);assert.equal(BATTLE_LIMITS.maxSeconds,59.6);
  for(const p of species)for(const o of species){const s=fresh(p,o,0xffffffff);assert.equal(s.phase,'watching');assert.equal(s.seed,0xffffffff);assert.equal(s.elapsed,0);assert.equal(s.turn,1);assert.equal(s.exchanges,0);assert.equal(s.position,0);assert.equal(s.lastExchange,null);assert.equal(s.winner,null);assert.ok(motions.includes(s.intent));frozen(s);}
  assert.equal(createBattle({playerSpecies:'stag',opponentSpecies:'rhino'}).seed,1);
  for(const v of ['butterfly','constructor','__proto__',null,undefined,0])assert.throws(()=>createBattle({playerSpecies:v,opponentSpecies:'rhino'}),TypeError);

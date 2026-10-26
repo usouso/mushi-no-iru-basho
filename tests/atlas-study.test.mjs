@@ -37,14 +37,14 @@ test('warning is grounded and ramped before a visible backward retreat; no snaps
   const before=s.state;assert.equal(s.disturb(),true);assert.equal(s.disturb(),false);assert.deepEqual(s.state.position,before.position);assert.equal(s.state.walkPhase,before.walkPhase);assert.equal(s.state.headLift,before.headLift,'warning entry preserves the current head pose');
   let old=s.state,warningStart=null,retreatStart=null,maxLift=0,finished=false,backwardDistance=0;
   for(let n=0;n<18/dt;n++){
-   s.update(dt);const a=s.state;maxLift=Math.max(maxLift,a.headLift);assert.ok(gap(a.position,old.position)<=.18*dt+1e-8);assert.ok(Math.abs(a.headLift-old.headLift)<.08,'head preparation does not pop between phases');assert.ok(Math.abs(a.walkPhase-old.walkPhase)<=.18*dt/D.cycleDistance*TAU+1e-7);
+   s.update(dt);const a=s.state;maxLift=Math.max(maxLift,a.headLift);assert.ok(gap(a.position,old.position)<=ATLAS_MOTION.retreatSpeed*dt+1e-8);assert.ok(Math.abs(a.headLift-old.headLift)<.08,'head preparation does not pop between phases');assert.ok(Math.abs(a.walkPhase-old.walkPhase)<=ATLAS_MOTION.retreatSpeed*dt/D.cycleDistance*TAU+1e-7);
    assert.ok(along(a,origin)>=-.7-1e-8&&along(a,origin)<=.12+1e-8);assert.equal(a.position.y,origin.y);
    if(a.phase==='warning'){warningStart??=a.time;assert.equal(sampleAtlasPose(a).legs.filter(l=>l.contact).length,6);}
    if(a.phase==='retreating'){retreatStart??=a.time;assert.ok(a.walkSpeed<=0);backwardDistance=Math.min(backwardDistance,along(a,origin));}
    if(retreatStart!==null&&a.phase==='resting'){finished=true;break;}
    old=a;
   }
-  assert.ok(warningStart!==null&&retreatStart!==null);assert.ok(retreatStart-warningStart>=.25-dt-1e-8);assert.ok(maxLift>.05);assert.ok(backwardDistance<-.5,'retreat is not the old 12cm shuffle');assert.ok(finished);assert.equal(sampleAtlasPose(s.state).legs.filter(l=>l.contact).length,6);
+  assert.ok(warningStart!==null&&retreatStart!==null);assert.ok(retreatStart-warningStart>=ATLAS_MOTION.warningSeconds-dt-1e-8);assert.ok(maxLift>.05);assert.ok(backwardDistance<-.5,'retreat is not the old 12cm shuffle');assert.ok(finished);assert.equal(sampleAtlasPose(s.state).legs.filter(l=>l.contact).length,6);
  }
 });
 
@@ -55,7 +55,7 @@ test('capture freezes every state clock and pose; release starts at the actual s
   else if(phase!=='resting'){s.disturb();until(s,a=>a.phase===phase);}
   const before=s.state,pose=sampleAtlasPose(before);assert.equal(s.capture(),true);assert.equal(s.capture(),false);const held=s.state;assert.equal(s.disturb(),false);step(s,5);assert.deepEqual(s.state,held);assert.deepEqual(sampleAtlasPose(s.state),pose);
   assert.equal(s.release(),true);assert.equal(s.release(),false);assert.deepEqual(s.state.position,before.position);assert.equal(s.state.walkPhase,before.walkPhase);assert.deepEqual(sampleAtlasPose(s.state),pose);
-  s.update(dt);assert.ok(gap(s.state.position,before.position)<=.18*dt+1e-8);assert.ok(Math.abs(s.state.headLift-before.headLift)<.08);
+  s.update(dt);assert.ok(gap(s.state.position,before.position)<=ATLAS_MOTION.retreatSpeed*dt+1e-8);assert.ok(Math.abs(s.state.headLift-before.headLift)<.08);
  }
 });
 

@@ -1,32 +1,37 @@
-import {createGoliathStudy} from './goliath-study.js?v=0.28.0&b=52b81ed2c56b';
-import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import {createElephantStudy} from './elephant-study.js?v=0.28.0&b=52b81ed2c56b';
-import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import {createGiantStagStudy} from './giant-stag-study.js?v=0.28.0&b=52b81ed2c56b';
-import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.28.0&b=52b81ed2c56b';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import { individualScale } from './individual-layout.js?v=0.28.0&b=52b81ed2c56b';
+import {createManticoraStudy} from './manticora-study.js?v=0.37.0&b=4d59dc9955d7';
+import {createEuchirusStudy} from './euchirus-study.js?v=0.37.0&b=4d59dc9955d7';
+import {createMiyamaStudy} from './miyama-study.js?v=0.37.0&b=4d59dc9955d7';
+import {createFiveHornStudy} from './five-horn-study.js?v=0.37.0&b=4d59dc9955d7';
+import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {createGoliathStudy} from './goliath-study.js?v=0.37.0&b=4d59dc9955d7';
+import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {createElephantStudy} from './elephant-study.js?v=0.37.0&b=4d59dc9955d7';
+import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {createGiantStagStudy} from './giant-stag-study.js?v=0.37.0&b=4d59dc9955d7';
+import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.37.0&b=4d59dc9955d7';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { individualScale } from './individual-layout.js?v=0.37.0&b=4d59dc9955d7';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.28.0&b=52b81ed2c56b';
-import { createLonghornStudy } from './longhorn-study.js?v=0.28.0&b=52b81ed2c56b';
-import { createJewelStudy } from './jewel-study.js?v=0.28.0&b=52b81ed2c56b';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.28.0&b=52b81ed2c56b';
-import { createBeeStudy } from './bee-study.js?v=0.28.0&b=52b81ed2c56b';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.28.0&b=52b81ed2c56b';
-import { createStagStudy } from './stag-study.js?v=0.28.0&b=52b81ed2c56b';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import { createRhinoStudy } from './rhino-study.js?v=0.28.0&b=52b81ed2c56b';
-import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.28.0&b=52b81ed2c56b';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.28.0&b=52b81ed2c56b';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import { createMantisStudy } from './mantis-study.js?v=0.28.0&b=52b81ed2c56b';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.28.0&b=52b81ed2c56b';
-import { createDivingStudy } from './diving-study.js?v=0.28.0&b=52b81ed2c56b';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.28.0&b=52b81ed2c56b';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.28.0&b=52b81ed2c56b';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.37.0&b=4d59dc9955d7';
+import { createLonghornStudy } from './longhorn-study.js?v=0.37.0&b=4d59dc9955d7';
+import { createJewelStudy } from './jewel-study.js?v=0.37.0&b=4d59dc9955d7';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.37.0&b=4d59dc9955d7';
+import { createBeeStudy } from './bee-study.js?v=0.37.0&b=4d59dc9955d7';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.37.0&b=4d59dc9955d7';
+import { createStagStudy } from './stag-study.js?v=0.37.0&b=4d59dc9955d7';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { createRhinoStudy } from './rhino-study.js?v=0.37.0&b=4d59dc9955d7';
+import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.37.0&b=4d59dc9955d7';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.37.0&b=4d59dc9955d7';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { createMantisStudy } from './mantis-study.js?v=0.37.0&b=4d59dc9955d7';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { createDivingStudy } from './diving-study.js?v=0.37.0&b=4d59dc9955d7';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.37.0&b=4d59dc9955d7';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.37.0&b=4d59dc9955d7';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
@@ -48,11 +53,15 @@ export const SPECIES = Object.freeze({
   jewel: { name: 'ヤマトタマムシ', label: 'ヤマトタマムシ', scientificName: 'Chrysochroa fulgidissima', size: '自然の体長の紹介目安は3〜4cm（測定端点・雌雄別の範囲は未確認）。試作表示は胴と頭が約16cm、胴幅約5cm（脚・触角を除く表示補正であり、実寸ではありません）', observation: '緑色の光沢と赤紫の縦縞をもつ、細長い甲虫です。成虫は日中に活動して生きた葉を食べ、幼虫は木材を食べます。光沢は光や見る角度で変わる構造色で、発光ではありません。この試作は6本の脚で低い生葉の上を短く前進・後退し、閉じた上翅と収納した後翅を観察する見本です。低い葉は観察用の配置で、自然の代表的な生息高度ではありません。飛行・摂食は再現せず、速度や接近反応はゲーム上の調整です。', hint: '昼の生木の低い葉を探して。細長い体の光沢と、葉につく6本の脚を見てみよう。', color: '#638d59' },
   swallowtail: { name: 'ナミアゲハ（夏型の雄）', label: 'ナミアゲハ', scientificName: 'Papilio xuthus', size: '自然の前翅長の紹介目安は35〜60mm（翅の付け根から先端までで、開張ではありません）。試作表示は開張約40cm、胴と頭が約10cm（別々の表示補正であり、実寸ではありません）', observation: '黒とクリーム色の模様をもつチョウで、4枚の翅のうち後翅には尾状突起があります。この夏型雄の翅の表では、尾の近くに橙赤色の斑点を付けていません。地面で吸水する観察例がありますが、この種の野外の吸水は研究ではまれとされています。試作は湿った地面で休み、近くへ短く飛ぶ見本です。口器の接地や吸水は再現せず、休止時間・飛行経路はゲーム上の調整です。', hint: '池岸の湿った地面を探して。立てた翅の輪郭と、後翅の尾をそっと観察しよう。', color: '#e6d794' },
   bee: { name: 'ニホンミツバチ（働き蜂）', label: 'ニホンミツバチ', scientificName: 'Apis cerana japonica', size: '自然の働き蜂の体長は10〜13mmという紹介がありますが、測定端点は未確認です。試作の胴と頭の表示長は約12cm（脚・触角を除く表示補正であり、実寸ではありません）', observation: '花を訪れるミツバチの働き蜂です。6本の脚と4枚の翅があり、飛ぶときは同じ側の前翅と後翅が連動します。後脚には花粉を運ぶ花粉籠があります。この試作は花の上で休み、隣の花へ短く飛ぶ動作見本です。口器による吸蜜接触や精密な翅の結合機構は再現していません。巣・攻撃・刺傷は扱わず、羽ばたきや接近への反応はゲーム上の調整です。', hint: '花の上で休む小さな姿を探して。4枚の翅と、後脚の花粉籠を見てみよう。', color: '#a88849' },
-  atlas: { name: 'アトラスオオカブト（雄）', label: 'アトラスオオカブト', scientificName: 'Chalcosoma atlas', size: '基準模型は胴と頭が約20cm、角を含む前後長が約38cm。見分けるための表示補正であり、実物の寸法ではありません。この種は初回の固定個体で、大きさの計測は未対応です。', observation: '東南アジアの熱帯雨林にすむカブトムシです。雄の頭の角1本と、胸の角2本を見比べてみましょう。成虫は熟して傷んだ果実や樹液を利用し、主に夜から夕方に活動すると紹介されています。この明るい区画と低い枝は観察用の配置です。角を構えて後退する距離・速さはゲーム上の近似で、人への野生の反応を測定した再現ではありません。飛行と摂食は扱いません。', hint: '東南アジア林の入口、右側の明るい太枝。三本の角を探し、急いで近づくと後退するので横からそっと。', color: '#66563c' },
+  atlas: { name: 'アトラスオオカブト（雄）', label: 'アトラスオオカブト', scientificName: 'Chalcosoma atlas', size: '基準模型は胴と頭が約20cm、角を含む前後長が約38cm。見分けるための表示補正であり、実物の寸法ではありません。新しい散策では同種内の大きさ指数を記録します。以前の固定個体の大きさは作り直しません。指数は表示上の比較で、実寸や強さではありません。', observation: '東南アジアの熱帯雨林にすむカブトムシです。雄の頭の角1本と、胸の角2本を見比べてみましょう。成虫は熟して傷んだ果実や樹液を利用し、主に夜から夕方に活動すると紹介されています。この明るい区画と低い枝は観察用の配置です。角を構えて後退する距離・速さはゲーム上の近似で、人への野生の反応を測定した再現ではありません。飛行と摂食は扱いません。', hint: '東南アジア林の入口、右側の明るい太枝。三本の角を探し、急いで近づくと後退するので横からそっと。', color: '#66563c' },
   metallifer: { name: 'メタリフェルホソアカクワガタ（雄）', label: 'メタリフェルホソアカクワガタ', scientificName: 'Cyclommatus metallifer', size: '試作の表示寸法は胴と頭が約16cm、大顎を含む前後長が約36.7cm（脚を含む外形は約38.6cm）。見分けるための表示補正であり、実物の寸法ではありません。', observation: 'インドネシア原産のクワガタです。雄の長い大顎と、内側の大きな歯を見比べてみましょう。低い枝は観察用の配置です。この試作の短い前進・後退と顎の反応はゲーム上の表現で、野外の活動時刻・食性・逃避を確定した再現ではありません。飛行と摂食は扱いません。', hint: '東南アジア林の入口近く、低い太枝を見て。金褐色の体と、長く伸びた左右の大顎を探してみよう。', color: '#98784b' },
   giantstag: { name: 'オオクワガタ（雄）', label: 'オオクワガタ', scientificName: 'Dorcus hopei binodulosus（参照標本の表記）', size: '雄の資料例は大顎先端から上翅末端まで27〜76.1mm。すべての個体の最小最大値ではありません。模型は胴と頭約18.5cm、大顎込み約29cmの表示補正で、実寸ではありません。大きさ指数は同種のゲーム内比較です。以前の未計測個体の値は作り直しません。', observation: '黒い幅広の頭と、内側に大きな歯がある太い大顎をもつクワガタです。昼は樹洞などに隠れ、夜に広葉樹の樹液を利用します。大顎の長さや形は個体により異なります。この試作は低い樹皮際を短く歩き、近づくと顎を構えて隙間側へ退く観察用の表現です。人への反応距離・速さはゲーム調整で、飛行・摂食は再現していません。', hint: '夜の樹液の木、左の低い樹皮際を見て。隙間へ退いたら横へ回るか、少し離れて待ち、静かに近づこう。', color: '#303b3a' },
   elephant: { name: 'ゾウカブト（雄）', label: 'ゾウカブト', scientificName: 'Megasoma elephas', size: '資料の雄79標本では角込み53〜137mm、角を除く体長41〜90mm。細かな測定端点は未確認で、すべての個体の範囲ではありません。模型は胴頭約23cm、体軸方向の角込み約35cmという表示補正で、実寸ではありません。今回は固定の未計測個体です。', observation: '中南米の熱帯林にすむ、幅広く丸い体のカブトムシです。雄の前へ伸びて先が上を向く頭角と、左右の短い胸角を見比べてみましょう。短い毛に覆われた体表を、試作では色むらと鈍い反射で近似しています。成虫が生木の枝で樹液を利用する観察記録があり、腐朽木で育つ幼虫とは暮らしが異なります。低い傾斜枝の登降と接近への反応は観察用のゲーム表現で、飛行・摂食は再現していません。', hint: '中米熱帯林の入口から左へ。果実のある倒木のさらに西、低い斜めの枝で丸い体を探そう。', color: '#88704b' },
-  goliath:{name:'ゴライアスオオツノハナムグリ（雄）',label:'ゴライアス',scientificName:'Goliathus goliatus',size:'試作表示は胴と頭が約22cm、頭角の先まで約25.5cm。自然の体長・体重を表す値ではありません',observation:'中部アフリカの熱帯森林にすむ大きなハナムグリの仲間です。雄の頭には短いY字の角があり、雄同士の争いに使われます。白黒の縦模様のある前胸と、褐色の上翅を見比べてみましょう。成虫は樹液を利用します。この区画はカメルーンの森林縁を参考にした観察用の低い枝です。樹液跡は目印で、摂食や飛翔の動作はまだ再現していません。速度や接近反応はゲーム上の調整です。',hint:'明るい林縁の太い生木。白黒の胸と、短いY字の角を探して。',color:'#766040'}
+  goliath:{name:'ゴライアスオオツノハナムグリ（雄）',label:'ゴライアス',scientificName:'Goliathus goliatus',size:'試作表示は胴と頭が約22cm、頭角の先まで約25.5cm。自然の体長・体重を表す値ではありません',observation:'中部アフリカの熱帯森林にすむ大きなハナムグリの仲間です。雄の頭には短いY字の角があり、雄同士の争いに使われます。白黒の縦模様のある前胸と、褐色の上翅を見比べてみましょう。成虫は樹液を利用します。この区画はカメルーンの森林縁を参考にした観察用の低い枝です。樹液跡は目印で、摂食や飛翔の動作はまだ再現していません。速度や接近反応はゲーム上の調整です。',hint:'明るい林縁の太い生木。白黒の胸と、短いY字の角を探して。',color:'#766040'},
+  fivehorn:{name:'ゴホンヅノカブト（雄）',label:'ゴホンヅノカブト',scientificName:'Eupatorus gracilicornis',size:'試作表示は胴と頭が約22cm、体軸方向の角先まで約35cm。自然の体長ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'タイやベトナムなどの森林で記録されるカブトムシです。雄は頭に1本、前胸に4本の角を持ちます。弓状に立ち上がる頭角と、その後ろに並ぶ二対の角を、向きを変えて見比べてみましょう。黒い頭胸部と黄褐色の上翅を自作模型で近似しました。低い斜め枝の登り下りは観察用の配置と動作で、野生での典型的な高さや姿勢を示すものではありません。飛行・摂食はまだ再現していません。',hint:'東南アジア林の低い斜めの太枝。黄褐色の背と、立ち上がる五本の角を探して。',color:'#a98b4c'},
+  miyama:{name:'ミヤマクワガタ（雄）',label:'ミヤマクワガタ',scientificName:'Lucanus maculifemoratus',size:'試作表示は胴と頭が約19cm、大顎先まで約30cm。実物の寸法ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'日本の雑木林やブナ林で見られ、成虫はクヌギなどの樹液を利用します。大きな雄では頭の後ろが左右へ張り出します。黒褐色の体にある短い金色の毛を、試作では控えめな同じ面の色むらで近似しています。大顎だけでなく、頭と胸の輪郭を横から見比べてみましょう。低い樹皮面と短い歩行は観察用の配置で、野生の典型的な高さや人への反応速度を再現したものではありません。飛行・摂食はまだ再現していません。',hint:'温帯の林縁の生木。樹皮に沿う体と、大顎より後ろで左右へ張り出す頭を探して。',color:'#66533b'}, 
+  euchirus:{name:'テナガコガネ（E. longimanus・雄）',label:'テナガコガネ',scientificName:'Euchirus longimanus',size:'胴と頭を約18cmで表示。長い前脚は3節の長さの合計が約37cm。実物の測定値ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'インドネシアにすむ大型のコガネムシの仲間です。雄の非常に長い前脚は、頭の角ではなく胸から伸びています。丸い前胸、黄褐色の上翅と暗い会合線、短い中脚・後脚を見比べてみましょう。この低い幹と短い歩行・相撲はゲーム上の表現で、野生の生息位置や闘争を再現したものではありません。',hint:'東南アジア林の奥の生木。二本の長い前脚を探して。',color:'#856044'},
+  manticora:{name:'マンティコラ（M. latipennis・雄）',label:'マンティコラ',scientificName:'Manticora latipennis',size:'胴と頭を約18cm、長い顎先までの前後長を約25cmで表示しています。実物の測定値ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'ザンビアで採集された標本が知られる、飛ばないハンミョウの仲間です。大きな頭と、左右で形の異なる曲がった大顎、幅広い黒い背を見比べてみましょう。裸地での歩行・反転・退避と非殺傷の相撲はゲーム上の近似です。精密な生息環境や野生の速度・闘争を再現したものではありません。',hint:'南部アフリカ草地区画。球の東側の裸地で、大きな黒い頭を探して。',color:'#161819'}
 });
 
 const TAU = Math.PI * 2;
@@ -68,7 +77,7 @@ const homes = [
   ['butterfly', -6.8, 8.4, 1.2]
 ];
 
-export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes, extraHomes = [], individuals = [], grasshopperSupports = [], herculesSupports = [], leafSupports = [], striderSupports = [], antSupports = [], fireflySupports = [], dungSupports = [], divingSupports = [], mantisSupports = [], ladybirdSupports = [], rhinoSupports = [], stagSupports = [], metalliferSupports = [], atlasSupports = [], giantStagSupports = [], elephantSupports = [], goliathSupports = [], beeSupports = [], swallowtailSupports = [], jewelSupports = [], longhornSupports = [], logFruitStation = null, bounds = 75, hasLineOfSight = () => true } = {}) {
+export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes, extraHomes = [], individuals = [], grasshopperSupports = [], herculesSupports = [], leafSupports = [], striderSupports = [], antSupports = [], fireflySupports = [], dungSupports = [], divingSupports = [], mantisSupports = [], ladybirdSupports = [], rhinoSupports = [], stagSupports = [], metalliferSupports = [], atlasSupports = [], giantStagSupports = [], elephantSupports = [], goliathSupports = [], fiveHornSupports = [], beeSupports = [], swallowtailSupports = [], jewelSupports = [], longhornSupports = [], miyamaSupports = [], euchirusSupports = [], manticoraSupports = [], logFruitStation = null, bounds = 75, hasLineOfSight = () => true } = {}) {
   // Optional geometry adapter: the pure simulation never reads renderer meshes.
   if (typeof hasLineOfSight !== 'function') throw new TypeError('Invalid line-of-sight adapter');
   const validHomes = rows => Array.isArray(rows) && rows.every(row => Array.isArray(row) && typeof row[0] === 'string' && Object.prototype.hasOwnProperty.call(SPECIES,row[0]) && row.length === 4 && [row[1],row[2],row[3]].every(Number.isFinite));
@@ -78,7 +87,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   if(!Array.isArray(individuals)||individuals.length>6)throw new TypeError('Invalid individual profiles');
   for(const e of individuals){
     const index=Number(e?.runtimeSlotId?.replace('insect-',''))-1;
-    if(!e||!/^insect-[1-9]\d{0,5}$/.test(e.runtimeSlotId)||!['hercules','rhino','stag','metallifer','giantstag'].includes(e.species)||initialHomes[index]?.[0]!==e.species||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||typeof e.encounterId!=='string'||!(e.species==='giantstag'?e.runtimeSlotId==='insect-6'&&/^g2-[0-9a-f]{8}-o[1-9][0-9]{0,15}-night-giantstag$/.test(e.encounterId):/^g1-[0-9a-f]{8}-o[1-9][0-9]{0,15}-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.test(e.encounterId)))throw new TypeError('Individual profile does not match home');
+    if(!e||!/^insect-[1-9]\d{0,5}$/.test(e.runtimeSlotId)||!['hercules','rhino','stag','metallifer','giantstag','atlas'].includes(e.species)||initialHomes[index]?.[0]!==e.species||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||typeof e.encounterId!=='string'||!(e.species==='atlas'?e.runtimeSlotId==='insect-5'&&/^g3-[0-9a-f]{8}-o[1-9][0-9]{0,15}-understory-atlas$/.test(e.encounterId):e.species==='giantstag'?e.runtimeSlotId==='insect-6'&&/^g2-[0-9a-f]{8}-o[1-9][0-9]{0,15}-night-giantstag$/.test(e.encounterId):/^g1-[0-9a-f]{8}-o[1-9][0-9]{0,15}-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.test(e.encounterId)))throw new TypeError('Individual profile does not match home');
     profiles.set(e.runtimeSlotId,{...e});
   }
   const flightBounds = Number.isFinite(bounds) && bounds > 6 ? Math.min(75, bounds) : 75;
@@ -317,6 +326,51 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='longhorn');if(groups.length>1||rows.length!==groups.length)throw new Error();
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();longhornGroups.set(index,g);}
   } catch { throw new TypeError('Invalid longhorn supports'); }
+  const miyamaGroups=new Map(),miyamas=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
+    const groups=array(miyamaSupports).map(g=>{
+      record(g,['home','orientation']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);
+      const home={...g.home},orientation={...g.orientation},{x,y,z}=home,ground=heightAt(x,z);
+      // A coarse world-height limit is not a bark contact or world-up constraint.
+      if(![x,y,z,ground].every(Number.isFinite)||Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||y<ground-.1||y>ground+3)throw new Error();
+      const q=createMiyamaStudy({position:home,orientation}).state.orientation;
+      if(Math.abs(x+2*(q.x*q.z+q.w*q.y)*.08)>flightBounds||Math.abs(z+(1-2*(q.x*q.x+q.y*q.y))*.08)>flightBounds)throw new Error();
+      return{home,orientation};
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='miyama');if(groups.length>1||rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();miyamaGroups.set(index,g);}
+  } catch { throw new TypeError('Invalid miyama supports'); }
+  const euchirusGroups=new Map(),euchiruses=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
+    const groups=array(euchirusSupports).map(g=>{
+      record(g,['home','orientation']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);
+      const home={...g.home},orientation={...g.orientation},{x,y,z}=home,ground=heightAt(x,z);
+      // A coarse world-height limit is not a bark contact or world-up constraint.
+      if(![x,y,z,ground].every(Number.isFinite)||Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||y<ground-.1||y>ground+3)throw new Error();
+      const q=createEuchirusStudy({position:home,orientation}).state.orientation;
+      if(Math.abs(x+2*(q.x*q.z+q.w*q.y)*.08)>flightBounds||Math.abs(z+(1-2*(q.x*q.x+q.y*q.y))*.08)>flightBounds)throw new Error();
+      return{home,orientation};
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='euchirus');if(groups.length>1||rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();euchirusGroups.set(index,g);}
+  } catch { throw new TypeError('Invalid euchirus supports'); }
+  const manticoraGroups=new Map(),manticoras=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
+    const groups=array(manticoraSupports).map(g=>{
+      record(g,['home','route']);record(g.home,['x','y','z']);const home={...g.home};
+      if(!Object.values(home).every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||Math.abs(home.y-heightAt(home.x,home.z)-.055)>1e-6)throw new Error();
+      const route=array(g.route).map(p=>{record(p,['x','z']);if(![p.x,p.z].every(Number.isFinite)||Math.abs(p.x)>flightBounds||Math.abs(p.z)>flightBounds||Math.abs(heightAt(p.x,p.z)+.055-home.y)>1e-6)throw new Error();return{x:p.x,z:p.z};});
+      createManticoraStudy({position:home,route,seed:1729});return{home,route};
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='manticora');if(groups.length>1||rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();manticoraGroups.set(index,g);}
+  }catch{throw new TypeError('Invalid manticora supports');}
   const jewelGroups=new Map(),jewels=new Map();
   try {
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
@@ -427,6 +481,15 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='elephant');if(groups.length>1||rows.length!==groups.length)throw new Error();
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();elephantGroups.set(index,g);}
   } catch { throw new TypeError('Invalid elephant supports'); }
+  const fiveHornGroups=new Map(),fiveHorns=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
+    const point=v=>{record(v,['x','y','z']);const p={...v},ground=heightAt(p.x,p.z);if(![p.x,p.y,p.z,ground].every(Number.isFinite)||Math.abs(p.x)>flightBounds||Math.abs(p.z)>flightBounds||p.y<ground+FIVE_HORN.rootAboveSupport*.8||p.y>ground+3)throw new Error();return p;};
+    const groups=array(fiveHornSupports).map(g=>{record(g,['home','axis']);const home=point(g.home),axis=array(g.axis).map(point);if(axis.length!==2)throw new Error();createFiveHornStudy({home,axis});return{home,axis};});
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='fivehorn');if(groups.length>1||rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();fiveHornGroups.set(index,g);}
+  } catch { throw new TypeError('Invalid five horn supports'); }
   let logStation=null;
   if(logFruitStation!==null)try {
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
@@ -450,7 +513,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   const eye = p => ({ x: p.x, y: Number.isFinite(p.y) ? p.y : heightAt(p.x, p.z) + 1.65, z: p.z });
   function reset() {
     logFruit=null;logVisit=null;logCooldown=0;
-    bait = null; baitCooldown.clear(); hoppers.clear(); beetles.clear(); leaves.clear(); striders.clear(); ants.clear(); fireflies.clear(); dungStudies.clear(); divers.clear(); mantises.clear(); ladybirds.clear(); rhinos.clear(); stags.clear(); metallifers.clear(); atlases.clear(); giantStags.clear(); elephants.clear(); goliaths.clear(); bees.clear(); swallowtails.clear(); jewels.clear(); longhorns.clear();
+    bait = null; baitCooldown.clear(); hoppers.clear(); beetles.clear(); leaves.clear(); striders.clear(); ants.clear(); fireflies.clear(); dungStudies.clear(); divers.clear(); mantises.clear(); ladybirds.clear(); rhinos.clear(); stags.clear(); metallifers.clear(); atlases.clear(); giantStags.clear(); elephants.clear(); goliaths.clear(); fiveHorns.clear(); bees.clear(); swallowtails.clear(); jewels.clear(); longhorns.clear(); miyamas.clear(); euchiruses.clear(); manticoras.clear();
     time = 0; held = null; catches = 0; previousPlayer = null; caughtFrom = null; items.length = 0;
     initialHomes.forEach(([species, x, z, altitude], index) => {
       const y = heightAt(x, z) + altitude;
@@ -471,7 +534,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (species === 'hercules') {
         const item=items[items.length-1],support=beetleSupports.get(index);
         item.heading=item.homeHeading=Math.atan2(support.ux,support.uz);item.walkPhase=0;item.walkSpeed=0;item.turnProgress=0;
-        beetles.set(item.id,{support,s:support.homeS,move:null,nextMoveAt:item.encounterId?3+(item.motionSeed%700)/100:30+5*(1+Math.sin(item.phase)),reactAfter:0,near:false});
+        beetles.set(item.id,{support,s:support.homeS,move:null,nextMoveAt:item.encounterId?3+(item.motionSeed%700)/100:30+5*(1+Math.sin(item.phase)),reactAfter:0,near:false,pendingNear:false});
       }
       if (species === 'leafinsect') {
         const item=items[items.length-1],support=leafGroups.get(index);
@@ -498,6 +561,18 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         const item=items[items.length-1],support=longhornGroups.get(index);
         longhorns.set(item.id,{study:createLonghornStudy({position:support.home,orientation:support.orientation}),near:false});syncLonghorn(item);
       }
+      if (species === 'miyama') {
+        const item=items[items.length-1],support=miyamaGroups.get(index);
+        miyamas.set(item.id,{study:createMiyamaStudy({position:support.home,orientation:support.orientation}),near:false});syncMiyama(item);
+      }
+      if (species === 'euchirus') {
+        const item=items[items.length-1],support=euchirusGroups.get(index);
+        euchiruses.set(item.id,{study:createEuchirusStudy({position:support.home,orientation:support.orientation}),near:false});syncEuchirus(item);
+      }
+      if(species==='manticora'){
+        const item=items[items.length-1],support=manticoraGroups.get(index);
+        manticoras.set(item.id,{study:createManticoraStudy({position:support.home,route:support.route,seed:1729})});syncManticora(item);
+      }
       if (species === 'jewel') {
         const item=items[items.length-1],support=jewelGroups.get(index);
         jewels.set(item.id,{study:createJewelStudy({position:support.home,heading:support.heading}),near:false});syncJewel(item);item.homeHeading=item.heading;
@@ -517,7 +592,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       }
       if (species === 'atlas') {
         const item=items[items.length-1],support=atlasGroups.get(index);
-        atlases.set(item.id,{study:createAtlasStudy({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null}),near:false});syncAtlas(item);item.homeHeading=item.heading;
+        atlases.set(item.id,{study:createAtlasStudy({position:support.home,heading:support.heading,scale:individualScale(item),motionSeed:item.motionSeed??null,fixedWorldBounds:!!item.encounterId}),near:false});syncAtlas(item);item.homeHeading=item.heading;
       }
       if (species === 'goliath') {
         const item=items[items.length-1],support=goliathGroups.get(index);
@@ -526,6 +601,10 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (species === 'elephant') {
         const item=items[items.length-1],support=elephantGroups.get(index);
         elephants.set(item.id,{study:createElephantStudy(support)});syncElephant(item);item.homeHeading=item.heading;
+      }
+      if (species === 'fivehorn') {
+        const item=items[items.length-1],support=fiveHornGroups.get(index);
+        fiveHorns.set(item.id,{study:createFiveHornStudy(support)});syncFiveHorn(item);item.homeHeading=item.heading;
       }
       if (species === 'giantstag') {
         const item=items[items.length-1],support=giantStagGroups.get(index);
@@ -573,6 +652,36 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const longhorn=longhorns.get(item.id),near=!!p&&Math.hypot(p.x-item.x,p.z-item.z)<(player.quiet?.75:1.4)&&Math.abs(p.y-item.y)<2.5;
     if(near&&!longhorn.near)longhorn.study.disturb();longhorn.near=near;
     longhorn.study.update(dt);syncLonghorn(item);
+  }
+
+  function syncManticora(item){
+    const s=manticoras.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.jawOpen=s.jawOpen;item.turnFeet=s.turnFeet;item.manticoraPhase=s.phase;item.warningBlend=s.warningBlend??0;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','running','turning'].includes(s.phase);
+  }
+  function updateManticora(item,dt,player,p){
+    if(dt<=0)return;const beetle=manticoras.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncManticora(item);
+  }
+
+  function syncMiyama(item) {
+    const s=miyamas.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.miyamaPhase=s.phase;item.jawOpen=s.jawOpen;item.warningBlend=s.warningBlend;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateMiyama(item,dt,player,p) {
+    if(dt<=0)return;const beetle=miyamas.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncMiyama(item);
+  }
+
+  function syncEuchirus(item) {
+    const s=euchiruses.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.euchirusPhase=s.phase;item.jawOpen=s.jawOpen;item.warningBlend=s.warningBlend;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateEuchirus(item,dt,player,p) {
+    if(dt<=0)return;const beetle=euchiruses.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncEuchirus(item);
   }
 
   function syncJewel(item) {
@@ -633,6 +742,16 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if(dt<=0)return;const beetle=elephants.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncElephant(item);
   }
 
+  function syncFiveHorn(item) {
+    const s=fiveHorns.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.heading=s.heading;item.pitch=s.pitch;
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.headLift=s.headLift||0;item.warningBlend=s.warningBlend||0;item.fiveHornPhase=s.phase;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateFiveHorn(item,dt,player,p) {
+    if(dt<=0)return;const beetle=fiveHorns.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncFiveHorn(item);
+  }
+
   function syncGoliath(item) {
     const s=goliaths.get(item.id).study.state;
     item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.heading=s.heading;item.pitch=s.pitch;
@@ -676,14 +795,17 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     item.walkPhase=s.walkPhase;item.walkSpeed=item.caught?0:s.walkSpeed;item.direction=s.direction;item.headLift=s.headLift;item.atlasPhase=s.phase;
     item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
   }
+  function atlasFacesThreat(item,p) {
+    return !!p&&(p.x-item.x)*Math.sin(item.heading)+(p.z-item.z)*Math.cos(item.heading)>=-.15;
+  }
   function updateAtlas(item,dt,player,p) {
     if(dt<=0)return;
     const atlas=atlases.get(item.id),dx=p?p.x-item.x:0,dz=p?p.z-item.z:0,distance=Math.hypot(dx,dz);
     // A fixed forward-facing route cannot honestly flee away from a rear threat.
     // Front/side approach gets the visible warning; circling is fair counterplay.
-    const facing=dx*Math.sin(item.heading)+dz*Math.cos(item.heading),speed=Number.isFinite(player?.speed)?player.speed:0;
+    const speed=Number.isFinite(player?.speed)?player.speed:0;
     const radius=player?.quiet?1.05:speed>4?3.7:2.9;
-    const near=!!p&&distance<radius&&facing>=-.15&&Math.abs(p.y-item.y)<2.5&&(speed>.12||distance<.7)&&hasLineOfSight(p,item)===true;
+    const near=!!p&&distance<radius&&atlasFacesThreat(item,p)&&Math.abs(p.y-item.y)<2.5&&(speed>.12||distance<.7)&&hasLineOfSight(p,item)===true;
     if(near&&!atlas.near)atlas.study.disturb();atlas.near=near;
     atlas.study.update(dt);syncAtlas(item);
   }
@@ -785,10 +907,14 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if (item.species === 'bee') { bees.get(item.id).study.release();syncBee(item);return; }
     if (item.species === 'stag') { stags.get(item.id).study.release();syncStag(item);return; }
     if (item.species === 'metallifer') { metallifers.get(item.id).study.release();syncMetallifer(item);return; }
+    if (item.species === 'fivehorn') { fiveHorns.get(item.id).study.release();syncFiveHorn(item);return; }
     if (item.species === 'goliath') { goliaths.get(item.id).study.release();syncGoliath(item);return; }
     if (item.species === 'elephant') { elephants.get(item.id).study.release();syncElephant(item);return; }
     if (item.species === 'giantstag') { giantStags.get(item.id).study.release();syncGiantStag(item);return; }
     if (item.species === 'atlas') { atlases.get(item.id).study.release();syncAtlas(item);return; }
+    if(item.species==='manticora'){manticoras.get(item.id).study.release();syncManticora(item);return;}
+    if (item.species === 'euchirus') { euchiruses.get(item.id).study.release();syncEuchirus(item);return; }
+    if (item.species === 'miyama') { miyamas.get(item.id).study.release();syncMiyama(item);return; }
     if (item.species === 'longhorn') { longhorns.get(item.id).study.release();syncLonghorn(item);return; }
     if (item.species === 'jewel') { jewels.get(item.id).study.release();syncJewel(item);return; }
     if (item.species === 'rhino') { rhinos.get(item.id).study.release();syncRhino(item);return; }
@@ -993,6 +1119,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   }
   function beginBeetleWalk(item,reason,player,targetS=null,targetHeading=null) {
     const beetle=beetles.get(item.id),support=beetle.support,p=finitePlayer(player);
+    beetle.pendingNear=false;
     const projected=p?(p.x-support.axis[0].x)*support.ux+(p.z-support.axis[0].z)*support.uz:beetle.s;
     let direction=targetS!==null?(targetS>=beetle.s?1:-1):p?(beetle.s>=projected?1:-1):(item.departures%2?-1:1);
     let available=direction>0?support.length-beetle.s:beetle.s;
@@ -1020,6 +1147,10 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const beetle=beetles.get(item.id),near=!!p && Math.hypot(item.x-p.x,item.z-p.z)<(player.quiet?.8:1.5) && Math.abs(item.y-p.y)<2;
     const arrived=near&&!beetle.near;beetle.near=near;
     const guided=logVisit?.id===item.id?(dt>0?controlLogVisit(item,near,player):true):false;
+    // Preserve only a newly arrived observer during recovery, not repeated
+    // automatic retreats while the same observer remains beside a finished one.
+    if(!near||guided)beetle.pendingNear=false;
+    else if(arrived&&(!beetle.move||beetle.move.reason==='spontaneous'))beetle.pendingNear=true;
     if(!guided && arrived && beetle.move?.reason==='spontaneous'){
       // A newly close observer interrupts an unprovoked walk at the next
       // grounded half-cycle, rather than making the beetle push into them.
@@ -1028,7 +1159,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       else{const total=Math.min(move.distance,move.travelled+left),ratio=total/move.distance;move.end={x:move.start.x+(move.end.x-move.start.x)*ratio,y:move.start.y,z:move.start.z+(move.end.z-move.start.z)*ratio};move.endS=move.startS+(move.endS-move.startS)*ratio;move.distance=total;move.targetPhase=targetHalf*Math.PI;}
     }
     if(!guided&&!beetle.move){
-      if(arrived && time>=beetle.reactAfter)beginBeetleWalk(item,'near',player);
+      if(near && beetle.pendingNear && time>=beetle.reactAfter)beginBeetleWalk(item,'near',player);
       else if(!near && time>=beetle.nextMoveAt)beginBeetleWalk(item,'spontaneous',null);
     }
     const move=beetle.move;if(!move){item.walkSpeed=0;return;}
@@ -1176,16 +1307,32 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
 
   // Called by the input owner only AFTER an actual failed capture. One visible
   // nearby insect can react; held, occluded and already airborne ones cannot.
+  function herculesNetEligible(item) {
+    if(item.species!=='hercules')return false;
+    if(logVisit?.id===item.id)return ['approaching','resting'].includes(logVisit.stage);
+    return !beetles.get(item.id).move;
+  }
   function startleFromNet(origin, direction) {
     const p = finitePlayer(origin);
     if (held || !p || !Number.isFinite(p.y) || !direction ||
         ![direction.x,direction.y,direction.z].every(Number.isFinite) ||
         Math.hypot(direction.x,direction.y,direction.z) < .001) return null;
     const list = candidates(p,direction).filter(({item,distance,dot}) =>
-      ((CAPTURE_AWARENESS[item.species] && !awarenessInFlight(item) && !awarenessSettling(item) && time >= item.nextScareAt) || (item.species==='goliath'&&!['warning','retreating'].includes(item.goliathPhase)) || (item.species==='elephant'&&!['warning','retreating'].includes(item.elephantPhase)) || (item.species==='giantstag'&&!['warning','retreating'].includes(item.giantStagPhase)) || (item.species==='atlas'&&!['warning','retreating'].includes(item.atlasPhase)) || (item.species==='rhino'&&rhinos.get(item.id)?.reactive) || (item.species==='stag'&&stags.get(item.id)?.reactive)) && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
+      (item.species!=='atlas'||atlasFacesThreat(item,p))&&
+      ((CAPTURE_AWARENESS[item.species] && !awarenessInFlight(item) && !awarenessSettling(item) && time >= item.nextScareAt) || herculesNetEligible(item) || (item.species==='manticora'&&!['warning','running'].includes(item.manticoraPhase)) || (item.species==='euchirus'&&!['warning','retreating'].includes(item.euchirusPhase)) || (item.species==='miyama'&&!['warning','retreating'].includes(item.miyamaPhase)) || (item.species==='fivehorn'&&!['warning','retreating'].includes(item.fiveHornPhase)) || (item.species==='goliath'&&!['warning','retreating'].includes(item.goliathPhase)) || (item.species==='elephant'&&!['warning','retreating'].includes(item.elephantPhase)) || (item.species==='giantstag'&&!['warning','retreating'].includes(item.giantStagPhase)) || (item.species==='atlas'&&!['warning','retreating'].includes(item.atlasPhase)) || (item.species==='rhino'&&rhinos.get(item.id)?.reactive) || (item.species==='stag'&&stags.get(item.id)?.reactive)) && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
     list.sort((a,b) => a.distance-b.distance);
     const item = list.find(candidate => hasLineOfSight(p,candidate.item) === true)?.item;
     if (!item) return null;
+    if(item.species==='hercules'){
+      // A fruit visitor finishes the existing grounded stop/return sequence.
+      // Do not replace its active move or create a second route owner.
+      if(logVisit?.id===item.id){requestLogReturn();return item;}
+      return beginBeetleWalk(item,'net-miss',p)?item:null;
+    }
+    if(item.species==='manticora'){if(!manticoras.get(item.id).study.disturb(p))return null;syncManticora(item);return item;}
+    if(item.species==='euchirus'){if(!euchiruses.get(item.id).study.disturb(p))return null;syncEuchirus(item);return item;}
+    if(item.species==='miyama'){if(!miyamas.get(item.id).study.disturb(p))return null;syncMiyama(item);return item;}
+    if(item.species==='fivehorn'){if(!fiveHorns.get(item.id).study.disturb(p))return null;syncFiveHorn(item);return item;}
     if(item.species==='goliath'){if(!goliaths.get(item.id).study.disturb(p))return null;syncGoliath(item);return item;}
     if(item.species==='elephant'){if(!elephants.get(item.id).study.disturb(p))return null;syncElephant(item);return item;}
     if(item.species==='giantstag'){if(!giantStags.get(item.id).study.disturb(p))return null;syncGiantStag(item);return item;}
@@ -1331,10 +1478,14 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (item.species === 'bee') { if (!item.caught) updateBee(item,dt,player,p); continue; }
       if (item.species === 'stag') { if (!item.caught) updateStag(item,dt,player,p); continue; }
       if (item.species === 'metallifer') { if (!item.caught) updateMetallifer(item,dt,player,p); continue; }
+      if (item.species === 'fivehorn') { if (!item.caught) updateFiveHorn(item,dt,player,p); continue; }
       if (item.species === 'goliath') { if (!item.caught) updateGoliath(item,dt,player,p); continue; }
       if (item.species === 'elephant') { if (!item.caught) updateElephant(item,dt,player,p); continue; }
       if (item.species === 'giantstag') { if (!item.caught) updateGiantStag(item,dt,player,p); continue; }
       if (item.species === 'atlas') { if (!item.caught) updateAtlas(item,dt,player,p); continue; }
+      if(item.species==='manticora'){if(!item.caught)updateManticora(item,dt,player,p);continue;}
+      if (item.species === 'euchirus') { if (!item.caught) updateEuchirus(item,dt,player,p); continue; }
+      if (item.species === 'miyama') { if (!item.caught) updateMiyama(item,dt,player,p); continue; }
       if (item.species === 'longhorn') { if (!item.caught) updateLonghorn(item,dt,player,p); continue; }
       if (item.species === 'jewel') { if (!item.caught) updateJewel(item,dt,player,p); continue; }
       if (item.species === 'rhino') { if (!item.caught) updateRhino(item,dt,player,p); continue; }
@@ -1471,10 +1622,14 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if (held.species === 'bee') { bees.get(held.id).study.capture();syncBee(held); }
     if (held.species === 'stag') { stags.get(held.id).study.capture();syncStag(held); }
     if (held.species === 'metallifer') { metallifers.get(held.id).study.capture();syncMetallifer(held); }
+    if (held.species === 'fivehorn') { fiveHorns.get(held.id).study.capture();syncFiveHorn(held); }
     if (held.species === 'goliath') { goliaths.get(held.id).study.capture();syncGoliath(held); }
     if (held.species === 'elephant') { elephants.get(held.id).study.capture();syncElephant(held); }
     if (held.species === 'giantstag') { giantStags.get(held.id).study.capture();syncGiantStag(held); }
     if (held.species === 'atlas') { atlases.get(held.id).study.capture();syncAtlas(held); }
+    if(held.species==='manticora'){manticoras.get(held.id).study.capture();syncManticora(held);}
+    if (held.species === 'euchirus') { euchiruses.get(held.id).study.capture();syncEuchirus(held); }
+    if (held.species === 'miyama') { miyamas.get(held.id).study.capture();syncMiyama(held); }
     if (held.species === 'longhorn') { longhorns.get(held.id).study.capture();syncLonghorn(held); }
     if (held.species === 'jewel') { jewels.get(held.id).study.capture();syncJewel(held); }
     if (held.species === 'rhino') { rhinos.get(held.id).study.capture();syncRhino(held); }
@@ -1509,6 +1664,10 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if(item.species==='rhino')rhinos.get(item.id).study.capture();
     if(item.species==='stag')stags.get(item.id).study.capture();
     if(item.species==='metallifer')metallifers.get(item.id).study.capture();
+    if(item.species==='manticora')manticoras.get(item.id).study.capture();
+    if(item.species==='euchirus')euchiruses.get(item.id).study.capture();
+    if(item.species==='miyama')miyamas.get(item.id).study.capture();
+    if(item.species==='fivehorn')fiveHorns.get(item.id).study.capture();
     if(item.species==='goliath')goliaths.get(item.id).study.capture();
     if(item.species==='elephant')elephants.get(item.id).study.capture();
     if(item.species==='giantstag')giantStags.get(item.id).study.capture();
@@ -1517,7 +1676,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   }
   function setCompanions(origins=[],player) {
     if(!Array.isArray(origins))throw new TypeError('Invalid companion origins');
-    companionOrigins=origins.filter(o=>o&&['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath'].includes(o.species)&&typeof o.id==='string').map(o=>({id:o.id,species:o.species}));
+    companionOrigins=origins.filter(o=>o&&['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora'].includes(o.species)&&typeof o.id==='string').map(o=>({id:o.id,species:o.species}));
     for(const item of items){
       const retained=companionOrigins.some(o=>o.id===item.id&&o.species===item.species);
       if(retained&&item!==held)markCompanion(item);
@@ -1525,7 +1684,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     }
   }
   function retain() {
-    if(!held||!['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath'].includes(held.species))return null;
+    if(!held||!['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora'].includes(held.species))return null;
     const item=held;held=null;caughtFrom=null;markCompanion(item);
     if(!companionOrigins.some(o=>o.id===item.id))companionOrigins.push({id:item.id,species:item.species});
     return item;

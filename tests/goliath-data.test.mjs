@@ -23,7 +23,7 @@ const protectedRaw=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY,LE
 test('eighth companion appends without altering seven old g1/g2/fixed records; only explicit same-species replacement changes origin',async()=>{
  const f=fixture(),r=make(f),oldRaw=f.values.get(COMPANION_KEY),protectedBefore=protectedRaw(f),journalRaw=f.values.get(JOURNAL_KEY);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),oldRaw);
  assert.deepEqual(r.add(goliath()),{ok:true,entry:entry(goliath(),1000)});assert.equal(await r.flush(),true);
  assert.deepEqual(r.add(goliath('insect-2')),{ok:false,reason:'already-owned'});assert.deepEqual(r.replace('forest/insect-1',goliath()),{ok:false,reason:'same-individual'});
@@ -38,7 +38,7 @@ test('forest IDs 1/2 only: unknown origins, borrowed IDs and all measured goliat
  const bad=[...['night','tropical','understory','africa','__proto__'].map(originHabitat=>({...goliath(),originHabitat})),...['insect-0','insect-01','insect-3','insect-11'].map(originIndividualId=>goliath(originIndividualId)),{...goliath(),species:'__proto__'},{...goliath(),originKind:undefined},{...goliath(),sizePermille:1000},{...goliath(),measureVersion:1},{...goliath(),originEncounterId:'unknown'},...[1,2].map(g=>({...goliath(),originKind:'expedition',originEncounterId:`g${g}-1234abcd-o1-forest-goliath`,sizePermille:1100,measureVersion:1})),{...goliath(),originKind:'expedition',originEncounterId:'g2-1234abcd-o1-night-giantstag',sizePermille:1100,measureVersion:1}];
  for(const c of bad)assert.deepEqual(r.add(c),{ok:false,reason:'invalid-capture'});
  assert.deepEqual(r.entries,oldRoster);assert.equal(f.writes.length,0);
- assert.deepEqual(EXPEDITION_SLOTS.map(s=>[s.populationSlotId,s.habitat,s.runtimeSlotId]),[['hercules-a','tropical','insect-5'],['hercules-b','tropical','insect-6'],['rhino','night','insect-4'],['stag','night','insect-5'],['metallifer','understory','insect-4'],['giantstag','night','insect-6']]);
+ assert.deepEqual(EXPEDITION_SLOTS.map(s=>[s.populationSlotId,s.habitat,s.runtimeSlotId]),[['hercules-a','tropical','insect-5'],['hercules-b','tropical','insect-6'],['rhino','night','insect-4'],['stag','night','insect-5'],['metallifer','understory','insect-4'],['giantstag','night','insect-6'],['atlas','understory','insect-5']]);
 });
 
 test('unknown, duplicate and future roster payloads stay read-only; v1 never adopts goliath',async()=>{

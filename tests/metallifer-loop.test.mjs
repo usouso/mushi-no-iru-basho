@@ -28,8 +28,8 @@ const click=(h,id)=>h.elements.get(id).click();
 const select=(h,id,value)=>{const element=h.elements.get(id);element.value=value;element.dispatchEvent(new Event('change'));};
 const originalLeafRows=[['insect-1','leafinsect',0,4],['insect-2','leafinsect',-5,-3],['insect-3','leafinsect',5,-9]];
 function fieldLayout(h){
- const items=h.g.simulation.items;assert.equal(items.length,5);assert.deepEqual(items.slice(0,3).map(i=>[i.id,i.species,i.home.x,i.home.z]),originalLeafRows);
- assert.equal(items[3].species,'metallifer');assert.equal(items[3].id,'insect-4');assert.deepEqual([items[4].id,items[4].species],['insect-5','atlas']);return items[3];
+ const items=h.g.simulation.items;assert.equal(items.length,6);assert.deepEqual(items.slice(0,3).map(i=>[i.id,i.species,i.home.x,i.home.z]),originalLeafRows);
+ assert.equal(items[3].species,'metallifer');assert.equal(items[3].id,'insect-4');assert.deepEqual([items[4].id,items[4].species],['insect-5','atlas']);assert.deepEqual([items[5].id,items[5].species],['insect-6','fivehorn']);return items[3];
 }
 function catchMetallifer(h,{wait=true}={}){
  const {g}=h,item=g.simulation.items.find(i=>i.species==='metallifer'&&!i.companion);assert.ok(item,'one wild metallifer is available');
@@ -57,7 +57,7 @@ test('new actual net capture keeps legacy records, completes COM loss without ow
  const entry=g.roster.entries.find(e=>e.species==='metallifer');assert.equal(entry.id,'understory/'+item.id);assert.equal(entry.originHabitat,'understory');retainedAbsent(h,entry);g.restart();retainedAbsent(h,entry);
  h.travel('night');for(const old of oldEntries.filter(e=>e.originHabitat==='night'))retainedAbsent(h,old);h.travel('tropical');retainedAbsent(h,oldEntries[0]);h.travel('understory');fieldLayout(h);retainedAbsent(h,entry);
  const savedRoster=h.savedSettings.get(ROSTER_KEY),savedJournal=h.savedSettings.get(JOURNAL_KEY);assert.equal(JSON.parse(savedRoster).version,2,'new roster schema retains normalized legacy entries');assert.equal(JSON.parse(savedRoster).legacyImportDone,true);assert.equal(h.savedSettings.get(LEGACY_ROSTER_KEY),oldRaw);
- await begin(h);assert.equal(elements.get('companion-select').children.length,4);assert.equal(elements.get('battle-opponent-select').children.length,8);finishWatching(h);
+ await begin(h);assert.equal(elements.get('companion-select').children.length,4);assert.equal(elements.get('battle-opponent-select').children.length,10);finishWatching(h);
  assert.equal(g.battle.phase,'finished');assert.equal(g.battle.winner,'opponent');assert.equal(h.savedSettings.get(ROSTER_KEY),savedRoster);assert.equal(h.savedSettings.get(JOURNAL_KEY),savedJournal);click(h,'battle-finish-button');assert.equal(g.state.mode,'playing');retainedAbsent(h,entry);
  // A true fresh-main instance consumes successful saved bytes before any release.
  const fresh=await app(t,{entries:[[ROSTER_KEY,savedRoster],[LEGACY_ROSTER_KEY,oldRaw],[JOURNAL_KEY,savedJournal],['mushi-journal-v1',legacyRaw]],extraExports});fresh.choose('understory');fieldLayout(fresh);retainedAbsent(fresh,entry);assert.deepEqual(fresh.g.roster.entries.slice(0,3),normalized(oldEntries));assert.equal(fresh.g.journal.entries.find(e=>e.species==='metallifer').note,'長い顎と大きな内歯');

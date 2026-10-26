@@ -36,7 +36,7 @@ test('loaded sample path follows eight-species main across habitats, silence gat
  const page=(type,persisted=false)=>{const e=new Event(type);Object.defineProperty(e,'persisted',{value:persisted});window.dispatchEvent(e);};
  t.after(()=>page('pagehide'));
  assert.equal(a.contexts.length,0);assert.equal(a.requests.length,0,'title creates no audio context/download');
- choose('meadow');await a.flush();assert.equal(g.simulation.items.length,29);
+ choose('meadow');await a.flush();assert.equal(g.simulation.items.length,30);
  assert.equal(a.requests.length,13);assert.equal(new Set(a.requests.map(r=>r.file)).size,13);assert.equal(a.decoded.length,13);
  for(const r of a.requests){assert.ok(fs.existsSync(path.join(root,'assets/audio',r.file)));assert.equal(new URL(r.url).search,'?v=0.4.0&b=123456abcdef');assert.doesNotMatch(r.file,/aburazemi_call_02|capture_02|leaf|strider/);}
  assert.equal(bgm().length,1);assert.equal(bgm()[0].loopStart,0);assert.equal(bgm()[0].loopEnd,36.36);

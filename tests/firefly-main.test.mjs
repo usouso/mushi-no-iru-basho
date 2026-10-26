@@ -55,6 +55,6 @@ test('night selection, leaf and flight encounters, journal return and four-habit
  await g.journal.flush();const saved=g.journal.entries.find(e=>e.species==='firefly');assert.equal(saved.note,'湿地の小さな光 j');assert.ok(saved.location);
  key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'journal');key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'playing');
  g.pause();assert.equal(g.state.mode,'paused');const paused=g.simulation.time;step(15);assert.equal(g.simulation.time,paused);key('keydown','Escape');key('keyup','Escape');assert.equal(g.state.mode,'playing');
- for(const[id,count]of[['tropical',11],['meadow',29],['understory',5],['night',6]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='firefly'),saved);}
+ for(const[id,count]of[['tropical',11],['meadow',30],['understory',6],['night',6]]){choose(id);await a.flush();assert.equal(g.simulation.items.length,count);assert.equal(bgm().length,id==='meadow'?1:0);assert.deepEqual(g.journal.entries.find(e=>e.species==='firefly'),saved);}
  const{createJournal}=await import(h.moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries.find(e=>e.species==='firefly'),saved);
 });

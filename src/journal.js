@@ -7,7 +7,13 @@ export const JOURNAL_KEY = 'mushi-journal-v2';
 export const LEGACY_JOURNAL_KEY = 'mushi-journal-v1';
 export const JOURNAL_VERSION = 2;
 export const NOTE_LIMIT = 500;
-const speciesIds = new Set(['butterfly', 'dragonfly', 'cicada', 'morpho', 'grasshopper', 'hercules', 'leafinsect', 'waterstrider', 'leafcutterant', 'firefly', 'dungbeetle', 'divingbeetle', 'mantis', 'ladybird', 'rhino', 'stag', 'bee', 'swallowtail', 'jewel', 'longhorn', 'metallifer', 'atlas', 'giantstag', 'elephant', 'goliath']);
+const speciesIds = new Set(['butterfly', 'dragonfly', 'cicada', 'morpho', 'grasshopper', 'hercules', 'leafinsect', 'waterstrider', 'leafcutterant', 'firefly', 'dungbeetle', 'divingbeetle', 'mantis', 'ladybird', 'rhino', 'stag', 'bee', 'swallowtail', 'jewel', 'longhorn', 'metallifer', 'atlas', 'giantstag', 'elephant', 'goliath', 'fivehorn', 'miyama', 'euchirus', 'manticora']);
+const LOCATION_LIMIT = 120;
+// JSON can escape one UTF-16 unit as six characters (\uXXXX). Each row also
+// reserves 256 characters for field names, punctuation and four finite numeric
+// values; 128 covers the version/marker/array envelope. Bound serialized text,
+// not storage bytes, using the same limit for both writers and the reader.
+export const JOURNAL_RAW_LIMIT = 128 + [...speciesIds].reduce((total,species)=>total+6*(NOTE_LIMIT+LOCATION_LIMIT+species.length)+256,0);
 const entryFields = ['species','firstSeen','lastSeen','location','x','z','note'];
 const text = (value, limit) => typeof value === 'string' ? value.slice(0, limit) : '';
 const timestamp = value => Number.isSafeInteger(value) && value >= 0;
@@ -23,7 +29,7 @@ function normalizeEntries(entries){
  const result=[],seen=new Set();
  for(const entry of entries){
   if(!entry||!speciesIds.has(entry.species)||seen.has(entry.species)||!timestamp(entry.firstSeen)||!timestamp(entry.lastSeen)||entry.lastSeen<entry.firstSeen)continue;
-  seen.add(entry.species);result.push({species:entry.species,firstSeen:entry.firstSeen,lastSeen:entry.lastSeen,location:text(entry.location,120),x:coordinate(entry.x),z:coordinate(entry.z),note:text(entry.note,NOTE_LIMIT)});
+  seen.add(entry.species);result.push({species:entry.species,firstSeen:entry.firstSeen,lastSeen:entry.lastSeen,location:text(entry.location,LOCATION_LIMIT),x:coordinate(entry.x),z:coordinate(entry.z),note:text(entry.note,NOTE_LIMIT)});
   if(result.length===speciesIds.size)break;
  }
  return result;
@@ -32,13 +38,13 @@ function validEntries(entries){
  if(!Array.isArray(entries)||entries.length>speciesIds.size)return false;
  const seen=new Set();
  return entries.every(entry=>{
-  if(!fields(entry,entryFields)||!speciesIds.has(entry.species)||seen.has(entry.species)||!timestamp(entry.firstSeen)||!timestamp(entry.lastSeen)||entry.lastSeen<entry.firstSeen||typeof entry.location!=='string'||entry.location.length>120||typeof entry.note!=='string'||entry.note.length>NOTE_LIMIT||!(entry.x===null||Number.isFinite(entry.x))||!(entry.z===null||Number.isFinite(entry.z)))return false;
+  if(!fields(entry,entryFields)||!speciesIds.has(entry.species)||seen.has(entry.species)||!timestamp(entry.firstSeen)||!timestamp(entry.lastSeen)||entry.lastSeen<entry.firstSeen||typeof entry.location!=='string'||entry.location.length>LOCATION_LIMIT||typeof entry.note!=='string'||entry.note.length>NOTE_LIMIT||!(entry.x===null||Number.isFinite(entry.x))||!(entry.z===null||Number.isFinite(entry.z)))return false;
   seen.add(entry.species);return true;
  });
 }
 function parse(raw,legacy=false){
  try{
-  if(typeof raw!=='string'||raw.length>20000)return {valid:false,entries:[]};
+  if(typeof raw!=='string'||raw.length>JOURNAL_RAW_LIMIT)return {valid:false,entries:[]};
   const data=JSON.parse(raw),version=legacy?1:JOURNAL_VERSION;
   if(!data||data.version!==version||!Array.isArray(data.entries))return {valid:false,entries:[]};
   return {entries:normalizeEntries(data.entries),valid:fields(data,legacy?['version','entries']:['version','legacyImportDone','entries'])&&(legacy||data.legacyImportDone===true)&&validEntries(data.entries)};
@@ -55,7 +61,7 @@ function readState(storage){
   const data=parse(legacyRaw,true);return {...data,kind:data.valid?'legacy':'invalid',newRaw:null,legacyRaw,entries:data.entries,saved:false};
  }catch{return {kind:'unavailable',entries:[],saved:false};}
 }
-const payload=entries=>JSON.stringify({version:JOURNAL_VERSION,legacyImportDone:true,entries});
+const payload=entries=>{const raw=JSON.stringify({version:JOURNAL_VERSION,legacyImportDone:true,entries});return raw.length<=JOURNAL_RAW_LIMIT?raw:null;};
 /** Reading never writes, including legacy migration. */
 export function loadJournal(storage=browserStorage()){
  const result=readState(storage);return {entries:copyEntries(result.entries),saved:result.saved};
@@ -67,12 +73,13 @@ export function loadJournal(storage=browserStorage()){
 export async function saveJournal(entries,storage=browserStorage(),{locks=browserLocks()}={}){
  try{
   if(!storage||!hasLocks(locks)||!validEntries(entries))return false;
-  const snapshot=copyEntries(entries),baseline=readState(storage);
+  const snapshot=copyEntries(entries),serialized=payload(snapshot);if(serialized===null)return false;
+  const baseline=readState(storage);
   if(!['new','legacy','empty'].includes(baseline.kind)||baseline.entries.some(old=>!snapshot.some(entry=>entry.species===old.species)))return false;
   return await locks.request(JOURNAL_KEY,{mode:'exclusive'},()=>{
    if(storage.getItem(JOURNAL_KEY)!==baseline.newRaw)return false;
    if(baseline.newRaw===null&&storage.getItem(LEGACY_JOURNAL_KEY)!==baseline.legacyRaw)return false;
-   storage.setItem(JOURNAL_KEY,payload(snapshot));return true;
+   storage.setItem(JOURNAL_KEY,serialized);return true;
   })===true;
  }catch{return false;}
 }
@@ -121,7 +128,7 @@ export function createJournal(storage=browserStorage(),{now=Date.now,locks=brows
    }
   }
   if(!needsMigration&&persistedRevision===revision)return {ok:true,revision};
-  const atRevision=revision,serialized=payload(entries);
+  const atRevision=revision,serialized=payload(entries);if(serialized===null)return {ok:false};
   storage.setItem(JOURNAL_KEY,serialized);
   baseline={kind:'new',newRaw:serialized,entries:copyEntries(entries),saved:true};trusted=true;needsMigration=false;
   return {ok:true,revision:atRevision};
@@ -158,7 +165,7 @@ export function createJournal(storage=browserStorage(),{now=Date.now,locks=brows
    if(!speciesIds.has(species))return null;const time=now();if(!timestamp(time))return null;
    let entry=entries.find(item=>item.species===species);
    if(!entry){entry={species,firstSeen:time,lastSeen:time,location:'',x:null,z:null,note:''};entries.push(entry);}
-   entry.lastSeen=Math.max(entry.lastSeen,time);entry.location=text(location,120);entry.x=coordinate(x);entry.z=coordinate(z);return changed(entry);
+   entry.lastSeen=Math.max(entry.lastSeen,time);entry.location=text(location,LOCATION_LIMIT);entry.x=coordinate(x);entry.z=coordinate(z);return changed(entry);
   },
   setNote(species,note){const entry=entries.find(item=>item.species===species);if(!entry||typeof note!=='string')return null;entry.note=text(note,NOTE_LIMIT);return changed(entry);}
  };
