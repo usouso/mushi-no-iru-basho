@@ -1,4 +1,4 @@
-import { NOTE_LIMIT } from './journal.js?v=0.18.0&b=f75693c4884e';
+import { NOTE_LIMIT } from './journal.js?v=0.18.1&b=0f85c9d0b1ba';
 
 const LEGACY_SPECIES_IDS = ['butterfly', 'dragonfly', 'cicada'];
 let instance = 0;

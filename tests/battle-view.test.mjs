@@ -50,15 +50,15 @@ test('watching, finished and cancelled positions remain finite, supported, separ
  }
 });
 
-test('portrait to wide projections keep complete table and beetles above the reserved lower controls',()=>{
+test('portrait to wide close projections keep complete beetles inside the central arena while the stump may crop',()=>{
  const point=new T.Vector3();
  for(const playerSpecies of ids)for(const opponentSpecies of ids){
   const view=createBattleView({playerSpecies,opponentSpecies});
   for(const aspect of [.25,.45,.75,1,16/9,3])for(const position of [-4,0,4]){
    view.resize(aspect);view.update(snapshot(position),.02,{reducedMotion:true});view.scene.updateMatrixWorld(true);view.camera.updateMatrixWorld(true);
-   view.scene.traverse(mesh=>{if(!mesh.isMesh)return;const box=new T.Box3().setFromObject(mesh);
+   for(const side of['player','opponent'])anchor(view,side).traverse(mesh=>{if(!mesh.isMesh)return;const box=new T.Box3().setFromObject(mesh);
     for(const x of[box.min.x,box.max.x])for(const y of[box.min.y,box.max.y])for(const z of[box.min.z,box.max.z]){
-     point.set(x,y,z).project(view.camera);assert.ok(point.x>=-.901&&point.x<=.901,`${aspect} horizontal ${mesh.name}`);assert.ok(point.y>=-.081&&point.y<=.841,`${aspect} vertical ${mesh.name}: ${point.y}`);assert.ok(point.z>=-1&&point.z<=1);
+     point.set(x,y,z).project(view.camera);assert.ok(point.x>=-.881&&point.x<=.881,`${aspect} horizontal ${mesh.name}`);assert.ok(point.y>=-.581&&point.y<=.581,`${aspect} vertical ${mesh.name}: ${point.y}`);assert.ok(point.z>=-1&&point.z<=1);
     }
    });
   }
@@ -77,7 +77,7 @@ test('snapshot transition animates a bounded push, while reduced motion and repe
  view.update(snapshot(NaN),NaN,{reducedMotion:true});assertScene(view);view.resize(NaN);assert.ok(view.camera.projectionMatrix.elements.every(Number.isFinite));view.dispose();
 });
 
-test('automatic .65 second resolve clips distinguish both beetles, then settle without future-action previews',()=>{
+test('automatic contact-hold resolve clips distinguish both beetles, then settle without future-action previews',()=>{
  const actions=['push','evade','brace'],playerPoses=new Set(),opponentPoses=new Set();
  for(const action of actions){
   const a=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'}),b=createBattleView({playerSpecies:'rhino',opponentSpecies:'stag'});
@@ -103,7 +103,7 @@ test('every species pairing and action pairing keeps a 4mm actual-bounds gap thr
    assert.ok(b.min.x-a.max.x>=.004-1e-10,`${playerSpecies}/${opponentSpecies} ${playerAction}/${opponentAction} at ${frame}`);
    for(const box of[a,b])for(const x of[box.min.x,box.max.x])for(const y of[box.min.y,box.max.y])for(const z of[box.min.z,box.max.z]){
     assert.ok(Math.hypot(x,z)<radius,'resolve pose stays on table');projected.set(x,y,z).project(view.camera);
-    assert.ok(projected.x>=-.901&&projected.x<=.901&&projected.y>=-.081&&projected.y<=.841,'evade/lean/endpoint stays inside portrait reserved frame');
+    assert.ok(projected.x>=-.881&&projected.x<=.881&&projected.y>=-.581&&projected.y<=.581,'evade/lean/endpoint stays inside portrait reserved frame');
    }
   }
   view.dispose();
