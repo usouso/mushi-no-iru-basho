@@ -1,8 +1,8 @@
 /** Registered branch study: preserve the legacy short walk (also reused by
  * Metallifer), with opt-in supported threat response. Motion/jaw tuning is
  * illustrative, not measured wild behaviour. No combat or new flight. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.39.0&b=8a647322e77c';
-import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.40.0&b=8b1b975eded1';
+import {STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.40.0&b=8b1b975eded1';
 const TAU=2*Math.PI,rampTime=.5;
 const smooth=t=>t*t*(3-2*t);
 export function createStagStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,scale=1,motionSeed=null,retreatBounds=undefined}={}){

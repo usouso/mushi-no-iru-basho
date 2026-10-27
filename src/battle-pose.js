@@ -1,8 +1,8 @@
 /** Battle-only adapter over independently owned inspection geometry. Field and
  * journal models keep their ordinary rig. Feet stay world-planted while the
  * real torso/horns lean; only swing/recovery feet move to a new support point. */
-import {sampleRhinoPose} from './rhino-kinematics.js?v=0.39.0&b=8a647322e77c';
-import {sampleStagPose} from './stag-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {sampleRhinoPose} from './rhino-kinematics.js?v=0.40.0&b=8b1b975eded1';
+import {sampleStagPose} from './stag-kinematics.js?v=0.40.0&b=8b1b975eded1';
 const T=window.THREE;
 const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const vec=p=>new T.Vector3(p.x,p.y,p.z);
@@ -24,7 +24,7 @@ export function createBattleRig(model,species,{groundedKnees=false}={}){
  });
  const jaws=(data.jaws||[]).map(j=>({pivot:j.pivot||j,side:j.side||Math.sign((j.pivot||j).position.x),base:(j.pivot||j).rotation.y}));
  model.updateMatrixWorld(true);
- const giantHint=['giantstag','elephant','goliath','fivehorn','miyama'].includes(species)?vec(data.weaponHint.localPoint).applyMatrix4(data.weaponHint.mesh.matrixWorld).applyMatrix4(model.matrixWorld.clone().invert()):null;
+ const giantHint=['giantstag','elephant','goliath','fivehorn','miyama','rainbowstag'].includes(species)?vec(data.weaponHint.localPoint).applyMatrix4(data.weaponHint.mesh.matrixWorld).applyMatrix4(model.matrixWorld.clone().invert()):null;
  const desired=giantHint|| (species==='manticora'?new T.Vector3(.067,.005,.144):species==='atlas'?new T.Vector3(0,.100,.280):species==='rhino'?new T.Vector3(-.014,.119,.21):species==='hercules'?new T.Vector3(0,.041,.265):species==='stag'?new T.Vector3(-.014,-.010,.210):new T.Vector3(-.026,.063,.177));
  const weaponMeshes=species==='manticora'?data.jaws.map(j=>j.mesh):['elephant','goliath','fivehorn'].includes(species)?[data.weaponHint.mesh]:species==='atlas'?[data.horns.find(h=>h.role==='head-horn').mesh]:species==='rhino'?[data.hornMesh]:species==='hercules'?data.visual.children.filter(m=>m.isMesh&&m.userData.battleParts?.some(p=>p.role==='head-horn')):[jaws.find(j=>j.side<0).pivot];
  let weaponMesh=null,weaponIndex=0,best=Infinity;model.updateMatrixWorld(true);const inverse=model.matrixWorld.clone().invert();

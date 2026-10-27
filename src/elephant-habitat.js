@@ -1,7 +1,7 @@
 /** One additive living-tree connector and sloping observation support. Existing
  * trees, terrain, Hercules logs/fruit and ant geometry remain untouched. */
-import {ELEPHANT_BRANCH as B,ELEPHANT_TREE as TREE} from './elephant-layout.js?v=0.39.0&b=8a647322e77c';
-import {ELEPHANT_DIMENSIONS as D} from './elephant-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {ELEPHANT_BRANCH as B,ELEPHANT_TREE as TREE} from './elephant-layout.js?v=0.40.0&b=8b1b975eded1';
+import {ELEPHANT_DIMENSIONS as D} from './elephant-kinematics.js?v=0.40.0&b=8b1b975eded1';
 const T=window.THREE;
 function collector(){const p=[],c=[];return{add(g,m,color){const copy=g.index?g.toNonIndexed():g.clone();copy.applyMatrix4(m);p.push(...copy.attributes.position.array);const tint=new T.Color(color);for(let i=0;i<copy.attributes.position.count;i++)c.push(tint.r,tint.g,tint.b);copy.dispose();},finish(){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
 function circles(a,b,r){const length=Math.hypot(b.x-a.x,b.z-a.z),n=Math.max(1,Math.ceil(length/.30)),radius=Math.hypot(r,length/n/2);return Array.from({length:n+1},(_,i)=>({x:a.x+(b.x-a.x)*i/n,z:a.z+(b.z-a.z)*i/n,r:radius}));}

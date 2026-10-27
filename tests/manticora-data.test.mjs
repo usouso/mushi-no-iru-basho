@@ -26,7 +26,7 @@ const protectedRaw=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY,LE
 test('twelfth fixed companion preserves all eleven old g1/g2/g3/legacy records, one-per-species and explicit release/replacement',async()=>{
  const f=fixture(),r=make(f),oldRaw=f.values.get(COMPANION_KEY),protectedBefore=protectedRaw(f),journalRaw=f.values.get(JOURNAL_KEY);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
  const fixed=fixture();fixed.values.set(COMPANION_KEY,modern(oldRoster.map(e=>e.species==='atlas'?entry(capture('atlas','understory','insect-5'),104):e)));const fixedStore=make(fixed);assert.equal(fixedStore.entries[4].sizePermille,null);assert.equal(await fixedStore.flush(),true);assert.equal(fixed.writes.length,0);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),oldRaw);
  assert.deepEqual(r.add(manticora()),{ok:true,entry:entry(manticora(),1000)});assert.equal(await r.flush(),true);assert.equal(r.entries.length,12);
@@ -41,12 +41,12 @@ test('twelfth fixed companion preserves all eleven old g1/g2/g3/legacy records, 
  assert.deepEqual(protectedRaw(f),protectedBefore);assert.equal(f.values.get(JOURNAL_KEY),journalRaw);
 });
 
-test('only savanna/insect-2 is accepted and no manticora expedition or borrowed original habitat ID can become measured',()=>{
+test('only savanna/insect-2 is accepted; invented g1-g3 Manticora measurements or borrowed habitat IDs are rejected',()=>{
  const f=fixture(),r=make(f);
  const bad=[...['night','tropical','forest','meadow','understory','africa','__proto__'].map(originHabitat=>({...manticora(),originHabitat})),...['insect-0','insect-01','insect-1','insect-4','insect-5','insect-6','insect-29','insect-30'].map(originIndividualId=>({...manticora(),originIndividualId})),{...manticora(),species:'__proto__'},{...manticora(),originKind:undefined},{...manticora(),sizePermille:1000},{...manticora(),measureVersion:1},{...manticora(),originEncounterId:'unknown'},...[1,2,3].map(g=>({...manticora(),originKind:'expedition',originEncounterId:`g${g}-1234abcd-o1-savanna-manticora`,sizePermille:1100,measureVersion:1})),{...manticora(),originKind:'expedition',originEncounterId:'g1-1234abcd-o1-understory-metallifer',sizePermille:1100,measureVersion:1}];
  for(const c of bad)assert.deepEqual(r.add(c),{ok:false,reason:'invalid-capture'});
  assert.deepEqual(r.entries,oldRoster);assert.equal(f.writes.length,0);
- assert.deepEqual(EXPEDITION_SLOTS.map(s=>[s.populationSlotId,s.habitat,s.runtimeSlotId]),[['hercules-a','tropical','insect-5'],['hercules-b','tropical','insect-6'],['rhino','night','insect-4'],['stag','night','insect-5'],['metallifer','understory','insect-4'],['giantstag','night','insect-6'],['atlas','understory','insect-5']]);
+ assert.deepEqual(EXPEDITION_SLOTS.map(s=>[s.populationSlotId,s.habitat,s.runtimeSlotId]),[['hercules-a','tropical','insect-5'],['hercules-b','tropical','insect-6'],['rhino','night','insect-4'],['stag','night','insect-5'],['metallifer','understory','insect-4'],['giantstag','night','insect-6'],['atlas','understory','insect-5'],['manticora','savanna','insect-2']]);
 });
 
 test('unknown, duplicate and future roster payloads stay read-only, v2 wins and v1 cannot adopt manticora',async()=>{
@@ -73,8 +73,8 @@ test('29th journal article retains all 28 notes/fields and optional 500-characte
  f.quota=false;assert.equal(await j.flush(),true);assert.equal(j.entries.length,29);assert.deepEqual(j.entries.slice(0,28),oldJournal);assert.deepEqual(createJournal(f.storage,f).entries,j.entries);
  assert.equal(j.record({species:'manticora',location:'同じ地面',x:2,z:-3}).note,(literal+'角'.repeat(600)).slice(0,500));assert.equal(j.entries.length,29);assert.equal(await j.flush(),true);
  const a=createJournal(f.storage,f),b=createJournal(f.storage,f);a.setNote('manticora','');b.setNote('manticora','session only');assert.equal(await a.flush(),true);const winner=f.values.get(JOURNAL_KEY);assert.equal(await b.flush(),false);assert.equal(await b.flush(),false);assert.equal(f.values.get(JOURNAL_KEY),winner);
- // The species-derived finite JSON limit must grow with the 29th row.
- const allSpecies=[...oldSpecies,'manticora'];assert.equal(allSpecies.length,29);assert.equal(JOURNAL_RAW_LIMIT,128+allSpecies.reduce((n,s)=>n+6*(500+120+s.length)+256,0));assert.ok(JOURNAL_RAW_LIMIT<200000);
+ // The 29-row historical fixture stays intact; current capacity also includes Rainbow.
+ const allSpecies=[...oldSpecies,'manticora'],currentSpecies=[...allSpecies,'rainbowstag'];assert.equal(allSpecies.length,29);assert.equal(currentSpecies.length,30);assert.equal(JOURNAL_RAW_LIMIT,128+currentSpecies.reduce((n,s)=>n+6*(500+120+s.length)+256,0));assert.ok(JOURNAL_RAW_LIMIT<200000);
  const metrics=[];for(const c of ['字','\u0000','\ud800']){
   const max=allSpecies.map(species=>({species,firstSeen:1000,lastSeen:1000,location:c.repeat(120),x:-Number.MAX_VALUE,z:Number.MIN_VALUE,note:c.repeat(500)}));
   for(const writer of ['snapshot','session']){const cap=fixture();cap.values.set(JOURNAL_KEY,modern([]));if(writer==='snapshot')assert.equal(await saveJournal(max,cap.storage,cap),true);else{const store=createJournal(cap.storage,cap);for(const e of max){store.record(e);store.setNote(e.species,e.note);}assert.equal(await store.flush(),true);}
@@ -89,7 +89,7 @@ test('29th journal article retains all 28 notes/fields and optional 500-characte
 
 test('only twelfth battle eligibility extends; old eleven profiles, every rule and gen3 source outside exact gen4 additions stay unchanged',()=>{
  const old=['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus'];
- assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'manticora']);
+ assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'manticora','rainbowstag']);
  const hash=s=>createHash('sha256').update(s).digest('hex');
  assert.equal(hash(JSON.stringify(Object.fromEntries(old.map(s=>[s,BATTLE_SPECIES[s]])))),'203575a50ae673900083c398e1dd4a66e078448eb8e3c01d157109f01990f1f3');
  const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');

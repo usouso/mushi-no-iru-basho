@@ -57,7 +57,7 @@ test('actual tropical home arrays retain 4 morphos, 2 Hercules and 4 ants before
 test('seventh companion is exactly fixed tropical/insect-11, preserves six prior entries, and releases only explicitly',async()=>{
  const f=fixture(),raw=f.values.get(COMPANION_KEY),protectedRaw=untouched(f),journalRaw=f.values.get(JOURNAL_KEY),r=make(f);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);
  assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);assert.equal(isCompanionSpecies('elephant'),true);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),raw);
  const result=r.add(elephant);assert.deepEqual(result,{ok:true,entry:entry(elephant,1000)});assert.equal(r.entries.length,7);

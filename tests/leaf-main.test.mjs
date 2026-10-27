@@ -48,7 +48,7 @@ test('third title choice enters only on start; capture, inspect, memo, walking r
  let moved=false,previous=point(i);
  for(let n=0;n<180;n++){frame(1);const p=point(i);assert.ok(Math.hypot(p.x-previous.x,p.y-previous.y,p.z-previous.z)<.03,'continuous leaf walking');moved ||= Math.hypot(p.x-caughtAt.x,p.z-caughtAt.z)>.005;previous=p;}
  assert.ok(moved,'released insect resumes walking on the leaf');
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,27);
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,30);
  find('fj-close').click();assert.equal(g.state.mode,'playing');
  const before={...g.state.player};key('keydown','KeyW');frame(10);key('keyup','KeyW');
  assert.ok(Math.hypot(g.state.player.x-before.x,g.state.player.z-before.z)>.05,'walking still works after journal close');

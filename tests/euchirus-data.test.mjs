@@ -26,7 +26,7 @@ const protectedRaw=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY,LE
 test('eleventh fixed companion preserves all ten old g1/g2/g3/legacy records, one-per-species and explicit release/replacement',async()=>{
  const f=fixture(),r=make(f),oldRaw=f.values.get(COMPANION_KEY),protectedBefore=protectedRaw(f),journalRaw=f.values.get(JOURNAL_KEY);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
  const fixed=fixture();fixed.values.set(COMPANION_KEY,modern(oldRoster.map(e=>e.species==='atlas'?entry(capture('atlas','understory','insect-5'),104):e)));const fixedStore=make(fixed);assert.equal(fixedStore.entries[4].sizePermille,null);assert.equal(await fixedStore.flush(),true);assert.equal(fixed.writes.length,0);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),oldRaw);
  assert.deepEqual(r.add(euchirus()),{ok:true,entry:entry(euchirus(),1000)});assert.equal(await r.flush(),true);assert.equal(r.entries.length,11);
@@ -79,7 +79,7 @@ test('28th journal article retains all 27 notes/fields and optional 500-characte
 
 test('only eleventh battle eligibility extends; old ten profiles, every rule and gen3 source outside exact gen4 additions stay unchanged',()=>{
  const old=['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama'];
- assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'euchirus','manticora']);
+ assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'euchirus','manticora','rainbowstag']);
  const hash=s=>createHash('sha256').update(s).digest('hex');
  assert.equal(hash(JSON.stringify(Object.fromEntries(old.map(s=>[s,BATTLE_SPECIES[s]])))),'a9d05d0b7c3a5c32382048d43db8b01d14ba44cf21b81936eb85c7f7ee1f3b2f');
  const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
