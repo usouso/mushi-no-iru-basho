@@ -3,7 +3,7 @@
  * not imported again. Unknown data/conflicts stay read-only, with session edits
  * still available. Persistence needs Web Locks, not a promise of browser support.
  */
-import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.37.0&b=4d59dc9955d7';
+import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.39.0&b=8a647322e77c';
 export const COMPANION_KEY = 'mushi-companions-v2';
 export const COMPANION_VERSION = 2;
 export const LEGACY_COMPANION_KEY = V1_KEY;
@@ -20,6 +20,10 @@ function originValid(entry){return isCompanionSpecies(entry?.species) && entry.o
 function legacyValid(entry){return fields(entry,legacyFields) && V1_SPECIES.includes(entry.species) && originValid(entry) && entry.id === `${entry.originHabitat}/${entry.originIndividualId}` && timestamp(entry.capturedAt);}
 function encounterValid(entry){
  if(typeof entry.originEncounterId!=='string')return false;
+ if(entry.species==='manticora'){
+  const manticora=/^g4-[0-9a-f]{8}-o([1-9][0-9]{0,15})-savanna-manticora$/.exec(entry.originEncounterId);
+  return !!manticora&&Number.isSafeInteger(Number(manticora[1]))&&entry.originHabitat==='savanna';
+ }
  if(entry.species==='atlas'){
   const atlas=/^g3-[0-9a-f]{8}-o([1-9][0-9]{0,15})-understory-atlas$/.exec(entry.originEncounterId);
   return !!atlas&&Number.isSafeInteger(Number(atlas[1]))&&entry.originHabitat==='understory';

@@ -1,4 +1,6 @@
-# マンティコラ — Manticora latipennis 雄（0.37.0）
+# マンティコラ — Manticora latipennis 雄（0.37.0導入時）
+
+以下は固定個体として導入した時の仕様です。0.38.0の明示次散策での個体差と保存互換は [MANTICORA-INDIVIDUALS-README.md](MANTICORA-INDIVIDUALS-README.md) を参照してください。旧散策の固定個体は引き続きこの範囲です。
 
 既存 `savanna` の露出した土に、固定・未計測の `insect-2` を追加。旧 `dungbeetle/insect-1` と玉の道は保持します。大頭・左右非対称の曲がった顎・黒い地上の輪郭を探します。
 

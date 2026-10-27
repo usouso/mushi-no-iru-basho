@@ -1,8 +1,8 @@
-import {createInsectModel} from './insect-models.js?v=0.37.0&b=4d59dc9955d7';
-import {createBattleRig} from './battle-pose.js?v=0.37.0&b=4d59dc9955d7';
-import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.37.0&b=4d59dc9955d7';
-import {sampleEuchirusPose} from './euchirus-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {createEuchirusContactPlan,sampleEuchirusContactPose,createEuchirusSelfContactPlan,sampleEuchirusSelfContactPose,solveEuchirusContactLeg,applyEuchirusContactLegs} from './euchirus-battle-contact.js?v=0.37.0&b=4d59dc9955d7';
+import {createInsectModel} from './insect-models.js?v=0.39.0&b=8a647322e77c';
+import {createBattleRig} from './battle-pose.js?v=0.39.0&b=8a647322e77c';
+import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.39.0&b=8a647322e77c';
+import {sampleEuchirusPose} from './euchirus-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createEuchirusContactPlan,sampleEuchirusContactPose,createEuchirusSelfContactPlan,sampleEuchirusSelfContactPose,solveEuchirusContactLeg,applyEuchirusContactLegs} from './euchirus-battle-contact.js?v=0.39.0&b=8a647322e77c';
 /** New-pair-only foreleg presentation. No winner/rule/storage/field mutations.
  * Original ten-species pairs never enter this module. No throw or body pitch. */
 const T=window.THREE,old=new Set(['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','manticora']),V=p=>new T.Vector3(p.x,p.y,p.z),P=v=>({x:v.x,y:v.y,z:v.z}),clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);},ramp=(t,a,b)=>ease((t-a)/(b-a));

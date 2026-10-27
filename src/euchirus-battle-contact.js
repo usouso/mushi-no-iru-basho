@@ -1,5 +1,5 @@
-import {sampleEuchirusPose,EUCHIRUS_DIMENSIONS as D} from './euchirus-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {updateEuchirusModel} from './euchirus-model.js?v=0.37.0&b=4d59dc9955d7';
+import {sampleEuchirusPose,EUCHIRUS_DIMENSIONS as D} from './euchirus-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {updateEuchirusModel} from './euchirus-model.js?v=0.39.0&b=8a647322e77c';
 /** Euchirus-only contact choreography; not observed combat.
  * The caller owns the opponent and its grounded retreat animation. No rule,
  * clock, outcome or species registry is owned by this geometry helper. */

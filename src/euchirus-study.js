@@ -1,7 +1,7 @@
 /** One fixed bark facet. Short climbing, grounded foreleg pulse and upward withdrawal are game
  * tuning, not measured natural escape behaviour. No flight or trunk traversal. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.37.0&b=4d59dc9955d7';
-import {EUCHIRUS_DIMENSIONS as D} from './euchirus-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.39.0&b=8a647322e77c';
+import {EUCHIRUS_DIMENSIONS as D} from './euchirus-kinematics.js?v=0.39.0&b=8a647322e77c';
 export const EUCHIRUS_MOTION=Object.freeze({normalRange:.08,normalSpeed:.02,warningSeconds:.28,retreatDistance:.08,retreatSpeed:.08,warningPulse:true,maxStepSeconds:.1});
 function record(value,keys){return !!value&&[Object.prototype,null].includes(Object.getPrototypeOf(value))&&Reflect.ownKeys(value).length===keys.length&&keys.every(k=>Object.prototype.hasOwnProperty.call(value,k)&&'value'in Object.getOwnPropertyDescriptor(value,k)&&Number.isFinite(value[k])&&Math.abs(value[k])<=1e4);}
 export function createEuchirusStudy({position,orientation}={}){

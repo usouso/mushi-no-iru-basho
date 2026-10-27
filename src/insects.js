@@ -1,37 +1,37 @@
-import {createManticoraStudy} from './manticora-study.js?v=0.37.0&b=4d59dc9955d7';
-import {createEuchirusStudy} from './euchirus-study.js?v=0.37.0&b=4d59dc9955d7';
-import {createMiyamaStudy} from './miyama-study.js?v=0.37.0&b=4d59dc9955d7';
-import {createFiveHornStudy} from './five-horn-study.js?v=0.37.0&b=4d59dc9955d7';
-import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {createGoliathStudy} from './goliath-study.js?v=0.37.0&b=4d59dc9955d7';
-import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {createElephantStudy} from './elephant-study.js?v=0.37.0&b=4d59dc9955d7';
-import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {createGiantStagStudy} from './giant-stag-study.js?v=0.37.0&b=4d59dc9955d7';
-import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.37.0&b=4d59dc9955d7';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import { individualScale } from './individual-layout.js?v=0.37.0&b=4d59dc9955d7';
+import {createManticoraStudy} from './manticora-study.js?v=0.39.0&b=8a647322e77c';
+import {createEuchirusStudy} from './euchirus-study.js?v=0.39.0&b=8a647322e77c';
+import {createMiyamaStudy} from './miyama-study.js?v=0.39.0&b=8a647322e77c';
+import {createFiveHornStudy} from './five-horn-study.js?v=0.39.0&b=8a647322e77c';
+import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createGoliathStudy} from './goliath-study.js?v=0.39.0&b=8a647322e77c';
+import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createElephantStudy} from './elephant-study.js?v=0.39.0&b=8a647322e77c';
+import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createGiantStagStudy} from './giant-stag-study.js?v=0.39.0&b=8a647322e77c';
+import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.39.0&b=8a647322e77c';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.39.0&b=8a647322e77c';
+import { individualScale } from './individual-layout.js?v=0.39.0&b=8a647322e77c';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.37.0&b=4d59dc9955d7';
-import { createLonghornStudy } from './longhorn-study.js?v=0.37.0&b=4d59dc9955d7';
-import { createJewelStudy } from './jewel-study.js?v=0.37.0&b=4d59dc9955d7';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.37.0&b=4d59dc9955d7';
-import { createBeeStudy } from './bee-study.js?v=0.37.0&b=4d59dc9955d7';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.37.0&b=4d59dc9955d7';
-import { createStagStudy } from './stag-study.js?v=0.37.0&b=4d59dc9955d7';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import { createRhinoStudy } from './rhino-study.js?v=0.37.0&b=4d59dc9955d7';
-import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.37.0&b=4d59dc9955d7';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.37.0&b=4d59dc9955d7';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import { createMantisStudy } from './mantis-study.js?v=0.37.0&b=4d59dc9955d7';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import { createDivingStudy } from './diving-study.js?v=0.37.0&b=4d59dc9955d7';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.37.0&b=4d59dc9955d7';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.39.0&b=8a647322e77c';
+import { createLonghornStudy } from './longhorn-study.js?v=0.39.0&b=8a647322e77c';
+import { createJewelStudy } from './jewel-study.js?v=0.39.0&b=8a647322e77c';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.39.0&b=8a647322e77c';
+import { createBeeStudy } from './bee-study.js?v=0.39.0&b=8a647322e77c';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.39.0&b=8a647322e77c';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.39.0&b=8a647322e77c';
+import { createStagStudy } from './stag-study.js?v=0.39.0&b=8a647322e77c';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.39.0&b=8a647322e77c';
+import { createRhinoStudy } from './rhino-study.js?v=0.39.0&b=8a647322e77c';
+import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.39.0&b=8a647322e77c';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.39.0&b=8a647322e77c';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.39.0&b=8a647322e77c';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.39.0&b=8a647322e77c';
+import { createMantisStudy } from './mantis-study.js?v=0.39.0&b=8a647322e77c';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.39.0&b=8a647322e77c';
+import { createDivingStudy } from './diving-study.js?v=0.39.0&b=8a647322e77c';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.39.0&b=8a647322e77c';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.39.0&b=8a647322e77c';
 export const SPECIES = Object.freeze({
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
@@ -61,7 +61,7 @@ export const SPECIES = Object.freeze({
   fivehorn:{name:'ゴホンヅノカブト（雄）',label:'ゴホンヅノカブト',scientificName:'Eupatorus gracilicornis',size:'試作表示は胴と頭が約22cm、体軸方向の角先まで約35cm。自然の体長ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'タイやベトナムなどの森林で記録されるカブトムシです。雄は頭に1本、前胸に4本の角を持ちます。弓状に立ち上がる頭角と、その後ろに並ぶ二対の角を、向きを変えて見比べてみましょう。黒い頭胸部と黄褐色の上翅を自作模型で近似しました。低い斜め枝の登り下りは観察用の配置と動作で、野生での典型的な高さや姿勢を示すものではありません。飛行・摂食はまだ再現していません。',hint:'東南アジア林の低い斜めの太枝。黄褐色の背と、立ち上がる五本の角を探して。',color:'#a98b4c'},
   miyama:{name:'ミヤマクワガタ（雄）',label:'ミヤマクワガタ',scientificName:'Lucanus maculifemoratus',size:'試作表示は胴と頭が約19cm、大顎先まで約30cm。実物の寸法ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'日本の雑木林やブナ林で見られ、成虫はクヌギなどの樹液を利用します。大きな雄では頭の後ろが左右へ張り出します。黒褐色の体にある短い金色の毛を、試作では控えめな同じ面の色むらで近似しています。大顎だけでなく、頭と胸の輪郭を横から見比べてみましょう。低い樹皮面と短い歩行は観察用の配置で、野生の典型的な高さや人への反応速度を再現したものではありません。飛行・摂食はまだ再現していません。',hint:'温帯の林縁の生木。樹皮に沿う体と、大顎より後ろで左右へ張り出す頭を探して。',color:'#66533b'}, 
   euchirus:{name:'テナガコガネ（E. longimanus・雄）',label:'テナガコガネ',scientificName:'Euchirus longimanus',size:'胴と頭を約18cmで表示。長い前脚は3節の長さの合計が約37cm。実物の測定値ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'インドネシアにすむ大型のコガネムシの仲間です。雄の非常に長い前脚は、頭の角ではなく胸から伸びています。丸い前胸、黄褐色の上翅と暗い会合線、短い中脚・後脚を見比べてみましょう。この低い幹と短い歩行・相撲はゲーム上の表現で、野生の生息位置や闘争を再現したものではありません。',hint:'東南アジア林の奥の生木。二本の長い前脚を探して。',color:'#856044'},
-  manticora:{name:'マンティコラ（M. latipennis・雄）',label:'マンティコラ',scientificName:'Manticora latipennis',size:'胴と頭を約18cm、長い顎先までの前後長を約25cmで表示しています。実物の測定値ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'ザンビアで採集された標本が知られる、飛ばないハンミョウの仲間です。大きな頭と、左右で形の異なる曲がった大顎、幅広い黒い背を見比べてみましょう。裸地での歩行・反転・退避と非殺傷の相撲はゲーム上の近似です。精密な生息環境や野生の速度・闘争を再現したものではありません。',hint:'南部アフリカ草地区画。球の東側の裸地で、大きな黒い頭を探して。',color:'#161819'}
+  manticora:{name:'マンティコラ（M. latipennis・雄）',label:'マンティコラ',scientificName:'Manticora latipennis',size:'胴と頭を約18cm、長い顎先までの前後長を約25cmで表示しています。実物の測定値ではなく、見分けるための表示補正です。同種の基準100に対する表示指数で個体差を示します。旧散策の固定個体は未計測のままです。',observation:'ザンビアで採集された標本が知られる、飛ばないハンミョウの仲間です。大きな頭と、左右で形の異なる曲がった大顎、幅広い黒い背を見比べてみましょう。裸地での歩行・反転・退避と非殺傷の相撲はゲーム上の近似です。精密な生息環境や野生の速度・闘争を再現したものではありません。',hint:'南部アフリカ草地区画。球の東側の裸地で、大きな黒い頭を探して。',color:'#161819'}
 });
 
 const TAU = Math.PI * 2;
@@ -87,7 +87,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   if(!Array.isArray(individuals)||individuals.length>6)throw new TypeError('Invalid individual profiles');
   for(const e of individuals){
     const index=Number(e?.runtimeSlotId?.replace('insect-',''))-1;
-    if(!e||!/^insect-[1-9]\d{0,5}$/.test(e.runtimeSlotId)||!['hercules','rhino','stag','metallifer','giantstag','atlas'].includes(e.species)||initialHomes[index]?.[0]!==e.species||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||typeof e.encounterId!=='string'||!(e.species==='atlas'?e.runtimeSlotId==='insect-5'&&/^g3-[0-9a-f]{8}-o[1-9][0-9]{0,15}-understory-atlas$/.test(e.encounterId):e.species==='giantstag'?e.runtimeSlotId==='insect-6'&&/^g2-[0-9a-f]{8}-o[1-9][0-9]{0,15}-night-giantstag$/.test(e.encounterId):/^g1-[0-9a-f]{8}-o[1-9][0-9]{0,15}-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.test(e.encounterId)))throw new TypeError('Individual profile does not match home');
+    if(!e||!/^insect-[1-9]\d{0,5}$/.test(e.runtimeSlotId)||!['hercules','rhino','stag','metallifer','giantstag','atlas','manticora'].includes(e.species)||initialHomes[index]?.[0]!==e.species||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||typeof e.encounterId!=='string'||!(e.species==='manticora'?e.runtimeSlotId==='insect-2'&&Number.isInteger(e.siteIndex)&&e.siteIndex>=0&&e.siteIndex<=2&&/^g4-[0-9a-f]{8}-o[1-9][0-9]{0,15}-savanna-manticora$/.test(e.encounterId):e.species==='atlas'?e.runtimeSlotId==='insect-5'&&/^g3-[0-9a-f]{8}-o[1-9][0-9]{0,15}-understory-atlas$/.test(e.encounterId):e.species==='giantstag'?e.runtimeSlotId==='insect-6'&&/^g2-[0-9a-f]{8}-o[1-9][0-9]{0,15}-night-giantstag$/.test(e.encounterId):/^g1-[0-9a-f]{8}-o[1-9][0-9]{0,15}-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.test(e.encounterId)))throw new TypeError('Individual profile does not match home');
     profiles.set(e.runtimeSlotId,{...e});
   }
   const flightBounds = Number.isFinite(bounds) && bounds > 6 ? Math.min(75, bounds) : 75;
@@ -359,14 +359,15 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();euchirusGroups.set(index,g);}
   } catch { throw new TypeError('Invalid euchirus supports'); }
   const manticoraGroups=new Map(),manticoras=new Map();
+  const manticoraIndex=initialHomes.findIndex(row=>row[0]==='manticora'),manticoraScale=individualScale(profiles.get(`insect-${manticoraIndex+1}`));
   try {
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
     const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
     const groups=array(manticoraSupports).map(g=>{
       record(g,['home','route']);record(g.home,['x','y','z']);const home={...g.home};
-      if(!Object.values(home).every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||Math.abs(home.y-heightAt(home.x,home.z)-.055)>1e-6)throw new Error();
-      const route=array(g.route).map(p=>{record(p,['x','z']);if(![p.x,p.z].every(Number.isFinite)||Math.abs(p.x)>flightBounds||Math.abs(p.z)>flightBounds||Math.abs(heightAt(p.x,p.z)+.055-home.y)>1e-6)throw new Error();return{x:p.x,z:p.z};});
-      createManticoraStudy({position:home,route,seed:1729});return{home,route};
+      if(!Object.values(home).every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||Math.abs(home.y-heightAt(home.x,home.z)-.055*manticoraScale)>1e-6)throw new Error();
+      const route=array(g.route).map(p=>{record(p,['x','z']);if(![p.x,p.z].every(Number.isFinite)||Math.abs(p.x)>flightBounds||Math.abs(p.z)>flightBounds||Math.abs(heightAt(p.x,p.z)+.055*manticoraScale-home.y)>1e-6)throw new Error();return{x:p.x,z:p.z};});
+      createManticoraStudy({position:home,route,seed:1729,scale:manticoraScale});return{home,route};
     });
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='manticora');if(groups.length>1||rows.length!==groups.length)throw new Error();
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();manticoraGroups.set(index,g);}
@@ -571,7 +572,7 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       }
       if(species==='manticora'){
         const item=items[items.length-1],support=manticoraGroups.get(index);
-        manticoras.set(item.id,{study:createManticoraStudy({position:support.home,route:support.route,seed:1729})});syncManticora(item);
+        manticoras.set(item.id,{study:createManticoraStudy({position:support.home,route:support.route,seed:item.motionSeed??1729,scale:individualScale(item),startOffset:profile?(profile.siteIndex-1)*.12*individualScale(item):0})});syncManticora(item);
       }
       if (species === 'jewel') {
         const item=items[items.length-1],support=jewelGroups.get(index);

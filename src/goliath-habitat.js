@@ -1,7 +1,7 @@
 /** Two attached observation-height branches. The damp bark marks are only
  * visual search clues; no sap-feeding animation, bait or resource is modeled. */
-import {GOLIATH_SITES as SITES,GOLIATH_RETREAT_BOUNDS as LIMITS,GOLIATH_BRANCH_RADIUS as R} from './goliath-layout.js?v=0.37.0&b=4d59dc9955d7';
-import {GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {GOLIATH_SITES as SITES,GOLIATH_RETREAT_BOUNDS as LIMITS,GOLIATH_BRANCH_RADIUS as R} from './goliath-layout.js?v=0.39.0&b=8a647322e77c';
+import {GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.39.0&b=8a647322e77c';
 const T=window.THREE;
 function collector(){const p=[],colors=[];return{add(g,color){const copy=g.index?g.toNonIndexed():g.clone();p.push(...copy.attributes.position.array);const c=new T.Color(color);for(let i=0;i<copy.attributes.position.count;i++)colors.push(c.r,c.g,c.b);copy.dispose();},finish(){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));g.computeVertexNormals();g.computeBoundingSphere();return g;}};}
 export function createGoliathHabitat(world,scene){
