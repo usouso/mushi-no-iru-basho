@@ -1,7 +1,7 @@
 /** Fixed, unmeasured male on one real branch. Human-response distances, waits
  * and speeds are game tuning, not measured G. goliatus defensive behaviour. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.37.0&b=4d59dc9955d7';
-import {GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.39.0&b=8a647322e77c';
+import {GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.39.0&b=8a647322e77c';
 export const GOLIATH_MOTION=Object.freeze({warningSeconds:.35,retreatDistance:.24,retreatSpeed:.10,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1});
 export function createGoliathStudy({position={x:0,y:D.rootAboveSupport,z:0},heading=0,retreatBounds}={}){
  if(!position||![Object.prototype,null].includes(Object.getPrototypeOf(position))||Reflect.ownKeys(position).length!==3||!['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(position,k)&&'value'in Object.getOwnPropertyDescriptor(position,k)&&Number.isFinite(position[k])&&Math.abs(position[k])<=1e4)||!Number.isFinite(heading)||Math.abs(heading)>1e4)throw new TypeError('Invalid goliath support');

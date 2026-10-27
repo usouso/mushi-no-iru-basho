@@ -1,4 +1,4 @@
-import {sampleManticoraPose,MANTICORA_DIMENSIONS as D} from './manticora-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {sampleManticoraPose,MANTICORA_DIMENSIONS as D} from './manticora-kinematics.js?v=0.39.0&b=8a647322e77c';
 /** Original M. latipennis male silhouette informed by museum specimen viewing.
  * Fixed wingcases only; hidden hindwing anatomy was not established and is not
  * invented. Rendering accepts the finite grounded study, including explicit

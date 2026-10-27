@@ -1,0 +1,25 @@
+/** Production input/net/LOS with DOM, rendering, audio and storage doubles.
+ * These finite response checks are not a visual or human playtest. */
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..'),source=fs.readFileSync(path.join(root,'tests/companions-main.test.mjs'),'utf8'),marker='\nconst legacy=';assert.ok(source.includes(marker));
+const factory=source.slice(0,source.indexOf(marker)).replace("const root=path.resolve(import.meta.dirname,'..');",`const root=${JSON.stringify(root)};`)+'\nexport{app};';const{app}=await import('data:text/javascript;base64,'+Buffer.from(factory).toString('base64'));
+const xyz=i=>({x:i.x,y:i.y,z:i.z}),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z),pose=i=>({position:xyz(i),orientation:{...i.orientation},walkPhase:i.walkPhase,jawOpen:i.jawOpen,phase:i.manticoraPhase,turnFeet:i.turnFeet?structuredClone(i.turnFeet):null});
+const direction=p=>({x:-Math.sin(p.yaw)*Math.cos(p.pitch),y:Math.sin(p.pitch),z:-Math.cos(p.yaw)*Math.cos(p.pitch)}),net=h=>{h.key('keydown','Space');h.key('keyup','Space');};
+async function ready(t){const h=await app(t,{expeditionEnabled:true,battleSeed:17,extraExports:'models,collides'});assert.equal(await h.g.expedition.flush(),true);h.choose('savanna');return h;}
+function item(h){const i=h.g.simulation.items.find(i=>i.species==='manticora');assert.equal(i.sizePermille,1089);assert.equal(i.id,'insect-2');return i;}
+function aim(h,i,offset=0){const p=h.g.state.player;h.g.setPose({yaw:Math.atan2(p.x-i.x,p.z-i.z)+offset,pitch:Math.atan2(i.y-p.y,Math.hypot(i.x-p.x,i.z-p.z))});}
+function legal(h,i){const target=h.g.simulation.findTarget(h.g.state.player,direction(h.g.state.player));return target?.item.id===i.id&&target.catchable;}
+function begin(h,side=1,mode='normal'){h.g.restart();const i=item(h),yaw=2*Math.atan2(i.orientation.y,i.orientation.w),start={x:i.x+side*Math.sin(yaw)*4.5,z:i.z+side*Math.cos(yaw)*4.5};assert.equal(h.g.collides(start.x,start.z),false);h.g.setPose({...start,y:h.g.world.heightAt(start.x,start.z)+(mode==='quiet'?1.28:1.65),speed:0});if(mode==='quiet')h.mouse('mousedown',2);if(mode==='sprint')h.key('keydown','ShiftLeft');aim(h,i);h.key('keydown','KeyW');return i;}
+function stop(h){h.key('keyup','KeyW');}function clear(h){stop(h);h.key('keyup','ShiftLeft');h.mouse('mouseup',2);}
+
+test('reversed normal and sprint approach visibly withdraw before the next legal net without changing capture rules',async t=>{
+ const h=await ready(t),results=[];
+ for(const mode of['normal','sprint']){const i=begin(h,1,mode),origin=xyz(i),began=h.g.state.elapsed;let warning=null,count=0;while(count++<600){aim(h,i);h.frame(1);if(!warning&&i.manticoraPhase==='warning')warning=h.g.state.elapsed-began;if(legal(h,i))break;}stop(h);assert.ok(count<600&&warning!==null);const first=h.g.state.elapsed-began;aim(h,i,.95);net(h);assert.equal(h.g.simulation.caught,null);assert.equal(h.g.state.cooldown,.7);const miss=xyz(i);let frames=0;while(h.g.state.cooldown>0&&frames++<60){h.frame(1);aim(h,i);}assert.equal(h.g.state.cooldown,0);const moved=distance(miss,i);assert.ok(moved>.001,`${mode}: actual root must move while waiting, not only its legs`);assert.ok(distance(origin,i)<.3,'bounded short withdrawal, no jump');let pursue=0;while(!legal(h,i)&&pursue++<120){h.key('keydown','KeyW');aim(h,i);h.frame(1);}stop(h);aim(h,i);assert.ok(legal(h,i),'visible insect can be fairly retried');net(h);assert.equal(h.g.simulation.caught?.id,i.id);results.push({mode,warning,first,cooldownFrames:frames,moved,pursue});h.frame(22);h.g.release({lock:false});clear(h);}
+ console.log('Reverse response / actual net',JSON.stringify(results));
+});
+
+test('quiet first catch remains available in both directions; capture during signed withdrawal freezes and resumes the same individual',async t=>{
+ const h=await ready(t),{g}=h,before=structuredClone(g.activeOuting.encounters);
+ for(const side of[-1,1]){const i=begin(h,side,'quiet');let n=0;while(n++<600){aim(h,i);h.frame(1);if(legal(h,i))break;}stop(h);assert.ok(n<600);assert.equal(i.manticoraPhase,'resting');aim(h,i);net(h);assert.equal(g.simulation.caught?.id,i.id);h.frame(22);g.release({lock:false});clear(h);}
+ const i=begin(h,1,'normal');let frames=0;while(frames++<600){aim(h,i);h.frame(1);if(i.manticoraPhase==='running'&&i.walkPhase<-.01&&i.walkSpeed>0)break;}stop(h);assert.ok(frames<600,'short reverse gait is actually reached');const id=i.encounterId;h.mouse('mousedown',2);const x=i.x+1.15,z=i.z,y=g.world.heightAt(x,z)+1.28;assert.equal(g.collides(x,z),false);g.setPose({x,y,z,speed:0});aim(h,i);const at=pose(i);net(h);assert.equal(g.simulation.caught?.id,i.id);assert.deepEqual(pose(i),at);assert.equal(i.walkSpeed,0);h.frame(22);assert.equal(g.state.mode,'inspect');assert.deepEqual(pose(i),at);g.release({lock:false});assert.deepEqual(pose(i),at);h.frame(5);assert.ok(distance(at.position,i)>.001);assert.equal(i.encounterId,id);assert.deepEqual(g.activeOuting.encounters,before);clear(h);
+});

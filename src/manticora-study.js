@@ -1,34 +1,53 @@
-import {MANTICORA_DIMENSIONS as D,sampleManticoraPose} from './manticora-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {MANTICORA_DIMENSIONS as D,sampleManticoraPose} from './manticora-kinematics.js?v=0.39.0&b=8a647322e77c';
 /** Finite ground lane, stepped turns and observation timings: GAME tuning,
  * not measured M. latipennis speed, microhabitat or defensive behaviour. */
 export const MANTICORA_MOTION=Object.freeze({normalSpeed:.08,runSpeed:.30,warningSeconds:.18,turnStepAngle:Math.PI/36,turnStepSeconds:.10,halfStride:.02});
-const TAU=2*Math.PI,H=D.cycleDistance/2,clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),smooth=x=>x*x*(3-2*x),lerp=(a,b,t)=>a+(b-a)*t,copy=p=>({...p}),angle=x=>Math.atan2(Math.sin(x),Math.cos(x));
+const TAU=2*Math.PI,clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),smooth=x=>x*x*(3-2*x),lerp=(a,b,t)=>a+(b-a)*t,copy=p=>({...p}),angle=x=>Math.atan2(Math.sin(x),Math.cos(x));
 const finitePoint=(p,keys=['x','y','z'])=>p&&[Object.prototype,null].includes(Object.getPrototypeOf(p))&&Reflect.ownKeys(p).length===keys.length&&keys.every(k=>Object.prototype.hasOwnProperty.call(p,k)&&'value'in Object.getOwnPropertyDescriptor(p,k)&&Number.isFinite(p[k])&&Math.abs(p[k])<1e4),distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
-export function createManticoraStudy({position,route,seed=1}={}){
+export function createManticoraStudy({position,route,seed=1,scale=1,startOffset=0}={}){
+ if(!Number.isFinite(scale)||scale<1||scale>1.15)throw new RangeError('Invalid display scale');
+ const C=D.cycleDistance*scale,H=C/2;
+ // Offsets select sites on this same lane, never translate the ground route.
+ if(!Number.isFinite(startOffset)||Math.abs(startOffset)>6*H+1e-10||Math.abs(startOffset/H-Math.round(startOffset/H))>1e-8)throw new RangeError('Expected bounded half-stride start offset');
  if(!finitePoint(position)||!Array.isArray(route)||route.length!==3||!route.every(p=>finitePoint(p,['x','z']))||!Number.isInteger(seed)||seed<0||seed>0xffffffff||distance(position,route[1])>1e-8)throw new TypeError('Expected flat [A,home,B] root lane and uint seed');
  const raw=route.map(p=>({...p,y:position.y})),lengths=[distance(raw[0],raw[1]),distance(raw[1],raw[2])];if(lengths.some(n=>n<.2||n>5))throw new RangeError('Invalid ground lane length');
- const len=lengths.map(n=>Math.floor((n+1e-10)/H)*H),nodes=[0,1,2].map(i=>i===1?copy(position):{x:lerp(position.x,raw[i].x,len[i===0?0:1]/lengths[i===0?0:1]),y:position.y,z:lerp(position.z,raw[i].z,len[i===0?0:1]/lengths[i===0?0:1])}),total=len[0]+len[1];
+ // Keep both effective endpoints inside the original unscaled half-stride lane.
+ const len=lengths.map(n=>Math.floor((Math.floor((n+1e-10)/(D.cycleDistance/2))*(D.cycleDistance/2)+1e-10)/H)*H),nodes=[0,1,2].map(i=>i===1?copy(position):{x:lerp(position.x,raw[i].x,len[i===0?0:1]/lengths[i===0?0:1]),y:position.y,z:lerp(position.z,raw[i].z,len[i===0?0:1]/lengths[i===0?0:1])}),total=len[0]+len[1];
  let s=len[0],yaw=0,phase='resting',time=0,caught=false,walkPhase=0,walkSpeed=0,jawOpen=D.restJawOpen,wait=0,rng=seed>>>0,move=null,turn=null,goal=null,pending=null,warningElapsed=0,lastReaction=-Infinity,normalDirection=1;
  const random=()=>{rng=(Math.imul(rng,1664525)+1013904223)>>>0;return rng/4294967296;};
  const pointAt=value=>{const segment=value<len[0]?0:1,t=(value-(segment?len[0]:0))/len[segment];return{x:lerp(nodes[segment].x,nodes[segment+1].x,t),y:position.y,z:lerp(nodes[segment].z,nodes[segment+1].z,t)};};
  const location=()=>pointAt(s);
  const heading=(target)=>{const p=location(),q=pointAt(target);return Math.atan2(q.x-p.x,q.z-p.z);};
- function world(local,a=yaw){const p=location(),c=Math.cos(a),n=Math.sin(a);return{x:p.x+c*local.x+n*local.z,y:p.y+local.y,z:p.z-n*local.x+c*local.z};}
- function local(p,a=yaw){const o=location(),x=p.x-o.x,z=p.z-o.z,c=Math.cos(a),n=Math.sin(a);return{x:c*x-n*z,y:p.y-o.y,z:n*x+c*z};}
+ function world(local,a=yaw){const p=location(),c=Math.cos(a),n=Math.sin(a);return{x:p.x+c*local.x*scale+n*local.z*scale,y:p.y+local.y*scale,z:p.z-n*local.x*scale+c*local.z*scale};}
+ function local(p,a=yaw){const o=location(),x=p.x-o.x,z=p.z-o.z,c=Math.cos(a),n=Math.sin(a);return{x:(c*x-n*z)/scale,y:(p.y-o.y)/scale,z:(n*x+c*z)/scale};}
  function nominal(){return sampleManticoraPose({walkPhase}).legs.map(l=>l.foot);}
  function rest(){phase='resting';wait=2+2*random();walkSpeed=0;move=null;turn=null;goal=null;}
  function beginTurn(target){const delta=angle(target-yaw);if(Math.abs(delta)<1e-9)return false;const count=Math.ceil(Math.abs(delta)/MANTICORA_MOTION.turnStepAngle-1e-10),feet=nominal();turn={target,delta:delta/count,count,index:0,elapsed:0,anchors:feet.map(p=>world(p)),feet,startYaw:yaw};phase='turning';startTurnStep();return true;}
  function startTurnStep(){const t=turn;t.startYaw=yaw;t.endYaw=t.index<t.count?yaw+t.delta:yaw;t.elapsed=0;t.start=t.anchors.map(copy);t.targets=t.feet.map(p=>world(p,t.endYaw));}
- function turnFeet(){const t=turn,u=clamp(t.elapsed/MANTICORA_MOTION.turnStepSeconds,0,1),blend=smooth(u),group=t.index%2;return t.start.map((p,i)=>{const swing=(i%3)%2===(i<3?1:0)?0:1;let w=copy(p),contact=true;if(swing===group){w={x:lerp(p.x,t.targets[i].x,blend),y:lerp(p.y,t.targets[i].y,blend)+.010*Math.sin(Math.PI*u)**2,z:lerp(p.z,t.targets[i].z,blend)};contact=u<=1e-10||u>=1-1e-10;}return{...local(w),contact};});}
- function startMove(target,kind){const length=Math.abs(target-s),peak=kind==='running'?MANTICORA_MOTION.runSpeed:MANTICORA_MOTION.normalSpeed,ramp=Math.min(.16,Math.sqrt(length/peak)),actualPeak=Math.min(peak,length/ramp);if(length<1e-10){advanceGoal();return;}move={start:s,target,sign:Math.sign(target-s),length,elapsed:0,ramp,peak:actualPeak,duration:length/actualPeak+ramp,phaseStart:walkPhase,kind};phase=kind;}
- function advanceGoal(){if(!goal)return rest();if(Math.abs(goal.target-s)<1e-9){if(goal.kind==='running')lastReaction=time;return rest();}const dir=Math.sign(goal.target-s),target=dir>0&&s<len[0]-1e-9?Math.min(goal.target,len[0]):dir<0&&s>len[0]+1e-9?Math.max(goal.target,len[0]):goal.target;const wanted=heading(target);if(beginTurn(wanted))return;startMove(target,goal.kind);}
+ function turnFeet(){const t=turn,u=clamp(t.elapsed/MANTICORA_MOTION.turnStepSeconds,0,1),blend=smooth(u),group=t.index%2;return t.start.map((p,i)=>{const swing=(i%3)%2===(i<3?1:0)?0:1;let w=copy(p),contact=true;if(swing===group){w={x:lerp(p.x,t.targets[i].x,blend),y:lerp(p.y,t.targets[i].y,blend)+.010*scale*Math.sin(Math.PI*u)**2,z:lerp(p.z,t.targets[i].z,blend)};contact=u<=1e-10||u>=1-1e-10;}return{...local(w),contact};});}
+ function startMove(target,kind,gaitSign=1){const length=Math.abs(target-s),peak=kind==='running'?MANTICORA_MOTION.runSpeed:MANTICORA_MOTION.normalSpeed,ramp=Math.min(.16,Math.sqrt(length/peak)),actualPeak=Math.min(peak,length/ramp);if(length<1e-10){advanceGoal();return;}move={start:s,target,sign:Math.sign(target-s),length,elapsed:0,ramp,peak:actualPeak,duration:length/actualPeak+ramp,phaseStart:walkPhase,kind,gaitSign};phase=kind;}
+ function advanceGoal(){if(!goal)return rest();
+  if(goal.withdrawal){const w=goal.withdrawal;if(!w.started){if(beginTurn(w.heading))return;w.started=true;startMove(w.target,'running',-1);return;}goal.withdrawal=null;}
+  if(Math.abs(goal.target-s)<1e-9){if(goal.kind==='running')lastReaction=time;return rest();}const dir=Math.sign(goal.target-s),target=dir>0&&s<len[0]-1e-9?Math.min(goal.target,len[0]):dir<0&&s>len[0]+1e-9?Math.max(goal.target,len[0]):goal.target;const wanted=heading(target);if(beginTurn(wanted))return;startMove(target,goal.kind);}
  function warning(){phase='warning';warningElapsed=0;move=null;turn=null;walkSpeed=0;lastReaction=time;}
- function chooseRun(){const p=pending;pending=null;const a=distance(nodes[0],p),b=distance(nodes[2],p);goal={target:a>b?0:total,kind:'running'};advanceGoal();}
- function normal(){if(s<=1e-9)normalDirection=1;else if(s>=total-1e-9)normalDirection=-1;else if(random()<.25)normalDirection*=-1;goal={target:clamp(s+normalDirection*.12,0,total),kind:'walking'};advanceGoal();}
- function reset(){s=len[0];yaw=Math.atan2(nodes[2].x-position.x,nodes[2].z-position.z);time=0;caught=false;walkPhase=0;walkSpeed=0;jawOpen=D.restJawOpen;rng=seed>>>0;move=null;turn=null;goal=null;pending=null;warningElapsed=0;lastReaction=-Infinity;normalDirection=1;rest();}
+ // Before a large reversal, a short native backwards step can show withdrawal
+ // without spinning planted feet faster. Never cross a lane corner backwards.
+ function planWithdrawal(source,target){
+  const sign=Math.sign(target-s);if(!sign)return null;
+  const edge=sign>0?(s<len[0]-1e-9?len[0]:total):(s>len[0]+1e-9?len[0]:0),room=Math.abs(edge-s),steps=Math.min(6,Math.floor((room+1e-10)/H));
+  if(steps<1)return null;
+  const end=s+sign*steps*H,wanted=heading(end),backHeading=angle(wanted+Math.PI);
+  if(Math.abs(angle(wanted-yaw))<=Math.PI/2||Math.abs(angle(backHeading-yaw))>Math.PI/6+1e-10)return null;
+  const from=location(),to=pointAt(end),away=(from.x-source.x)*(to.x-from.x)+(from.z-source.z)*(to.z-from.z);
+  if(away<0||distance(to,source)<=distance(from,source)+1e-10)return null;
+  return{target:end,heading:backHeading,started:false};
+ }
+ function chooseRun(){const p=pending;pending=null;const a=distance(nodes[0],p),b=distance(nodes[2],p);goal={target:a>b?0:total,kind:'running'};goal.withdrawal=planWithdrawal(p,goal.target);advanceGoal();}
+ function normal(){if(s<=1e-9)normalDirection=1;else if(s>=total-1e-9)normalDirection=-1;else if(random()<.25)normalDirection*=-1;goal={target:clamp(s+normalDirection*(6*H),0,total),kind:'walking'};advanceGoal();}
+ function reset(){s=len[0]+startOffset;const origin=startOffset===0?position:location();yaw=Math.atan2(nodes[2].x-origin.x,nodes[2].z-origin.z);time=0;caught=false;walkPhase=0;walkSpeed=0;jawOpen=D.restJawOpen;rng=seed>>>0;move=null;turn=null;goal=null;pending=null;warningElapsed=0;lastReaction=-Infinity;normalDirection=1;rest();}
  function update(dt){dt=Number.isFinite(dt)?clamp(dt,0,.1):0;if(caught||dt===0)return;let left=dt,iterations=0;while(left>1e-12&&iterations++<20){
   if(turn){const part=Math.min(left,MANTICORA_MOTION.turnStepSeconds-turn.elapsed);turn.elapsed+=part;time+=part;left-=part;yaw=lerp(turn.startYaw,turn.endYaw,smooth(turn.elapsed/MANTICORA_MOTION.turnStepSeconds));if(turn.elapsed>=MANTICORA_MOTION.turnStepSeconds-1e-10){const feet=turnFeet();turn.anchors=feet.map(p=>world(p));turn.index++;if(turn.index>turn.count){turn=null;if(pending)warning();else advanceGoal();}else startTurnStep();}continue;}
-  if(move){const m=move,part=Math.min(left,m.duration-m.elapsed);m.elapsed+=part;time+=part;left-=part;let travelled,speed;if(m.brake){const u=m.elapsed/m.duration;travelled=m.length*smooth(u)+m.initialSpeed*m.duration*(u*u*u-2*u*u+u);speed=(m.length*(6*u-6*u*u)+m.initialSpeed*m.duration*(3*u*u-4*u+1))/m.duration;}else if(m.elapsed<m.ramp){speed=m.peak*m.elapsed/m.ramp;travelled=.5*speed*m.elapsed;}else if(m.elapsed>m.duration-m.ramp){const tail=m.duration-m.elapsed;speed=m.peak*tail/m.ramp;travelled=m.length-.5*speed*tail;}else{speed=m.peak;travelled=m.peak*(m.elapsed-.5*m.ramp);}s=m.start+m.sign*travelled;walkPhase=m.phaseStart+travelled/D.cycleDistance*TAU;walkSpeed=Math.max(0,speed);if(m.kind==='running')jawOpen=lerp(.65,D.restJawOpen,smooth(clamp(m.elapsed/.6,0,1)));if(m.elapsed>=m.duration-1e-10){s=m.target;walkPhase=m.phaseStart+m.length/D.cycleDistance*TAU;move=null;walkSpeed=0;if(pending)warning();else advanceGoal();}continue;}
+  if(move){const m=move,part=Math.min(left,m.duration-m.elapsed);m.elapsed+=part;time+=part;left-=part;let travelled,speed;if(m.brake){const u=m.elapsed/m.duration;travelled=m.length*smooth(u)+m.initialSpeed*m.duration*(u*u*u-2*u*u+u);speed=(m.length*(6*u-6*u*u)+m.initialSpeed*m.duration*(3*u*u-4*u+1))/m.duration;}else if(m.elapsed<m.ramp){speed=m.peak*m.elapsed/m.ramp;travelled=.5*speed*m.elapsed;}else if(m.elapsed>m.duration-m.ramp){const tail=m.duration-m.elapsed;speed=m.peak*tail/m.ramp;travelled=m.length-.5*speed*tail;}else{speed=m.peak;travelled=m.peak*(m.elapsed-.5*m.ramp);}s=m.start+m.sign*travelled;walkPhase=m.phaseStart+(m.gaitSign??1)*travelled/C*TAU;walkSpeed=Math.max(0,speed);if(m.kind==='running')jawOpen=lerp(.65,D.restJawOpen,smooth(clamp(m.elapsed/.6,0,1)));if(m.elapsed>=m.duration-1e-10){s=m.target;walkPhase=m.phaseStart+(m.gaitSign??1)*m.length/C*TAU;move=null;walkSpeed=0;if(pending)warning();else advanceGoal();}continue;}
   if(phase==='warning'){const part=Math.min(left,MANTICORA_MOTION.warningSeconds-warningElapsed);warningElapsed+=part;time+=part;left-=part;jawOpen=lerp(D.restJawOpen,.65,smooth(warningElapsed/MANTICORA_MOTION.warningSeconds));if(warningElapsed>=MANTICORA_MOTION.warningSeconds-1e-10)chooseRun();continue;}
   const part=Math.min(left,wait);wait-=part;time+=part;left-=part;jawOpen=D.restJawOpen+(jawOpen-D.restJawOpen)*Math.exp(-8*part);if(wait<=1e-10)normal();
  }}

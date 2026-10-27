@@ -1,6 +1,6 @@
 /** Two original broad leaves, additive to the existing meadow. No RNG or old-world mutation. */
-import {MANTIS_LEAF_SITES as SITES,MANTIS_LEAF_SHAPE as SHAPE} from './mantis-layout.js?v=0.37.0&b=4d59dc9955d7';
-import {MANTIS_DIMENSIONS as D} from './mantis-kinematics.js?v=0.37.0&b=4d59dc9955d7';
+import {MANTIS_LEAF_SITES as SITES,MANTIS_LEAF_SHAPE as SHAPE} from './mantis-layout.js?v=0.39.0&b=8a647322e77c';
+import {MANTIS_DIMENSIONS as D} from './mantis-kinematics.js?v=0.39.0&b=8a647322e77c';
 const T=window.THREE;
 export function createMantisHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];

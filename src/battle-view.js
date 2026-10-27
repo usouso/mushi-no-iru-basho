@@ -1,8 +1,8 @@
-import {createManticoraBattleView} from './manticora-battle-view.js?v=0.37.0&b=4d59dc9955d7';
-import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.37.0&b=4d59dc9955d7';
-import {createInsectModel} from './insect-models.js?v=0.37.0&b=4d59dc9955d7';
-import {createBattleRig} from './battle-pose.js?v=0.37.0&b=4d59dc9955d7';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.37.0&b=4d59dc9955d7';
+import {createManticoraBattleView} from './manticora-battle-view.js?v=0.39.0&b=8a647322e77c';
+import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.39.0&b=8a647322e77c';
+import {createInsectModel} from './insect-models.js?v=0.39.0&b=8a647322e77c';
+import {createBattleRig} from './battle-pose.js?v=0.39.0&b=8a647322e77c';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.39.0&b=8a647322e77c';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
 const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama']);

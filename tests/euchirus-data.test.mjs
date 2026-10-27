@@ -77,14 +77,51 @@ test('28th journal article retains all 27 notes/fields and optional 500-characte
 });
 
 
-test('only eleventh battle eligibility extends; old ten profiles, every rule and gen3 outing source stay unchanged',()=>{
+test('only eleventh battle eligibility extends; old ten profiles, every rule and gen3 source outside exact gen4 additions stay unchanged',()=>{
  const old=['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama'];
  assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'euchirus','manticora']);
  const hash=s=>createHash('sha256').update(s).digest('hex');
  assert.equal(hash(JSON.stringify(Object.fromEntries(old.map(s=>[s,BATTLE_SPECIES[s]])))),'a9d05d0b7c3a5c32382048d43db8b01d14ba44cf21b81936eb85c7f7ee1f3b2f');
  const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
  assert.equal(hash(source.replace(/export const BATTLE_SPECIES=freeze\(\{[\s\S]*?\n\}\);/,'export const BATTLE_SPECIES=<registry>;')),'bcb68d5024e7293e865e2ff9206ea5cbbe02e3cbe71769dfcaa1b3c1d46b5770');
- assert.equal(hash(fs.readFileSync(new URL('../src/expedition.js',import.meta.url))),'f50727a3d2d23a834778bd3cff46faed001735bfee4dce0efddddb38721b1445');
+ // Invert only the approved gen4 additions; retain the immutable frozen gen3 hash.
+ let priorExpedition=fs.readFileSync(new URL('../src/expedition.js',import.meta.url),'utf8');
+ const gen4Additions=[
+  [
+    "runtimeSlotId:'insect-5'},\n {populationSlotId:'manticora',species:'manticora',habitat:'savanna',runtimeSlotId:'insect-2'}\n].map",
+    "runtimeSlotId:'insect-5'}\n].map"
+  ],
+  [
+    "const generationThreeSlots=EXPEDITION_SLOTS.slice(0,7);\n",
+    ""
+  ],
+  [
+    "version===3?generationThreeSlots:version===4?EXPEDITION_SLOTS:null",
+    "version===3?EXPEDITION_SLOTS:null"
+  ],
+  [
+    "species==='atlas'?3:species==='manticora'?4:1",
+    "species==='atlas'?3:1"
+  ],
+  [
+    "g([1234])",
+    "g([123])"
+  ],
+  [
+    "(tropical|night|understory|savanna)-(hercules-a|hercules-b|rhino|stag|metallifer|giantstag|atlas|manticora)",
+    "(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer|giantstag|atlas)"
+  ],
+  [
+    "generatorVersion:4,worldSeed",
+    "generatorVersion:3,worldSeed"
+  ],
+  [
+    "![1,2,3,4].includes",
+    "![1,2,3].includes"
+  ]
+];
+ for(const [current,prior] of gen4Additions){assert.equal(priorExpedition.split(current).length-1,1,'each exact gen4 fragment occurs once');priorExpedition=priorExpedition.replace(current,prior);}
+ assert.equal(hash(priorExpedition),'f50727a3d2d23a834778bd3cff46faed001735bfee4dce0efddddb38721b1445');
  assert.equal(BATTLE_SPECIES.euchirus.role,'長い前脚で押し合う');assert.match(BATTLE_SPECIES.euchirus.help,/Euchirus longimanus/);assert.match(BATTLE_SPECIES.euchirus.help,/ゲーム上/);
  for(const [playerSpecies,opponentSpecies]of [['euchirus','rhino'],['rhino','euchirus'],['euchirus','euchirus']])for(const seed of [0,17]){
   const config={playerSpecies,opponentSpecies,seed},result=advanceBattle(createBattle(config),100);assert.equal(result.phase,'finished');

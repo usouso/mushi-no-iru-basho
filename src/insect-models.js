@@ -1,25 +1,25 @@
-import {createManticoraModel,updateManticoraModel} from './manticora-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createMiyamaModel,updateMiyamaModel} from './miyama-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createFiveHornModel,updateFiveHornModel} from './five-horn-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.37.0&b=4d59dc9955d7';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.37.0&b=4d59dc9955d7';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.37.0&b=4d59dc9955d7';
-import {applyInsectReadability} from './insect-readability.js?v=0.37.0&b=4d59dc9955d7';
+import {createManticoraModel,updateManticoraModel} from './manticora-model.js?v=0.39.0&b=8a647322e77c';
+import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.39.0&b=8a647322e77c';
+import {createMiyamaModel,updateMiyamaModel} from './miyama-model.js?v=0.39.0&b=8a647322e77c';
+import {createFiveHornModel,updateFiveHornModel} from './five-horn-model.js?v=0.39.0&b=8a647322e77c';
+import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.39.0&b=8a647322e77c';
+import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.39.0&b=8a647322e77c';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.39.0&b=8a647322e77c';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.39.0&b=8a647322e77c';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.39.0&b=8a647322e77c';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.39.0&b=8a647322e77c';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.39.0&b=8a647322e77c';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.39.0&b=8a647322e77c';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.39.0&b=8a647322e77c';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.39.0&b=8a647322e77c';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.39.0&b=8a647322e77c';
+import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.39.0&b=8a647322e77c';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.39.0&b=8a647322e77c';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.39.0&b=8a647322e77c';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.39.0&b=8a647322e77c';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.39.0&b=8a647322e77c';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {applyInsectReadability} from './insect-readability.js?v=0.39.0&b=8a647322e77c';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -749,7 +749,7 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
   const root = buildInsectModel(species, { inspection, fieldFlight });
   // Individual size is fixed at creation. Inspection framing may scale its root
   // further; animation must never replace that transform or redraw native art.
-  const eligible=['hercules','rhino','stag','metallifer','giantstag','atlas'].includes(species);
+  const eligible=['hercules','rhino','stag','metallifer','giantstag','atlas','manticora'].includes(species);
   const factor=eligible&&Number.isInteger(sizePermille)&&sizePermille>=1000&&sizePermille<=1150?sizePermille/1000:1;
   root.userData.individualScale=factor;root.scale.setScalar(factor);
   return applyInsectReadability(root, { inspection, species });
