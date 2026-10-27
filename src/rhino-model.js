@@ -1,4 +1,4 @@
-import {sampleRhinoPose,RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.40.0&b=8b1b975eded1';
+import {sampleRhinoPose,RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.41.0&b=bed5219b02cd';
 /** Original closed-wing male display rig; flight and feeding mouth contact are not simulated. */
 const T=window.THREE;
 function ellipsoid(parent,p,s,material){const m=new T.Mesh(new T.SphereGeometry(1,8,6),material);m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}

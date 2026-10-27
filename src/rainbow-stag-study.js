@@ -1,7 +1,7 @@
 /** Bounded horizontal-log field study. Durations, speeds and jaw motion are
  * game tuning, NOT measured natural behaviour. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.40.0&b=8b1b975eded1';
-import {RAINBOW_STAG_DIMENSIONS as D} from './rainbow-stag-kinematics.js?v=0.40.0&b=8b1b975eded1';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.41.0&b=bed5219b02cd';
+import {RAINBOW_STAG_DIMENSIONS as D} from './rainbow-stag-kinematics.js?v=0.41.0&b=bed5219b02cd';
 export const RAINBOW_STAG_MOTION=Object.freeze({warningSeconds:.22,retreatDistance:.18,retreatSpeed:.14,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1});
 function record(v,keys){return !!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k]));}
 export function createRainbowStagStudy({position={x:0,y:D.rootAboveSupport,z:0},orientation={x:0,y:0,z:0,w:1},retreatBounds={min:-.34,max:.34},motionSeed=1729}={}){

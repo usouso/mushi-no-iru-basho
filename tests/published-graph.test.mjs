@@ -20,7 +20,7 @@ test('actual production graph has a closed exact token on every edge and matchin
  // Public repository documents are not build inputs; all other unexpected files still fail.
  const reviewDocuments=new Set(['README.md','PLAYTEST-JA.md','AUDIO-PLAYTEST-JA.md']);
  const files=walk(dist).filter(name=>!name.startsWith('tests/')&&!reviewDocuments.has(name)),html=read('index.html').toString();
- const version=html.match(/<meta name="application-version" content="([0-9.]+)">/)?.[1];assert.equal(version,'0.40.0');
+ const version=html.match(/<meta name="application-version" content="([0-9.]+)">/)?.[1];assert.equal(version,'0.41.0');
  assert.equal([...html.matchAll(/<span data-build-version>([^<]+)<\/span>/g)].filter(m=>m[1]===version).length,2);
  const refs=[...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m=>m[1]);
  assert.equal(refs.length,3);const token=new URL(refs[0],'https://local.invalid/nested/index.html').search;

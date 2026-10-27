@@ -1,4 +1,4 @@
-import {sampleEuchirusPose,EUCHIRUS_DIMENSIONS as D} from './euchirus-kinematics.js?v=0.40.0&b=8b1b975eded1';
+import {sampleEuchirusPose,EUCHIRUS_DIMENSIONS as D} from './euchirus-kinematics.js?v=0.41.0&b=bed5219b02cd';
 /** Independent male Euchirus display. No flight/feeding/battle integration. */
 const T=window.THREE;export {D as EUCHIRUS_DIMENSIONS};
 function ellipsoid(parent,p,s,material){const m=new T.Mesh(new T.SphereGeometry(1,8,6),material);m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}

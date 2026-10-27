@@ -1,6 +1,6 @@
 /** Independent flat-ground display slice. No terrain/time/physics changes to old worlds. */
-import {SAVANNA_BOUNDS,SAVANNA_SPAWN,SAVANNA_HOMES,SAVANNA_DUNG_SUPPORTS,DUNG_ORIGIN} from './savanna-layout.js?v=0.40.0&b=8b1b975eded1';
-import {createDungBallModel,updateDungBallModel} from './dung-model.js?v=0.40.0&b=8b1b975eded1';
+import {SAVANNA_BOUNDS,SAVANNA_SPAWN,SAVANNA_HOMES,SAVANNA_DUNG_SUPPORTS,DUNG_ORIGIN} from './savanna-layout.js?v=0.41.0&b=bed5219b02cd';
+import {createDungBallModel,updateDungBallModel} from './dung-model.js?v=0.41.0&b=bed5219b02cd';
 const THREE=window.THREE;
 export const heightAt=()=>0;
 const hash=(x,z)=>{const n=Math.sin(x*127.1+z*311.7)*43758.5453;return n-Math.floor(n);};

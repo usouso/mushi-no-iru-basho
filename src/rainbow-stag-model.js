@@ -1,4 +1,4 @@
-import {sampleRainbowStagPose,RAINBOW_STAG_DIMENSIONS as D} from './rainbow-stag-kinematics.js?v=0.40.0&b=8b1b975eded1';
+import {sampleRainbowStagPose,RAINBOW_STAG_DIMENSIONS as D} from './rainbow-stag-kinematics.js?v=0.41.0&b=bed5219b02cd';
 /** Original long-mandibled male proposal, model-only. Qualitative historical
  * primary description + museum specimens, not traced anatomy or structural colour.
  * No flight/feeding/region registration. Natural millimetres are not these units. */

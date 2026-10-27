@@ -1,6 +1,6 @@
 /** One original insect on existing ground: no new support, grass or collision. */
-import {MANTICORA_ROUTE as R,MANTICORA_HOME as H,MANTICORA_ROOT_HEIGHT} from './manticora-layout.js?v=0.40.0&b=8b1b975eded1';
-import {MANTICORA_DIMENSIONS as D,sampleManticoraPose} from './manticora-kinematics.js?v=0.40.0&b=8b1b975eded1';
+import {MANTICORA_ROUTE as R,MANTICORA_HOME as H,MANTICORA_ROOT_HEIGHT} from './manticora-layout.js?v=0.41.0&b=bed5219b02cd';
+import {MANTICORA_DIMENSIONS as D,sampleManticoraPose} from './manticora-kinematics.js?v=0.41.0&b=bed5219b02cd';
 const T=window.THREE;
 export function createManticoraHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];
