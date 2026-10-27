@@ -2,7 +2,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createJournal,loadJournal,saveJournal,JOURNAL_KEY,LEGACY_JOURNAL_KEY,JOURNAL_VERSION,NOTE_LIMIT,JOURNAL_RAW_LIMIT} from '../src/journal.js';
 const species=['butterfly','dragonfly','cicada','morpho','grasshopper','hercules','leafinsect','waterstrider','leafcutterant','firefly','dungbeetle','divingbeetle','mantis','ladybird','rhino','stag','bee','swallowtail','jewel','longhorn','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus'];
-const currentSpecies=[...species,'manticora'];
+const currentSpecies=[...species,'manticora','rainbowstag'];
 const entries=(character,ids=species)=>ids.map((s,i)=>({species:s,firstSeen:Number.MAX_SAFE_INTEGER,lastSeen:Number.MAX_SAFE_INTEGER,location:character.repeat(120),x:i%2?-Number.MAX_VALUE:Number.MIN_VALUE,z:i%2?-0.0000012345678901234567:1.2345678901234567e+30,note:character.repeat(NOTE_LIMIT)}));
 const payload=rows=>JSON.stringify({version:2,legacyImportDone:true,entries:rows});
 function fixture(raw=null,legacy='untouched legacy bytes'){
@@ -11,7 +11,7 @@ function fixture(raw=null,legacy='untouched legacy bytes'){
 }
 const empty=()=>fixture(payload([]));
 
-test('both journal writers round-trip all 29 maximum notes/locations, including six-character JSON escapes and lone UTF-16 surrogates',async()=>{
+test('both journal writers round-trip all 30 maximum notes/locations, including six-character JSON escapes and lone UTF-16 surrogates',async()=>{
  assert.equal(NOTE_LIMIT,500);assert.equal(JOURNAL_VERSION,2);assert.equal(JOURNAL_RAW_LIMIT,128+currentSpecies.reduce((n,s)=>n+6*(500+120+s.length)+256,0));assert.ok(Number.isSafeInteger(JOURNAL_RAW_LIMIT)&&JOURNAL_RAW_LIMIT<200000);
  const metrics=[];
  for(const [kind,character]of [['normal','字'],['control','\u0000'],['lone-surrogate','\ud800']]){

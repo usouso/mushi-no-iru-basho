@@ -1,14 +1,16 @@
-import {createManticoraBattleView} from './manticora-battle-view.js?v=0.39.0&b=8a647322e77c';
-import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.39.0&b=8a647322e77c';
-import {createInsectModel} from './insect-models.js?v=0.39.0&b=8a647322e77c';
-import {createBattleRig} from './battle-pose.js?v=0.39.0&b=8a647322e77c';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.39.0&b=8a647322e77c';
+import {createRainbowStagBattleView} from './rainbow-stag-battle-view.js?v=0.40.0&b=8b1b975eded1';
+import {createManticoraBattleView} from './manticora-battle-view.js?v=0.40.0&b=8b1b975eded1';
+import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.40.0&b=8b1b975eded1';
+import {createInsectModel} from './insect-models.js?v=0.40.0&b=8b1b975eded1';
+import {createBattleRig} from './battle-pose.js?v=0.40.0&b=8b1b975eded1';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.40.0&b=8b1b975eded1';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
 const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama']);
 const finite=(n,f=0)=>Number.isFinite(n)?n:f,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function createBattleView({playerSpecies,opponentSpecies,playerSizePermille=null,opponentSizePermille=null,aspect=1}={}){
  if(playerSpecies==='euchirus'||opponentSpecies==='euchirus')return createEuchirusBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
+ if(playerSpecies==='rainbowstag'||opponentSpecies==='rainbowstag')return createRainbowStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='manticora'||opponentSpecies==='manticora')return createManticoraBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(!ELIGIBLE.has(playerSpecies)||!ELIGIBLE.has(opponentSpecies))throw new TypeError('Battle view requires supported beetles');
  const scene=new T.Scene();scene.background=new T.Color('#647368');scene.add(new T.HemisphereLight('#f7f1db','#475640',1.15));const sun=new T.DirectionalLight('#ffe9c8',1.2);sun.position.set(-2,4,3);scene.add(sun);const fill=new T.DirectionalLight('#cce2e4',.5);fill.position.set(3,2,-2);scene.add(fill);

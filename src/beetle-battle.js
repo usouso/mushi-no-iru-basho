@@ -23,7 +23,8 @@ export const BATTLE_SPECIES=freeze({
  fivehorn:{label:'ゴホンヅノカブト',role:'五本の角を合わせる',help:'立ち上がる頭角と、二対の胸角が目印。'},
  miyama:{label:'ミヤマクワガタ',role:'張り出した頭と大顎',help:'頭の後ろの張出しと、左右の大顎が目印。'},
  euchirus:{label:'テナガコガネ',role:'長い前脚で押し合う',help:'Euchirus longimanus の雄。長い左右の前脚が目印。押し合いはゲーム上の動作です。'},
- manticora:{label:'マンティコラ（M. latipennis・雄）',role:'大きな頭と曲がった顎',help:'Manticora latipennis の雄。大きな頭と曲がった大顎が目印。押し合いはゲーム上の動作です。'}
+ manticora:{label:'マンティコラ（M. latipennis・雄）',role:'大きな頭と曲がった顎',help:'Manticora latipennis の雄。大きな頭と曲がった大顎が目印。押し合いはゲーム上の動作です。'},
+ rainbowstag:{label:'ニジイロクワガタ（雄）',role:'丸い背と上向く大顎',help:'Phalacrognathus muelleri の雄。丸い背と上向く左右の大顎が目印。押し合いはゲーム上の動作です。'}
 });
 // Integer mixing is deliberately independent of Math.random and wall time.
 // Domain-separated slots give a repeatable temperament and exchange variation.

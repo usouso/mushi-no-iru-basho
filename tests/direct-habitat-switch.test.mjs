@@ -64,9 +64,9 @@ const travelButton=()=>elements.get('travel-button');
 function selectDestination(id){select().value=id;select().dispatchEvent(new Event('change'));}
 function travel(id){if(g.state.mode==='playing')g.pause({lock:false});assert.equal(g.state.mode,'paused');selectDestination(id);travelButton().click();frame(1);}
 
-test('pause offers the same five destinations; selection alone and Escape cancel preserve the field and bait',()=>{
+test('pause offers the same seven destinations; selection alone and Escape cancel preserve the field and bait',()=>{
  choose('tropical');const options=select().children;
- assert.deepEqual(options.map(o=>o.value),['meadow','tropical','understory','night','savanna']);
+ assert.deepEqual(options.map(o=>o.value),['meadow','tropical','understory','night','savanna','forest','australia']);
  const titleOptions=[...html.matchAll(/<option value="([^"]+)"[^>]*>([^<]+)<\/option>/g)];
  assert.deepEqual(options.map(o=>[o.value,o.textContent]),titleOptions.map(m=>[m[1],m[2]]));
  assert.match(html,/入口へ移動します。置いた餌は片付きます。/);

@@ -1,7 +1,7 @@
 /** Opt-in field-only departure rig. Original inspection/battle model is unchanged.
  * Folding panels and timings are a display approximation, not measured wing venation. */
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.39.0&b=8a647322e77c';
-import {sampleRhinoPose,RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.40.0&b=8b1b975eded1';
+import {sampleRhinoPose,RHINO_DIMENSIONS as D} from './rhino-kinematics.js?v=0.40.0&b=8b1b975eded1';
 const T=window.THREE,TAU=Math.PI*2;
 const number=(v,d=0)=>Number.isFinite(v)?v:d,unit=v=>Math.max(0,Math.min(1,number(v)));
 export const RHINO_FLIGHT_RIG=Object.freeze({rootAboveSupport:D.rootAboveSupport,panelLength:.072,panelGap:.0015,upperLength:D.upperLegLength,lowerLength:D.lowerLegLength,minimumFlightWingAngle:.20,maximumFlightWingAngle:.80});

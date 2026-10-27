@@ -25,8 +25,8 @@ test('title distinguishes unconditional Space net from pointer-lock-dependent le
  assert.match(html,/id="controls-hint"[^>]*>WASD 移動 · Shift 走る · 右クリック そっと · Space 網<\/p>/);assert.match(html,/見回し停止中 · 左クリックで見回し再開/);
  assert.equal((html.match(/class="gamepad-help"/g)||[]).length,1);
 });
-test('five habitat choices and twenty cards retain names hidden without summer or grassland-only generic copy',t=>{
- assert.deepEqual([...html.matchAll(/<option value="([^"]+)"/g)].map(m=>m[1]),['meadow','tropical','understory','night','savanna']);
+test('seven habitat choices and twenty fixture cards retain names hidden without summer or grassland-only generic copy',t=>{
+ assert.deepEqual([...html.matchAll(/<option value="([^"]+)"/g)].map(m=>m[1]),['meadow','tropical','understory','night','savanna','forest','australia']);
  assert.doesNotMatch(html,/夏の野原|夏の観察手帖|SUMMER 01/);assert.match(html,/aria-label="各生息地をマウスで見回し/);
  const {ui}=fixture(t),nodes=all(ui.element),text=nodes.filter(n=>n.tag!=='style').map(n=>n.textContent).join(' ');
  assert.equal(nodes.filter(n=>n.className?.split(' ').includes('fj-card')).length,20);

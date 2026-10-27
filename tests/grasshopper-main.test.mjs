@@ -93,7 +93,7 @@ test('five actual species records persist across both habitats and a new journal
  for(const species of ['butterfly','dragonfly','cicada']){g.restart();catchSpecies(species);g.journal.setNote(species,`note-${species}`);g.release({lock:false});}
  choose('tropical');assert.equal(g.simulation.items.length,11);assert.ok(g.simulation.items.filter(i=>i.species==='morpho').length===4&&g.simulation.items.filter(i=>i.species==='hercules').length===2);catchSpecies('morpho');g.journal.setNote('morpho','青い翅');g.release({lock:false});
  assert.equal(g.journal.entries.length,5);const expected=g.journal.entries;await g.journal.flush();const {createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
- choose('meadow');assert.equal(g.simulation.items.length,30);assert.deepEqual(g.journal.entries,expected);g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,27);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
+ choose('meadow');assert.equal(g.simulation.items.length,30);assert.deepEqual(g.journal.entries,expected);g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,30);key('keydown','KeyJ');key('keyup','KeyJ');assert.equal(g.state.mode,'playing');
 });
 test('new meadow keeps J focus, Esc mute0, Shift dash, E no-op and stable pointer-lock hint behavior',async()=>{
  g.restart();g.pause();elements.get('volume').value='0';elements.get('volume').dispatchEvent(new Event('input'));key('keydown','Escape');key('keyup','Escape');await settle();frame(1);assert.equal(g.state.mode,'playing');assert.equal(g.state.volume,0);assert.equal(master().value,0);

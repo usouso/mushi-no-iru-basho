@@ -1,6 +1,6 @@
 /** Independent sloping-ground pose study; timings/path are game tuning, not
  * measured puddling or flight. No terrain modification, fluids or renderer. */
-import {SWALLOWTAIL_DIMENSIONS as D} from './swallowtail-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {SWALLOWTAIL_DIMENSIONS as D} from './swallowtail-kinematics.js?v=0.40.0&b=8b1b975eded1';
 const TAU=2*Math.PI,openTime=.6,closeTime=.6,rampTime=.5,cycles=24;
 const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>x*x*(3-2*x),dot=(a,b)=>a.x*b.x+a.y*b.y+a.z*b.z+a.w*b.w;
 const neg=q=>({x:-q.x,y:-q.y,z:-q.z,w:-q.w}),align=(a,b)=>dot(a,b)<0?neg(b):{...b};

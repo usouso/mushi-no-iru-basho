@@ -23,7 +23,7 @@ const protectedRaw=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY,LE
 test('tenth fixed companion preserves all nine old g1/g2/legacy records, one-per-species and explicit release/replacement',async()=>{
  const f=fixture(),r=make(f),oldRaw=f.values.get(COMPANION_KEY),protectedBefore=protectedRaw(f),journalRaw=f.values.get(JOURNAL_KEY);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),oldRaw);
  assert.deepEqual(r.add(miyama()),{ok:true,entry:entry(miyama(),1000)});assert.equal(await r.flush(),true);assert.equal(r.entries.length,10);
  assert.deepEqual(r.add(miyama()),{ok:false,reason:'already-owned'});assert.deepEqual(r.replace('meadow/insect-30',miyama()),{ok:false,reason:'same-individual'});

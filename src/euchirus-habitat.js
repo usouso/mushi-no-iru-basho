@@ -1,6 +1,6 @@
 /** One real bark facet, with no new mesh, collider, food or invisible support. */
-import {EUCHIRUS_PROBE as P} from './euchirus-layout.js?v=0.39.0&b=8a647322e77c';
-import {EUCHIRUS_DIMENSIONS as D,sampleEuchirusPose} from './euchirus-kinematics.js?v=0.39.0&b=8a647322e77c';
+import {EUCHIRUS_PROBE as P} from './euchirus-layout.js?v=0.40.0&b=8b1b975eded1';
+import {EUCHIRUS_DIMENSIONS as D,sampleEuchirusPose} from './euchirus-kinematics.js?v=0.40.0&b=8b1b975eded1';
 const T=window.THREE,xyz=v=>({x:v.x,y:v.y,z:v.z});
 export function createEuchirusHabitat(world,scene){
  const trunk=world?.captureOccluders?.[1];

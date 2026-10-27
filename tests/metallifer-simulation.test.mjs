@@ -30,7 +30,7 @@ test('support binding rejects missing, mismatched, duplicate, inherited, accesso
  const s=support();
  for(const bad of [[],[s,s],[{...s,home:{...s.home,y:NaN}}],[{...s,home:{...s.home,x:76}}],[{...s,heading:Infinity}],[{...s,home:{...s.home,z:7.6}}],[Object.create(s)],[{...s,get heading(){throw Error('must not execute');}}]])assert.throws(()=>setup({metalliferSupports:bad}),/Invalid metallifer supports/);
  assert.throws(()=>setup({homes:[['metallifer',s.home.x,s.home.z,s.home.y],['metallifer',s.home.x,s.home.z,s.home.y]]}),/Invalid metallifer supports/);
- assert.equal(Object.keys(SPECIES).length,29);assert.match(SPECIES.metallifer.observation,/観察用.*ゲーム上/);assert.match(SPECIES.metallifer.size,/実物の寸法ではありません/);
+ assert.equal(Object.keys(SPECIES).length,30);assert.match(SPECIES.metallifer.observation,/観察用.*ゲーム上/);assert.match(SPECIES.metallifer.size,/実物の寸法ではありません/);
 });
 
 test('rest, walking and jaw-reaction captures freeze, then return continuously from the exact support pose',()=>{
