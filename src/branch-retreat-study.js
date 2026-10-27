@@ -1,7 +1,8 @@
 /** Supported, opt-in branch response. Human distances/timing/speed are game
  * tuning, not measured wild behaviour. A fixed branch axis is not free pathfinding. */
 const TAU=2*Math.PI,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),ease=t=>{const u=clamp(t,0,1);return u*u*(3-2*u);};
-export function createBranchRetreatStudy({species,position,heading,scale,motionSeed,retreatBounds,cycleDistance,rootAboveSupport,warningSeconds,retreatDistance,retreatSpeed,jawRest=null,jawWarning=null,warningPulse=false,boundedStepFinish=false}){
+export function createBranchRetreatStudy({species,position,heading,scale,motionSeed,retreatBounds,cycleDistance,rootAboveSupport,warningSeconds,retreatDistance,retreatSpeed,jawRest=null,jawWarning=null,warningPulse=false,boundedStepFinish=false,exposeTransitions=false}){
+ if(typeof exposeTransitions!=='boolean')throw new TypeError('Invalid transition exposure');
  const keys=retreatBounds&&Reflect.ownKeys(retreatBounds);
  if(!retreatBounds||![Object.prototype,null].includes(Object.getPrototypeOf(retreatBounds))||keys.length!==2||!keys.includes('min')||!keys.includes('max')||!keys.every(k=>'value'in Object.getOwnPropertyDescriptor(retreatBounds,k))||![retreatBounds.min,retreatBounds.max].every(Number.isFinite)||retreatBounds.min>0||retreatBounds.max<0||retreatBounds.min>=retreatBounds.max||Math.max(Math.abs(retreatBounds.min),Math.abs(retreatBounds.max))>3)throw new TypeError('Invalid branch retreat bounds');
  const origin={...position},axis={x:Math.sin(heading),z:Math.cos(heading)},halfStep=cycleDistance*scale/2,lo=Math.ceil((retreatBounds.min-1e-10)/halfStep)*halfStep,hi=Math.floor((retreatBounds.max+1e-10)/halfStep)*halfStep,normalEnd=Math.min(.12*scale,hi),normalSpeed=.02*scale;
@@ -50,5 +51,11 @@ export function createBranchRetreatStudy({species,position,heading,scale,motionS
   if(move){const speed=speedAt(move),sign=move.sign,n=sign>0?Math.ceil(distance/halfStep-1e-10):Math.floor(distance/halfStep+1e-10),target=clamp(n*halfStep,lo,hi);startMove(target,'walking','warning',.06*scale,speed);}else warning();return true;
  }
  function snapshot(){const result={id:species+'-study-1',position:location(),heading,pitch:0,walkPhase:distance/(cycleDistance*scale)*TAU,walkSpeed:caught?0:move?move.sign*speedAt(move):0,phase,direction,caught,time,warningBlend:clamp(warningBlend,0,1)};if(jawRest!==null)result.jawOpen=jawRest+(jawWarning-jawRest)*result.warningBlend;return result;}
- return{update,disturb,capture(){if(caught)return false;caught=true;return true;},release(){if(!caught)return false;caught=false;if(phase==='resting')normal();return true;},reset(){time=0;distance=0;direction=1;phase='resting';wait=initialWait;caught=false;warningBlend=0;warningElapsed=0;warningStart=0;move=null;threat=null;lastStimulus=-Infinity;lastReaction=-Infinity;restNumber=initialRestNumber;},get state(){return snapshot();}};
+ const api={update,disturb,capture(){if(caught)return false;caught=true;return true;},release(){if(!caught)return false;caught=false;if(phase==='resting')normal();return true;},reset(){time=0;distance=0;direction=1;phase='resting';wait=initialWait;caught=false;warningBlend=0;warningElapsed=0;warningStart=0;move=null;threat=null;lastStimulus=-Infinity;lastReaction=-Infinity;restNumber=initialRestNumber;},get state(){return snapshot();}};
+ // Opt-in timing metadata only: no callback, state mutation or new default API.
+ if(exposeTransitions)Object.defineProperty(api,'transitionInfo',{enumerable:true,get(){return{
+  remaining:move?Math.max(0,move.duration-move.elapsed):phase==='warning'?Math.max(0,warningSeconds-warningElapsed):phase==='cornered'?null:Math.max(0,wait),
+  warningRemaining:phase==='warning'?Math.max(0,warningSeconds-warningElapsed):null
+ };}});
+ return api;
 }

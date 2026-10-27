@@ -1,6 +1,6 @@
 /** Field-only, bounded departure prototype. Durations/trajectory are game tuning,
  * not measured escape responses. Uses the existing supported walk unchanged. */
-import {createRhinoStudy} from './rhino-study.js?v=0.40.0&b=8b1b975eded1';
+import {createRhinoStudy} from './rhino-study.js?v=0.41.0&b=bed5219b02cd';
 const TAU=2*Math.PI,clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=x=>{const t=clamp(x,0,1);return t*t*(3-2*t);};
 export const RHINO_FLIGHT_TIMING=Object.freeze({prepare:.65,flight:5.7,landing:.65,cooldown:8});
 // Local +X is the existing branch's forward direction, +Z the selected clear side.
@@ -24,37 +24,59 @@ function pathAt(t){
  return{x:p[0],y:p[1],z:p[2],angle};
 }
 export function createRhinoFlightStudy(options={}){
- const base=createRhinoStudy(options),enabled=options.retreatBounds!==undefined;
+ const enabled=options.retreatBounds!==undefined,base=createRhinoStudy(enabled?{...options,exposeTransitions:true}:options),warningSeconds=.3;
  let time=0,flight=null,caught=false,cooldownUntil=0,lastSource=null,lastPressureTime=-Infinity;
- function startFlight(renewWarning=false){
+ function startFlight(){
   const state=base.state,source=lastSource,side=source&&Math.abs(source.z-state.position.z)>.02?(source.z<state.position.z?1:-1):((options.motionSeed??0)&1?1:-1);
-  flight={elapsed:renewWarning?-.3:0,origin:{...state.position},state,side};
+  flight={elapsed:0,origin:{...state.position},state,side,warningStart:state.warningBlend||0};
+ }
+ function maybeStartFlight(){
+  if(!enabled||flight||time<cooldownUntil-1e-10)return;
+  const phase=base.state.phase;
+  if(phase==='warning'||phase==='cornered'&&time-lastPressureTime<=.25+1e-10)startFlight();
  }
  function snapshot(){
   const s=base.state;if(!flight)return{...s,time,caught};
-  const t=flight.elapsed,{prepare,flight:duration,landing}=RHINO_FLIGHT_TIMING;
-  let phase,position={...flight.origin},heading=flight.state.heading,elytra=1,unfold=1,tuck=0,flapAmplitude=0;
-  if(t<0){phase='warning';elytra=0;unfold=0;}
-  else if(t<prepare){phase='preparing-flight';elytra=ease(t/.25);unfold=ease((t-.25)/.4);}
-  else if(t<prepare+duration){
+  const t=flight.elapsed,{prepare,flight:duration}=RHINO_FLIGHT_TIMING;
+  let phase,position={...flight.origin},heading=flight.state.heading,elytra=1,unfold=1,tuck=0,flapAmplitude=0,warningBlend=0;
+  if(t<prepare){
+   // One .65-second wing clock: the .30-second head warning overlaps, rather
+   // than preceding, the unchanged .25 shell / .40 membrane sequence.
+   phase=t<warningSeconds?'warning':'preparing-flight';elytra=ease(t/.25);unfold=ease((t-.25)/.4);
+   warningBlend=t<warningSeconds?flight.warningStart+(1-flight.warningStart)*ease(t/warningSeconds):1-ease((t-warningSeconds)/(prepare-warningSeconds));
+  }else if(t<prepare+duration){
    phase='flying';const a=t-prepare,p=pathAt(a),forward={x:Math.sin(heading),z:Math.cos(heading)},side={x:-Math.cos(heading)*flight.side,z:Math.sin(heading)*flight.side};
    position.x+=forward.x*p.x+side.x*p.z;position.y+=p.y;position.z+=forward.z*p.x+side.z*p.z;
    heading-=flight.side*p.angle;tuck=ease((p.y-.20)/.18);flapAmplitude=ease((p.y-.10)/.15);
-  }else{phase='landing';const a=t-prepare-duration;unfold=1-ease(a/.4);elytra=1-ease((a-.4)/.25);}
-  return{...flight.state,id:s.id,time,caught,phase,position,heading,pitch:0,walkSpeed:0,warningBlend:phase==='warning'?(flight.state.warningBlend||0)+(1-(flight.state.warningBlend||0))*ease((t+.3)/.3):phase==='preparing-flight'?1-unfold:phase==='landing'?(flight.state.warningBlend||0)*ease((t-prepare-duration-.4)/.25):0,
+  }else{phase='landing';const a=t-prepare-duration;unfold=1-ease(a/.4);elytra=1-ease((a-.4)/.25);warningBlend=(s.warningBlend||0)*ease((a-.4)/.25);}
+  return{...flight.state,id:s.id,time,caught,phase,position,heading,pitch:0,walkSpeed:0,warningBlend,
    flightPose:{elytra,unfold,tuck,flapAmplitude,flapPhase:TAU*18*Math.max(0,t-prepare),pitch:0,roll:0}};
  }
  function update(dt){
-  dt=Number.isFinite(dt)?clamp(dt,0,.1):0;if(!dt||caught)return;time+=dt;
-  if(flight){flight.elapsed=Math.min(flight.elapsed+dt,RHINO_FLIGHT_TIMING.prepare+RHINO_FLIGHT_TIMING.flight+RHINO_FLIGHT_TIMING.landing);
-   if(flight.elapsed>=RHINO_FLIGHT_TIMING.prepare+RHINO_FLIGHT_TIMING.flight+RHINO_FLIGHT_TIMING.landing-1e-10){flight=null;cooldownUntil=time+RHINO_FLIGHT_TIMING.cooldown;}return;}
-  const prior=base.state.phase;base.update(dt);const next=base.state.phase;
-  if(enabled&&time>=cooldownUntil){
-   if(prior==='warning'&&['retreating','cornered'].includes(next))startFlight();
-   else if(next==='cornered'&&time-lastPressureTime<=.25)startFlight(true);
+  dt=Number.isFinite(dt)?clamp(dt,0,.1):0;if(!dt||caught)return;
+  if(!enabled){time+=dt;base.update(dt);return;}
+  let left=dt,transitions=0;
+  while(left>1e-12){
+   if(++transitions>16)throw new Error('Rhino flight transition did not advance');
+   maybeStartFlight();
+   if(flight){
+    const end=RHINO_FLIGHT_TIMING.prepare+RHINO_FLIGHT_TIMING.flight+RHINO_FLIGHT_TIMING.landing,part=Math.min(left,end-flight.elapsed);
+    // Consume only the stationary base warning, stopping exactly before its
+    // first retreat step. The original supported state then waits for landing.
+    const remaining=base.transitionInfo.warningRemaining;
+    if(remaining!==null&&remaining>1e-12)base.update(Math.min(part,remaining));
+    flight.elapsed+=part;time+=part;left-=part;
+    for(const boundary of[warningSeconds,RHINO_FLIGHT_TIMING.prepare,RHINO_FLIGHT_TIMING.prepare+RHINO_FLIGHT_TIMING.flight,end])if(Math.abs(flight.elapsed-boundary)<1e-10)flight.elapsed=boundary;
+    if(flight.elapsed>=end-1e-10){flight=null;cooldownUntil=time+RHINO_FLIGHT_TIMING.cooldown;}
+   }else{
+    const boundary=base.transitionInfo.remaining;
+    let part=boundary!==null&&boundary>1e-12?Math.min(left,boundary):left;
+    if(time<cooldownUntil&&cooldownUntil-time>1e-12)part=Math.min(part,cooldownUntil-time);
+    base.update(part);time+=part;left-=part;maybeStartFlight();
+   }
   }
  }
- return{update,disturb(source){if(caught||flight)return false;const changed=base.disturb(source);if(source&&Number.isFinite(source.x)&&Number.isFinite(source.z)&&Math.abs(source.x)<=1e4&&Math.abs(source.z)<=1e4){lastSource={x:source.x,z:source.z};lastPressureTime=time;}return changed;},
+ return{update,disturb(source){if(caught||flight)return false;const changed=base.disturb(source);if(source&&Number.isFinite(source.x)&&Number.isFinite(source.z)&&Math.abs(source.x)<=1e4&&Math.abs(source.z)<=1e4){lastSource={x:source.x,z:source.z};lastPressureTime=time;}maybeStartFlight();return changed;},
   capture(){if(caught)return false;caught=true;base.capture();return true;},
   release(){if(!caught)return false;caught=false;base.release();return true;},
   reset(){base.reset();time=0;flight=null;caught=false;cooldownUntil=0;lastSource=null;lastPressureTime=-Infinity;},

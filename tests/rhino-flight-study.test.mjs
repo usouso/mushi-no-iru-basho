@@ -10,7 +10,7 @@ const airborne=s=>['preparing-flight','flying','landing'].includes(s.phase);
 function finite(s){for(const k of ['time','heading','pitch','walkPhase','walkSpeed'])assert.ok(Number.isFinite(s[k]),k);for(const k of ['x','y','z'])assert.ok(Number.isFinite(s.position[k]));if(s.flightPose)for(const value of Object.values(s.flightPose))assert.ok(Number.isFinite(value));}
 function launch(model,source={x:1,z:4},dt=.01){assert.equal(model.disturb(source),true);let previous=model.state;for(let i=0;i<200;i++){model.update(dt);const s=model.state;if(s.phase==='preparing-flight')return {before:previous,start:s};previous=s;}assert.fail('warning must reach preparation');}
 
-test('supported warning completes before stationary preparation, bounded flight and landing restore exact support/walk phase',()=>{
+test('supported warning overlaps stationary opening; bounded flight and landing restore exact support/walk phase',()=>{
  assert.deepEqual(T,{prepare:.65,flight:5.7,landing:.65,cooldown:8});assert.ok(Object.isFrozen(T));
  for(const scale of [1,1.15]){
   const model=createRhinoFlightStudy({...options,scale}),{before,start}=launch(model);assert.equal(before.phase,'warning');near(start.time,.3);const origin=start.position,phase=start.walkPhase;
@@ -18,7 +18,7 @@ test('supported warning completes before stationary preparation, bounded flight 
   for(let i=0;i<720;i++){
    model.update(.01);const s=model.state;finite(s);seen.add(s.phase);assert.ok(distance(s.position,prior.position)<.04,'continuous position');assert.ok(Math.abs(angle(s.heading,prior.heading))<.06,'continuous physical heading, modulo full turns');assert.ok(Math.abs(s.warningBlend-prior.warningBlend)<.07,'continuous warning handoff');
    if(airborne(s)){near(s.walkPhase,phase);assert.equal(s.walkSpeed,0);if(s.phase==='preparing-flight'){assert.deepEqual(s.position,origin);near(s.heading,start.heading);}maxHeight=Math.max(maxHeight,s.position.y-origin.y);}
-   else{assert.deepEqual(s.position,origin);near(s.walkPhase,phase);near(s.time-start.time,T.prepare+T.flight+T.landing,1e-8);ended=true;break;}
+   else{assert.deepEqual(s.position,origin);near(s.walkPhase,phase);near(s.time-start.time,T.prepare+T.flight+T.landing-.3,1e-8);ended=true;break;}
    prior=s;
   }
   assert.equal(ended,true);for(const phase of ['preparing-flight','flying','landing'])assert.ok(seen.has(phase));assert.ok(maxHeight>=.8&&maxHeight<1,'bounded vertical departure');
@@ -75,14 +75,14 @@ test('cooldown blocks immediate retrigger; after pressure withdraws a new warnin
  for(let i=0;i<700;i++)model.update(.01);assert.equal(airborne(model.state),false);
 });
 
-test('sustained pressure at a bounded corner relaunches only after cooldown and a full visible closed-wing warning',()=>{
+test('sustained pressure at a bounded corner relaunches only after cooldown and a full visible warning overlapping staged opening',()=>{
  const model=createRhinoFlightStudy(options),source={x:1,z:4};let prior=model.state,starts=0,firstEnd=null,renewedWarning=null,secondStart=null;
  for(let i=0;i<2200;i++){
   model.disturb(source);model.update(.01);const s=model.state;finite(s);
   assert.ok(Math.abs(s.warningBlend-prior.warningBlend)<.07,'head warning stays continuous');
   if(airborne(prior)&&!airborne(s)&&s.phase!=='warning'&&firstEnd===null)firstEnd=s.time;
   if(firstEnd!==null&&s.phase==='warning'&&s.flightPose){
-   renewedWarning??=s.time;assert.ok(s.time>=firstEnd+T.cooldown-1e-8);assert.equal(s.flightPose.elytra,0);assert.equal(s.flightPose.unfold,0);assert.equal(s.flightPose.flapAmplitude,0);assert.equal(s.walkSpeed,0);
+   renewedWarning??=s.time;assert.ok(s.time>=firstEnd+T.cooldown-1e-8);assert.ok(s.flightPose.elytra>=0&&s.flightPose.elytra<=1);assert.ok(s.flightPose.unfold>=0&&s.flightPose.unfold<=1);if(s.flightPose.elytra<1-1e-10)assert.equal(s.flightPose.unfold,0,'membrane waits for full shell opening');if(prior.phase==='warning'&&prior.flightPose){assert.ok(s.flightPose.elytra>=prior.flightPose.elytra);assert.ok(s.flightPose.unfold>=prior.flightPose.unfold);}assert.equal(s.flightPose.flapAmplitude,0);assert.equal(s.walkSpeed,0);
   }
   if(prior.phase!=='preparing-flight'&&s.phase==='preparing-flight'){
    starts++;if(starts===2){secondStart=s.time;assert.ok(renewedWarning!==null,'second flight cannot skip warning');near(secondStart-renewedWarning,.3,1e-8);assert.ok(s.warningBlend>.99);break;}
