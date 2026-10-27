@@ -1,6 +1,6 @@
 /** Bounded independent Australian rainforest-reference display foundation.
  * Generic original broadleaf forms; no particular plant/community reconstruction. */
-import {AUSTRALIA_BOUNDS,AUSTRALIA_SPAWN,AUSTRALIA_TREES,RAINBOW_LOG as L} from './rainbow-stag-layout.js?v=0.41.0&b=bed5219b02cd';
+import {AUSTRALIA_BOUNDS,AUSTRALIA_SPAWN,AUSTRALIA_TREES,RAINBOW_LOG as L} from './rainbow-stag-layout.js?v=0.64.0&b=3616c2fe808e';
 const T=window.THREE;
 export const heightAt=()=>0;
 function logGeometry(){

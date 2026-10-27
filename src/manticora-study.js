@@ -1,4 +1,4 @@
-import {MANTICORA_DIMENSIONS as D,sampleManticoraPose} from './manticora-kinematics.js?v=0.41.0&b=bed5219b02cd';
+import {MANTICORA_DIMENSIONS as D,sampleManticoraPose} from './manticora-kinematics.js?v=0.64.0&b=3616c2fe808e';
 /** Finite ground lane, stepped turns and observation timings: GAME tuning,
  * not measured M. latipennis speed, microhabitat or defensive behaviour. */
 export const MANTICORA_MOTION=Object.freeze({normalSpeed:.08,runSpeed:.30,warningSeconds:.18,turnStepAngle:Math.PI/36,turnStepSeconds:.10,halfStride:.02});

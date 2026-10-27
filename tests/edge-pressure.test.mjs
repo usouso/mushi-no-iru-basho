@@ -9,7 +9,8 @@ const read=name=>fs.readFileSync(new URL('../src/'+name,import.meta.url),'utf8')
 const sha=text=>createHash('sha256').update(text).digest('hex');
 const oldLine="if(species==='stag'&&ownPosition<=-1.5)return .10;";
 const newLine="if(species==='stag'&&ownPosition<=-1.5)return .05;";
-const source=read('beetle-battle.js'),newSpeciesLine=",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",goliathSpeciesLine=",\n goliath:{label:'ゴライアス',role:'短いY字角で押し合う',help:'白黒の胸と、短い二叉の頭角が目印。'}",fivehornSpeciesLine=",\n fivehorn:{label:'ゴホンヅノカブト',role:'五本の角を合わせる',help:'立ち上がる頭角と、二対の胸角が目印。'}",miyamaSpeciesLine=",\n miyama:{label:'ミヤマクワガタ',role:'張り出した頭と大顎',help:'頭の後ろの張出しと、左右の大顎が目印。'}",priorSpeciesSource=source.replace(",\n rainbowstag:{label:'ニジイロクワガタ（雄）',role:'丸い背と上向く大顎',help:'Phalacrognathus muelleri の雄。丸い背と上向く左右の大顎が目印。押し合いはゲーム上の動作です。'}",'').replace(/,\n manticora:\{[^\n]+\}\n/,'\n').replace(",\n euchirus:{label:'テナガコガネ',role:'長い前脚で押し合う',help:'Euchirus longimanus の雄。長い左右の前脚が目印。押し合いはゲーム上の動作です。'}",'').replace(newSpeciesLine,'').replace(goliathSpeciesLine,'').replace(fivehornSpeciesLine,'').replace(miyamaSpeciesLine,''),referenceSource=priorSpeciesSource.replace(newLine,oldLine);
+const europeSpeciesLine=",\n europestag:{label:'ヨーロッパミヤマクワガタ（雄）',role:'鹿角状の顎で押し合う',help:'Lucanus cervus の雄。黒い頭と赤褐色の大顎が目印。押し合いの数値はゲーム上の設定です。'}";
+const source=read('beetle-battle.js'),newSpeciesLine=",\n elephant:{label:'ゾウカブト',role:'丸い体で押し合う',help:'太い胴と前へ伸びた頭角が目印。'}",goliathSpeciesLine=",\n goliath:{label:'ゴライアス',role:'短いY字角で押し合う',help:'白黒の胸と、短い二叉の頭角が目印。'}",fivehornSpeciesLine=",\n fivehorn:{label:'ゴホンヅノカブト',role:'五本の角を合わせる',help:'立ち上がる頭角と、二対の胸角が目印。'}",miyamaSpeciesLine=",\n miyama:{label:'ミヤマクワガタ',role:'張り出した頭と大顎',help:'頭の後ろの張出しと、左右の大顎が目印。'}",priorSpeciesSource=source.replace(europeSpeciesLine,'').replace(",\n rainbowstag:{label:'ニジイロクワガタ（雄）',role:'丸い背と上向く大顎',help:'Phalacrognathus muelleri の雄。丸い背と上向く左右の大顎が目印。押し合いはゲーム上の動作です。'}",'').replace(/,\n manticora:\{[^\n]+\}\n/,'\n').replace(",\n euchirus:{label:'テナガコガネ',role:'長い前脚で押し合う',help:'Euchirus longimanus の雄。長い左右の前脚が目印。押し合いはゲーム上の動作です。'}",'').replace(newSpeciesLine,'').replace(goliathSpeciesLine,'').replace(fivehornSpeciesLine,'').replace(miyamaSpeciesLine,''),referenceSource=priorSpeciesSource.replace(newLine,oldLine);
 const load=source=>import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const reference=await load(referenceSource);
 // Test-only exposure, never written to or exported from production runtime.
@@ -23,10 +24,11 @@ function endValid(s){
 }
 
 test('old species retain the hash-pinned single edge adjustment beside the exact added registry line',()=>{
+ assert.equal(source.split(europeSpeciesLine).length-1,1,'the exact new Europe registry row occurs once');
  assert.equal(source.split(newLine).length,2);assert.equal(source.includes(oldLine),false);
  assert.equal(sha(referenceSource),'8efcca57b8e5c24935fcac053661aed18ce81a250828f4ab901dcab727c6e55b');
  assert.notEqual(priorSpeciesSource,source);assert.equal(referenceSource.replace(oldLine,newLine),priorSpeciesSource);
- assert.deepEqual(Object.fromEntries(Object.entries(current.BATTLE_SPECIES).filter(([key])=>!['elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag'].includes(key))),reference.BATTLE_SPECIES);assert.deepEqual(current.BATTLE_LIMITS,reference.BATTLE_LIMITS);
+ assert.deepEqual(Object.fromEntries(Object.entries(current.BATTLE_SPECIES).filter(([key])=>!['elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','europestag'].includes(key))),reference.BATTLE_SPECIES);assert.deepEqual(current.BATTLE_LIMITS,reference.BATTLE_LIMITS);
  assert.deepEqual(Object.keys(current).sort(),Object.keys(reference).sort());
  assert.equal(current.BATTLE_SPECIES.stag.help,'端に近づいたときの踏ん張りが少し得意。');
 });

@@ -11,6 +11,10 @@ export const GOLIATH_SITES=Object.freeze([
  Object.freeze({id:'forest-branch-1',treeId:'forest-tree-1',x:-2.15,z:3,heading:Math.PI/2,branchStart:-3.35,branchEnd:-1.25,surfaceAboveGround:1.10}),
  Object.freeze({id:'forest-branch-2',treeId:'forest-tree-2',x:3.45,z:-4.2,heading:-Math.PI/2,branchStart:2.55,branchEnd:4.65,surfaceAboveGround:1.14})
 ]);
+// GOLIATH_INDIVIDUAL_BEGIN
+// Saved display starts within the same branch, not natural site frequencies.
+export const GOLIATH_INDIVIDUAL_OFFSETS=Object.freeze([-.08,0,.08]);
+// GOLIATH_INDIVIDUAL_END
 export const GOLIATH_RETREAT_BOUNDS=Object.freeze({min:-.24,max:.24});
 // Approach centres stay outside actual trunk/branch walking colliders.
 export const GOLIATH_APPROACHES=Object.freeze([

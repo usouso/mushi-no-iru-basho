@@ -32,23 +32,23 @@ test('existing v2 gen1/gen2/gen3 outings retain exact five/six/seven encounters,
  }
 });
 
-test('v1 protected copy remains gen1, v2 stays authoritative, and explicit next alone upgrades old outings to gen4',async()=>{
+test('v1 protected copy remains gen1, v2 stays authoritative, and explicit next alone upgrades old outings to gen6',async()=>{
  const old=oldFive();old.version=1;delete old.legacyImportDone;const bytes=JSON.stringify(old,null,2),f=fixture(null,bytes),e=make(f);
  assert.equal(EXPEDITION_KEY,'mushi-expedition-v2');assert.equal(EXPEDITION_VERSION,2);assert.equal(e.snapshot.generatorVersion,1);assert.equal(await e.flush(),true);
  assert.deepEqual(f.requests,[LEGACY_EXPEDITION_KEY,EXPEDITION_KEY]);assert.deepEqual(e.snapshot,{...old,version:2,legacyImportDone:true});assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),bytes);assert.equal(f.seedCalls,0);
  f.values.set(LEGACY_EXPEDITION_KEY,'later old-tab raw');f.reads.length=0;assert.deepEqual(make(f).snapshot,e.snapshot);assert.ok(!f.reads.includes(LEGACY_EXPEDITION_KEY));
  for(const source of [e.snapshot,oldSix(),oldSeven()]){
   const x=fixture(JSON.stringify(source)),r=make(x),before=r.snapshot,result=await r.beginNextOuting(before.outingCounter);
-  assert.equal(result.ok,true);assert.equal(r.snapshot.generatorVersion,4);assert.equal(r.snapshot.encounters.length,8);assert.equal(r.snapshot.outingCounter,2);assert.deepEqual(r.snapshot.best,before.best);assert.deepEqual(r.snapshot.measuredEncounterIds,[]);assert.equal(x.seedCalls,0);
+  assert.equal(result.ok,true);assert.equal(r.snapshot.generatorVersion,6);assert.equal(r.snapshot.encounters.length,9);assert.equal(r.snapshot.outingCounter,2);assert.deepEqual(r.snapshot.best,before.best);assert.deepEqual(r.snapshot.measuredEncounterIds,[]);assert.equal(x.seedCalls,0);
   const m=r.snapshot.encounters[7];assert.equal(m.encounterId,'g4-0000007b-o2-savanna-manticora');assert.equal(m.runtimeSlotId,'insect-2');assert.deepEqual(make(x).snapshot,r.snapshot);
  }
  assert.equal(f.values.get(LEGACY_EXPEDITION_KEY),'later old-tab raw');
 });
 
-test('new users get eight; old seven g1/g2/g3 draws remain byte-identical at bounded seeds/counters',async()=>{
+test('new users get nine; old seven g1/g2/g3 draws remain byte-identical at bounded seeds/counters',async()=>{
  const rows=[];
  for(const seed of [0,123,0xffffffff]){
-  const {f,e}=await ready(seed);assert.equal(e.snapshot.generatorVersion,4);assert.equal(e.snapshot.encounters.length,8);assert.equal(EXPEDITION_SLOTS.length,8);assert.ok(EXPEDITION_SLOTS.every(Object.isFrozen));
+  const {f,e}=await ready(seed);assert.equal(e.snapshot.generatorVersion,6);assert.equal(e.snapshot.encounters.length,9);assert.equal(EXPEDITION_SLOTS.length,9);assert.ok(EXPEDITION_SLOTS.every(Object.isFrozen));
   for(const counter of [1,2,3]){
    if(counter>1)assert.equal((await e.beginNextOuting()).ok,true);
    const s=e.snapshot;rows.push(s.encounters.slice(0,7));const m=s.encounters[7];
@@ -66,7 +66,7 @@ test('new users get eight; old seven g1/g2/g3 draws remain byte-identical at bou
 
 test('Manticora measurements reload once, preserve older maxima and never rewrite an old fixed companion',async()=>{
  const {f,e}=await ready(),r=createCompanionRoster(f.storage,f);assert.equal(await r.flush(),true);assert.equal(r.add(fixedManticora).ok,true);assert.equal(await r.flush(),true);const companionBytes=f.values.get(COMPANION_KEY);
- for(const x of e.snapshot.encounters)assert.equal(e.measure(x.encounterId).ok,true);assert.equal(await e.flush(),true);assert.equal(e.snapshot.measuredEncounterIds.length,8);assert.equal(e.snapshot.best.length,7);const measured=e.snapshot,manticora=measured.encounters[7];assert.equal(e.measure(manticora.encounterId).alreadyMeasured,true);assert.deepEqual(make(f).snapshot,measured);
+ for(const x of e.snapshot.encounters)assert.equal(e.measure(x.encounterId).ok,true);assert.equal(await e.flush(),true);assert.equal(e.snapshot.measuredEncounterIds.length,9);assert.equal(e.snapshot.best.length,8);const measured=e.snapshot,manticora=measured.encounters[7];assert.equal(e.measure(manticora.encounterId).alreadyMeasured,true);assert.deepEqual(make(f).snapshot,measured);
  assert.equal((await e.beginNextOuting()).ok,true);assert.deepEqual(e.snapshot.best,measured.best);assert.equal(e.measure(manticora.encounterId).reason,'invalid-encounter');
  // A valid saved current size is authoritative, not regenerated at load.
  const next=e.snapshot,oldBest=measured.best.find(b=>b.species==='manticora');next.encounters[7].sizePermille=1000;f.values.set(EXPEDITION_KEY,JSON.stringify(next));const loaded=make(f);assert.equal(loaded.measure(next.encounters[7].encounterId).newRecord,false);assert.equal(await loaded.flush(),true);assert.deepEqual(loaded.snapshot.best.find(b=>b.species==='manticora'),oldBest);
@@ -74,20 +74,20 @@ test('Manticora measurements reload once, preserve older maxima and never rewrit
 });
 
 test('initial/transition failures preserve the visible old outing; verified throw-after-write is successful',async()=>{
- const first=fixture();first.quota=true;const initial=make(first);assert.equal(await initial.flush(),false);assert.equal(initial.snapshot,null);assert.equal(first.seedCalls,1);first.quota=false;assert.equal(await initial.flush(),true);assert.equal(first.seedCalls,1);assert.equal(initial.snapshot.encounters.length,8);
+ const first=fixture();first.quota=true;const initial=make(first);assert.equal(await initial.flush(),false);assert.equal(initial.snapshot,null);assert.equal(first.seedCalls,1);first.quota=false;assert.equal(await initial.flush(),true);assert.equal(first.seedCalls,1);assert.equal(initial.snapshot.encounters.length,9);
  for(const mode of ['quota','deny','failReadback','foreign','missingLocks']){
   const bytes=JSON.stringify(oldSeven()),f=fixture(bytes),e=mode==='missingLocks'?createExpedition(f.storage,{...f,locks:null}):make(f),before=e.snapshot;
   if(mode==='foreign')f.values.set(EXPEDITION_KEY,'foreign winner');else if(mode!=='missingLocks')f[mode]=true;
   const result=await e.beginNextOuting();assert.equal(result.ok,false,mode);assert.deepEqual(e.snapshot,before,mode);assert.equal(e.snapshot.encounters.length,7);
-  if(mode==='failReadback'){assert.equal(e.reason,'storage-uncertain');const n=f.writes.length;f.failReadback=false;assert.equal(await e.flush(),false);assert.equal(f.writes.length,n);assert.equal(JSON.parse(raw(f)).generatorVersion,4,'uncertain outcome is not rolled back');}
+  if(mode==='failReadback'){assert.equal(e.reason,'storage-uncertain');const n=f.writes.length;f.failReadback=false;assert.equal(await e.flush(),false);assert.equal(f.writes.length,n);assert.equal(JSON.parse(raw(f)).generatorVersion,6,'uncertain outcome is not rolled back');}
   else assert.equal(raw(f),mode==='foreign'?'foreign winner':bytes);
  }
  const f=fixture(JSON.stringify(oldSeven())),e=make(f);f.quota=true;assert.equal(e.measure(e.snapshot.encounters[2].encounterId).ok,true);const pending=e.snapshot;assert.equal((await e.beginNextOuting()).ok,false);assert.deepEqual(e.snapshot,pending);assert.equal(JSON.parse(raw(f)).measuredEncounterIds.length,3);f.quota=false;assert.equal((await e.beginNextOuting()).ok,true);assert.deepEqual(e.snapshot.best,pending.best);
- const after=fixture(JSON.stringify(oldSeven())),a=make(after);after.throwAfter=true;assert.equal((await a.beginNextOuting()).ok,true);assert.equal(a.snapshot.generatorVersion,4);assert.deepEqual(JSON.parse(raw(after)),a.snapshot);
+ const after=fixture(JSON.stringify(oldSeven())),a=make(after);after.throwAfter=true;assert.equal((await a.beginNextOuting()).ok,true);assert.equal(a.snapshot.generatorVersion,6);assert.deepEqual(JSON.parse(raw(after)),a.snapshot);
 });
 
 test('future/malformed generations and mismatched g4 namespace remain read-only without fallback',async()=>{
- const {e}=await ready(),good=e.snapshot,variants=[{...good,version:3},{...good,generatorVersion:5},{...good,generatorVersion:2},{...good,generatorVersion:3},{...good,legacyImportDone:false},{...good,unknown:1},{...good,encounters:good.encounters.slice(0,6)}];
+ const {e}=await ready(),good=e.snapshot,variants=[{...good,version:3},{...good,generatorVersion:7},{...good,generatorVersion:2},{...good,generatorVersion:3},{...good,legacyImportDone:false},{...good,unknown:1},{...good,encounters:good.encounters.slice(0,6)}];
  for(const patch of [{encounterId:good.encounters[7].encounterId.replace('g4-','g2-')},{species:'__proto__'},{runtimeSlotId:'insect-6'},{habitat:'night'},{sizePermille:1151},{measureVersion:2},{siteIndex:3}]){const x=clone(good);Object.assign(x.encounters[7],patch);variants.push(x);}
  const oversized=clone(good);oversized.encounters.push(clone(good.encounters[7]));variants.push(oversized);
  const tooManyMeasured=clone(good);tooManyMeasured.measuredEncounterIds=Array(9).fill(good.encounters[7].encounterId);variants.push(tooManyMeasured);

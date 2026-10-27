@@ -10,7 +10,7 @@ export function sampleMantisPose(state={}){
   // Two forelegs are folded raptorial limbs, not support legs.
   legs.push({id:`front-${side}`,role:'raptorial',side,support:false,hip:point(side*.009,-.001,.073),knee:point(side*.025,-.022,.104),foot:point(side*.014,-.007,.080)});
   for(const role of ['middle','hind']){
-   const hip=point(side*.013,-.002,role==='middle'?.008:-.035),knee=point(side*.053,-.012,role==='middle'?.046:-.070),foot=point(side*.080,-.045,role==='middle'?.025:-.100);
+   const hip=point(side*.013,-.002,role==='middle'?.008:.006),knee=point(side*.053,-.012,role==='middle'?.046:-.070),foot=point(side*.080,-.045,role==='middle'?.025:-.100);
    // Rigid rotation about each hip preserves both segment lengths. Small tuck only.
    const a=side*tuck*.38,c=Math.cos(a),s=Math.sin(a);
    for(const p of [knee,foot]){const x=p.x-hip.x,y=p.y-hip.y;p.x=hip.x+c*x-s*y;p.y=hip.y+s*x+c*y;}

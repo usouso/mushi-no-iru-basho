@@ -1,3 +1,4 @@
+import {priorExpedition as frozen047Expedition} from './fixtures/europe-individual-prior.mjs';
 /** Isolated Map storage + exclusive lock doubles; no browser storage or external I/O. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -26,7 +27,7 @@ const protectedRaw=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY,LE
 test('eleventh fixed companion preserves all ten old g1/g2/g3/legacy records, one-per-species and explicit release/replacement',async()=>{
  const f=fixture(),r=make(f),oldRaw=f.values.get(COMPANION_KEY),protectedBefore=protectedRaw(f),journalRaw=f.values.get(JOURNAL_KEY);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','europestag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
  const fixed=fixture();fixed.values.set(COMPANION_KEY,modern(oldRoster.map(e=>e.species==='atlas'?entry(capture('atlas','understory','insect-5'),104):e)));const fixedStore=make(fixed);assert.equal(fixedStore.entries[4].sizePermille,null);assert.equal(await fixedStore.flush(),true);assert.equal(fixed.writes.length,0);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),oldRaw);
  assert.deepEqual(r.add(euchirus()),{ok:true,entry:entry(euchirus(),1000)});assert.equal(await r.flush(),true);assert.equal(r.entries.length,11);
@@ -77,15 +78,22 @@ test('28th journal article retains all 27 notes/fields and optional 500-characte
 });
 
 
-test('only eleventh battle eligibility extends; old ten profiles, every rule and gen3 source outside exact gen4 additions stay unchanged',()=>{
+test('only eleventh battle eligibility extends; old ten profiles, every rule and gen3 source outside exact gen4/gen5 additions stay unchanged',()=>{
  const old=['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama'];
- assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'euchirus','manticora','rainbowstag']);
+ assert.deepEqual(Object.keys(BATTLE_SPECIES),[...old,'euchirus','manticora','rainbowstag','europestag']);
  const hash=s=>createHash('sha256').update(s).digest('hex');
  assert.equal(hash(JSON.stringify(Object.fromEntries(old.map(s=>[s,BATTLE_SPECIES[s]])))),'a9d05d0b7c3a5c32382048d43db8b01d14ba44cf21b81936eb85c7f7ee1f3b2f');
  const source=fs.readFileSync(new URL('../src/beetle-battle.js',import.meta.url),'utf8');
  assert.equal(hash(source.replace(/export const BATTLE_SPECIES=freeze\(\{[\s\S]*?\n\}\);/,'export const BATTLE_SPECIES=<registry>;')),'bcb68d5024e7293e865e2ff9206ea5cbbe02e3cbe71769dfcaa1b3c1d46b5770');
  // Invert only the approved gen4 additions; retain the immutable frozen gen3 hash.
- let priorExpedition=fs.readFileSync(new URL('../src/expedition.js',import.meta.url),'utf8');
+ let priorExpedition=frozen047Expedition(fs.readFileSync(new URL('../src/expedition.js',import.meta.url),'utf8'));
+ // Reverse only the three explicit gen5 outing/support-version changes.
+ for(const [current,prior] of [
+  ['version===4||version===5?EXPEDITION_SLOTS:null','version===4?EXPEDITION_SLOTS:null'],
+  ['generatorVersion:5,worldSeed:seed','generatorVersion:4,worldSeed:seed'],
+  ['![1,2,3,4,5].includes(data.generatorVersion)','![1,2,3,4].includes(data.generatorVersion)']
+ ]){assert.equal(priorExpedition.split(current).length-1,1,'each exact gen5 fragment occurs once');priorExpedition=priorExpedition.replace(current,prior);}
+
  const gen4Additions=[
   [
     "runtimeSlotId:'insect-5'},\n {populationSlotId:'manticora',species:'manticora',habitat:'savanna',runtimeSlotId:'insect-2'}\n].map",

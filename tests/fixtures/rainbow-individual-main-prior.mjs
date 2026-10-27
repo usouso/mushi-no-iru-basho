@@ -1,0 +1,4 @@
+import {priorMain as before058Main} from './xylotrupes-integration-prior.mjs';
+import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+const pairs=[["[5,6,7,8].includes(activeOuting?.generatorVersion)", "[5,6,7].includes(activeOuting?.generatorVersion)", 2], ["if(inspectModel.userData.species==='rainbowstag')inspectModel.scale.setScalar(Math.min(3.2*(inspectModel.userData.individualScale||1),inspectCamera.aspect*5));", "if(inspectModel.userData.species==='rainbowstag')inspectModel.scale.setScalar(Math.min(3.2,inspectCamera.aspect*5));", 1]];
+export function priorMain(source){if(source.includes('XYLOTRUPES_MAIN_BEGIN'))source=before058Main(source);let s=source.replace(/\?v=[0-9.]+&b=[a-f0-9]+/g,'');for(const [now,old,count] of pairs){assert.equal(s.split(now).length-1,count);s=s.split(now).join(old);}assert.equal(createHash('sha256').update(s).digest('hex'),"8de0cd878fbbb09ba05717949471ff16a87562861fde017cf75488340eebb4db");return s;}

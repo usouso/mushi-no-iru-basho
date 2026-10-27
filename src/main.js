@@ -1,45 +1,77 @@
-import {createAustraliaWorld} from './world-australia.js?v=0.41.0&b=bed5219b02cd';
-import {createRainbowStagHabitat} from './rainbow-stag-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createManticoraHabitat} from './manticora-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createEuchirusHabitat} from './euchirus-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createMiyamaHabitat} from './miyama-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createFiveHornHabitat} from './five-horn-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createForestWorld} from './world-forest.js?v=0.41.0&b=bed5219b02cd';
-import {createGoliathHabitat} from './goliath-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createElephantHabitat} from './elephant-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createGiantStagHabitat} from './giant-stag-habitat.js?v=0.41.0&b=bed5219b02cd';
-import {createAtlasHabitat} from './atlas-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createWorld } from './world.js?v=0.41.0&b=bed5219b02cd';
-import { createTropicalWorld } from './world-tropical.js?v=0.41.0&b=bed5219b02cd';
-import { createUnderstoryWorld } from './world-understory.js?v=0.41.0&b=bed5219b02cd';
-import { createNightWorld } from './world-night.js?v=0.41.0&b=bed5219b02cd';
-import { createSavannaWorld } from './world-savanna.js?v=0.41.0&b=bed5219b02cd';
-import { createWaterHabitat } from './water-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createDivingHabitat } from './diving-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createMantisHabitat } from './mantis-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createBeeHabitat } from './bee-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createJewelHabitat } from './jewel-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createLonghornHabitat } from './longhorn-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createRhinoHabitat } from './rhino-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createStagHabitat } from './stag-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createAntHabitat } from './ant-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.41.0&b=bed5219b02cd';
-import { createInsects, SPECIES } from './insects.js?v=0.41.0&b=bed5219b02cd';
-import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.41.0&b=bed5219b02cd';
-import { createInput } from './input.js?v=0.41.0&b=bed5219b02cd';
-import { createAudio } from './audio.js?v=0.41.0&b=bed5219b02cd';
-import { createNet } from './net.js?v=0.41.0&b=bed5219b02cd';
-import { createJournal } from './journal.js?v=0.41.0&b=bed5219b02cd';
-import { createJournalUI } from './journal-ui.js?v=0.41.0&b=bed5219b02cd';
-import { createCaptureVisibility } from './capture-visibility.js?v=0.41.0&b=bed5219b02cd';
-import { createCompanionRoster, isCompanionSpecies } from './individual-roster.js?v=0.41.0&b=bed5219b02cd';
-import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.41.0&b=bed5219b02cd';
-import { createBattleView } from './battle-view.js?v=0.41.0&b=bed5219b02cd';
-import { createExpedition } from './expedition.js?v=0.41.0&b=bed5219b02cd';
-import { individualHabitatOptions, individualScale, individualLabel } from './individual-layout.js?v=0.41.0&b=bed5219b02cd';
+// MOONMOTH_MAIN_BEGIN
+import {createMoonmothHabitat} from './moonmoth-habitat.js?v=0.64.0&b=3616c2fe808e';
+let moonmothHabitat;
+// MOONMOTH_MAIN_END
+// ANAX_MAIN_BEGIN
+import {createAnaxHabitat} from './anax-habitat.js?v=0.64.0&b=3616c2fe808e';
+let anaxHabitat;
+// ANAX_MAIN_END
+// XYLOTRUPES_MAIN_BEGIN
+import {createXylotrupesHabitat} from './xylotrupes-habitat.js?v=0.64.0&b=3616c2fe808e';
+let xylotrupesHabitat;
+// XYLOTRUPES_MAIN_END
+// ORCHID_MANTIS_MAIN_BEGIN
+import {createOrchidMantisHabitat} from './orchid-mantis-habitat.js?v=0.64.0&b=3616c2fe808e';
+let orchidMantisHabitat;
+// ORCHID_MANTIS_MAIN_END
+// TIGER_BEETLE_MAIN_BEGIN
+import {createTigerBeetleHabitat} from './tiger-beetle-habitat.js?v=0.64.0&b=3616c2fe808e';
+let tigerBeetleHabitat;
+// TIGER_BEETLE_MAIN_END
+import {createFloresWorld} from './flores-world.js?v=0.64.0&b=3616c2fe808e';
+import {createGiraffeStagHabitat} from './giraffe-stag-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createNewZealandWorld} from './newzealand-world.js?v=0.64.0&b=3616c2fe808e';
+import {createEuropeWorld} from './world-europe.js?v=0.64.0&b=3616c2fe808e';
+import {createEuropeStagHabitat} from './europe-stag-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createAustraliaWorld} from './world-australia.js?v=0.64.0&b=3616c2fe808e';
+import {createRainbowStagHabitat} from './rainbow-stag-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createManticoraHabitat} from './manticora-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusHabitat} from './euchirus-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createMiyamaHabitat} from './miyama-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createFiveHornHabitat} from './five-horn-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createForestWorld} from './world-forest.js?v=0.64.0&b=3616c2fe808e';
+import {createGoliathHabitat} from './goliath-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createElephantHabitat} from './elephant-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createGiantStagHabitat} from './giant-stag-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createAtlasHabitat} from './atlas-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createAtlasAlternateHabitat} from './atlas-alternate-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {atlasEncounterSupportKey} from './atlas-encounter-layout.js?v=0.64.0&b=3616c2fe808e';
+import { createWorld } from './world.js?v=0.64.0&b=3616c2fe808e';
+import { createTropicalWorld } from './world-tropical.js?v=0.64.0&b=3616c2fe808e';
+import { createUnderstoryWorld } from './world-understory.js?v=0.64.0&b=3616c2fe808e';
+import { createNightWorld } from './world-night.js?v=0.64.0&b=3616c2fe808e';
+import { createSavannaWorld } from './world-savanna.js?v=0.64.0&b=3616c2fe808e';
+import { createWaterHabitat } from './water-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createDivingHabitat } from './diving-habitat.js?v=0.64.0&b=3616c2fe808e';
+import {createGiantWaterbugHabitat} from './giant-waterbug-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createMantisHabitat } from './mantis-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createLadybirdHabitat } from './ladybird-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createBeeHabitat } from './bee-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createSwallowtailHabitat } from './swallowtail-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createJewelHabitat } from './jewel-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createLonghornHabitat } from './longhorn-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createRhinoHabitat } from './rhino-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createStagHabitat } from './stag-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createMetalliferHabitat } from './metallifer-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createAntHabitat } from './ant-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createLogFruitHabitat } from './log-fruit-habitat.js?v=0.64.0&b=3616c2fe808e';
+import { createInsects, SPECIES } from './insects.js?v=0.64.0&b=3616c2fe808e';
+import { createInsectModel, updateInsectModel } from './insect-models.js?v=0.64.0&b=3616c2fe808e';
+import { createInput } from './input.js?v=0.64.0&b=3616c2fe808e';
+import { createAudio } from './audio.js?v=0.64.0&b=3616c2fe808e';
+import { createNet } from './net.js?v=0.64.0&b=3616c2fe808e';
+import { createJournal } from './journal.js?v=0.64.0&b=3616c2fe808e';
+import { createJournalUI } from './journal-ui.js?v=0.64.0&b=3616c2fe808e';
+import { createCaptureVisibility } from './capture-visibility.js?v=0.64.0&b=3616c2fe808e';
+import { createCompanionRoster, isCompanionSpecies } from './individual-roster.js?v=0.64.0&b=3616c2fe808e';
+import { createBattle, advanceBattle, cancelBattle, BATTLE_SPECIES } from './beetle-battle.js?v=0.64.0&b=3616c2fe808e';
+import { createBattleView } from './battle-view.js?v=0.64.0&b=3616c2fe808e';
+import { createExpedition } from './expedition.js?v=0.64.0&b=3616c2fe808e';
+import {dragonflyAmbientProfiles} from './dragonfly-ambient.js?v=0.64.0&b=3616c2fe808e';
+// BUTTERFLY_AMBIENT_MAIN_BEGIN
+import {butterflyAmbientProfiles} from './butterfly-ambient.js?v=0.64.0&b=3616c2fe808e';
+// BUTTERFLY_AMBIENT_MAIN_END
+import { individualHabitatOptions, individualScale, individualLabel } from './individual-layout.js?v=0.64.0&b=3616c2fe808e';
 
 const HABITATS={
  meadow:{name:'温帯の草地・林縁',create:createWorld,hint:'白い翅が、草花の上でひと休み。近づいてみよう。'},
@@ -48,15 +80,19 @@ const HABITATS={
  night:{name:'東アジア湿地の夜',create:createNightWorld,hint:'湿地の葉先に、小さな光。そっと近づいてみよう。'},
  savanna:{name:'南部アフリカ草地の再現区画',create:createSavannaWorld,hint:'球を押す虫と、裸地を歩く黒い大顎。足元も見てみよう。'},
  forest:{name:'中部アフリカ森林縁の再現区画',create:createForestWorld,hint:'明るい道から、太い木の樹液跡へ。白黒の胸と短い角を探して。'},
- australia:{name:'北東オーストラリア・雨林の小再現区画',create:createAustraliaWorld,hint:'倒木の上に、緑や紫の背。横からそっと近づいてみよう。'}
+ australia:{name:'北東オーストラリア・雨林の小再現区画',create:createAustraliaWorld,hint:'倒木の虹色、東の枝の二本角。横からそっと探そう。'},
+ newzealand:{name:'ニュージーランド北部・林の小再現区画',create:createNewZealandWorld,hint:'垂れた枯れ葉の下。太い枝を横から見て、長い触角と大きな後脚を探して。'},
+ europe:{name:'欧州の広葉樹林縁・夕方',create:createEuropeWorld,hint:'明るい倒木に、赤褐色の大顎。横から静かに近づいてみよう。'},
+ flores:{name:'フローレス島・林縁の小再現区画',create:createFloresWorld,hint:'明るい枝に、まっすぐ長い黒い大顎。横からそっと探してみよう。'}
 };
 function habitatId(id){return Object.prototype.hasOwnProperty.call(HABITATS,id)?id:'meadow';}
+function habitatHint(id){return id==='understory'&&[5,6,7,8,9,10].includes(activeOuting?.generatorVersion)?'入口の枝や、西の太い幹に三本の角。葉の揺れや長い顎も探してみよう。':HABITATS[id].hint;}
 const THREE=window.THREE;
 const $=id=>document.getElementById(id);
 const canvas=$('game-canvas');
 const state={mode:'title',habitat:'meadow',time:0,elapsed:0,captures:0,seen:[],sensitivity:1,volume:.25,player:{x:0,y:1.65,z:10,yaw:0,pitch:-.03,speed:0,quiet:false,running:false},swing:0,cooldown:0};
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let renderer,scene,camera,world,waterHabitat,divingHabitat,mantisHabitat,ladybirdHabitat,beeHabitat,swallowtailHabitat,jewelHabitat,longhornHabitat,miyamaHabitat,euchirusHabitat,manticoraHabitat,rainbowStagHabitat,rhinoHabitat,stagHabitat,giantStagHabitat,elephantHabitat,goliathHabitat,fiveHornHabitat,metalliferHabitat,atlasHabitat,antHabitat,logFruitHabitat,simulation,input,audio,net,models=new Map(),inspectScene,inspectCamera,inspectModel,inspectTurn=0,inspectTilt=.2;
+let renderer,scene,camera,world,waterHabitat,divingHabitat,giantWaterbugHabitat,mantisHabitat,ladybirdHabitat,beeHabitat,swallowtailHabitat,jewelHabitat,longhornHabitat,miyamaHabitat,euchirusHabitat,manticoraHabitat,rainbowStagHabitat,europeStagHabitat,giraffeStagHabitat,rhinoHabitat,stagHabitat,giantStagHabitat,elephantHabitat,goliathHabitat,fiveHornHabitat,metalliferHabitat,atlasHabitat,atlasAlternateHabitat,antHabitat,logFruitHabitat,simulation,input,audio,net,models=new Map(),inspectScene,inspectCamera,inspectModel,inspectTurn=0,inspectTilt=.2;
 let toastTime=0,captureDelay=0,lastTime=0,accumulator=0,frames=0,disposed=false;
 const insectStates=new Map();
 // Own the lock transition explicitly; browsers may queue duplicate unlock events.
@@ -104,8 +140,21 @@ function activateHabitat(id){
  if(scene){scene.remove(camera);for(const root of [...scene.children])disposeSceneRoot(root,!root.userData.species);}
  scene=new THREE.Scene();scene.add(camera);
  world=HABITATS[next].create(scene);
+ // MOONMOTH_MAIN_BEGIN
+ moonmothHabitat=next==='night'?createMoonmothHabitat(world,scene):null;
+ // MOONMOTH_MAIN_END
  waterHabitat=next==='meadow'?createWaterHabitat(world,scene):null;
  divingHabitat=next==='meadow'?createDivingHabitat(world,scene):null;
+ giantWaterbugHabitat=next==='meadow'?createGiantWaterbugHabitat(world,scene):null;
+ // ANAX_MAIN_BEGIN
+ anaxHabitat=next==='meadow'?createAnaxHabitat(world,scene):null;
+ // ANAX_MAIN_END
+ // TIGER_BEETLE_MAIN_BEGIN
+ tigerBeetleHabitat=next==='meadow'?createTigerBeetleHabitat(world,scene):null;
+ // TIGER_BEETLE_MAIN_END
+ // ORCHID_MANTIS_MAIN_BEGIN
+ orchidMantisHabitat=next==='understory'?createOrchidMantisHabitat(world,scene):null;
+ // ORCHID_MANTIS_MAIN_END
  mantisHabitat=next==='meadow'?createMantisHabitat(world,scene):null;
  ladybirdHabitat=next==='meadow'?createLadybirdHabitat(world,scene):null;
  beeHabitat=next==='meadow'?createBeeHabitat(world,scene):null;
@@ -118,6 +167,8 @@ function activateHabitat(id){
  giantStagHabitat=next==='night'?createGiantStagHabitat(world,scene):null;
  metalliferHabitat=next==='understory'?createMetalliferHabitat(world,scene):null;
  atlasHabitat=next==='understory'?createAtlasHabitat(world,scene):null;
+ // Both supports stay in the gen5 landscape; only the saved outing chooses the insect's home.
+ atlasAlternateHabitat=next==='understory'&&[5,6,7,8,9,10].includes(activeOuting?.generatorVersion)?createAtlasAlternateHabitat(world,scene):null;
  antHabitat=next==='tropical'?createAntHabitat(world,scene):null;
  logFruitHabitat=next==='tropical'?createLogFruitHabitat(world,scene):null;
  elephantHabitat=next==='tropical'?createElephantHabitat(world,scene):null;
@@ -126,12 +177,22 @@ function activateHabitat(id){
  euchirusHabitat=next==='understory'?createEuchirusHabitat(world,scene):null;
  manticoraHabitat=next==='savanna'?createManticoraHabitat(world,scene):null;
  rainbowStagHabitat=next==='australia'?createRainbowStagHabitat(world,scene):null;
+ // XYLOTRUPES_MAIN_BEGIN
+ xylotrupesHabitat=next==='australia'?createXylotrupesHabitat(world,scene):null;
+ // XYLOTRUPES_MAIN_END
+ europeStagHabitat=next==='europe'?createEuropeStagHabitat(world,scene):null;
+ giraffeStagHabitat=next==='flores'?createGiraffeStagHabitat(world,scene):null;
  const habitatOptions=world.insectHomes?{homes:world.insectHomes,bounds:world.bounds}:{};
+ if(next==='meadow')habitatOptions.dragonflyAmbient=dragonflyAmbientProfiles(activeOuting);
+ // BUTTERFLY_AMBIENT_MAIN_BEGIN
+ if(next==='meadow')habitatOptions.butterflyAmbient=butterflyAmbientProfiles(activeOuting);
+ // BUTTERFLY_AMBIENT_MAIN_END
  if(world.grasshopperHomes){habitatOptions.extraHomes=world.grasshopperHomes;habitatOptions.grasshopperSupports=world.grasshopperSupports;}
  if(world.herculesHomes){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...world.herculesHomes];habitatOptions.herculesSupports=world.herculesSupports;}
  if(world.leafSupports)habitatOptions.leafSupports=world.leafSupports;
  if(world.fireflySupports)habitatOptions.fireflySupports=world.fireflySupports;
  if(world.dungSupports)habitatOptions.dungSupports=world.dungSupports;
+ if(world.wetapungaSupports)habitatOptions.wetapungaSupports=world.wetapungaSupports;
  if(waterHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...waterHabitat.homes];habitatOptions.striderSupports=waterHabitat.supports;}
  if(divingHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...divingHabitat.homes];habitatOptions.divingSupports=divingHabitat.supports;}
  if(antHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...antHabitat.homes];habitatOptions.antSupports=antHabitat.supports;}
@@ -142,7 +203,7 @@ function activateHabitat(id){
  if(stagHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...stagHabitat.homes];habitatOptions.stagSupports=stagHabitat.stagSupports;}
  if(giantStagHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...giantStagHabitat.homes];habitatOptions.giantStagSupports=giantStagHabitat.giantStagSupports;}
  if(metalliferHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...metalliferHabitat.homes];habitatOptions.metalliferSupports=metalliferHabitat.metalliferSupports;}
- if(atlasHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...atlasHabitat.homes];habitatOptions.atlasSupports=atlasHabitat.atlasSupports;}
+ if(atlasHabitat){const selected=atlasEncounterSupportKey(activeOuting)==='B'?atlasAlternateHabitat:atlasHabitat;if(!selected)throw new Error('Atlas outing support missing');habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...selected.homes];habitatOptions.atlasSupports=selected.atlasSupports;}
  if(beeHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...beeHabitat.homes];habitatOptions.beeSupports=beeHabitat.beeSupports;}
  if(swallowtailHabitat){const[,x,z,altitude]=swallowtailHabitat.homes[0];habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...swallowtailHabitat.homes];habitatOptions.swallowtailSupports=[{home:{x,y:world.heightAt(x,z)+altitude,z},perches:swallowtailHabitat.swallowtailSupports}];}
  if(jewelHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...jewelHabitat.homes];habitatOptions.jewelSupports=jewelHabitat.jewelSupports;}
@@ -159,7 +220,27 @@ function activateHabitat(id){
  if(manticoraHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...manticoraHabitat.homes];habitatOptions.manticoraSupports=manticoraHabitat.manticoraSupports;}
  // Separate Australian origin; no old habitat slot is inserted or renumbered.
  if(rainbowStagHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...rainbowStagHabitat.homes];habitatOptions.rainbowStagSupports=rainbowStagHabitat.rainbowStagSupports;}
- const captureOccluders=[...(world.captureOccluders||[]),...(antHabitat?.captureOccluders||[]),...(mantisHabitat?.captureOccluders||[]),...(ladybirdHabitat?.captureOccluders||[]),...(rhinoHabitat?.captureOccluders||[]),...(stagHabitat?.captureOccluders||[]),...(giantStagHabitat?.captureOccluders||[]),...(elephantHabitat?.captureOccluders||[]),...(goliathHabitat?.captureOccluders||[]),...(fiveHornHabitat?.captureOccluders||[]),...(miyamaHabitat?.captureOccluders||[]),...(euchirusHabitat?.captureOccluders||[]),...(metalliferHabitat?.captureOccluders||[]),...(atlasHabitat?.captureOccluders||[]),...(beeHabitat?.captureOccluders||[]),...(swallowtailHabitat?.captureOccluders||[]),...(jewelHabitat?.captureOccluders||[])];
+ // XYLOTRUPES_MAIN_BEGIN
+ if(xylotrupesHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...xylotrupesHabitat.homes];habitatOptions.xylotrupesSupports=xylotrupesHabitat.xylotrupesSupports;}
+ // XYLOTRUPES_MAIN_END
+ // One fixed origin in a separate European exhibit, without changing outing slots.
+ if(europeStagHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...europeStagHabitat.homes];habitatOptions.europeStagSupports=europeStagHabitat.europeStagSupports;}
+ if(giraffeStagHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...giraffeStagHabitat.homes];habitatOptions.giraffeStagSupports=giraffeStagHabitat.giraffeStagSupports;}
+ // Append after the30 old meadow origins; no older slot is renumbered.
+ if(giantWaterbugHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...giantWaterbugHabitat.homes];habitatOptions.giantWaterbugSupports=giantWaterbugHabitat.giantWaterbugSupports;}
+ // TIGER_BEETLE_MAIN_BEGIN
+ if(tigerBeetleHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...tigerBeetleHabitat.homes];habitatOptions.tigerBeetleSupports=tigerBeetleHabitat.tigerBeetleSupports;}
+ // TIGER_BEETLE_MAIN_END
+ // ORCHID_MANTIS_MAIN_BEGIN
+ if(orchidMantisHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...orchidMantisHabitat.homes];habitatOptions.orchidMantisSupports=orchidMantisHabitat.orchidMantisSupports;}
+ // ORCHID_MANTIS_MAIN_END
+ // ANAX_MAIN_BEGIN
+ if(anaxHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...anaxHabitat.homes];habitatOptions.anaxSupports=anaxHabitat.anaxSupports;}
+ // ANAX_MAIN_END
+ // MOONMOTH_MAIN_BEGIN
+ if(moonmothHabitat){habitatOptions.extraHomes=[...(habitatOptions.extraHomes||[]),...moonmothHabitat.homes];habitatOptions.moonmothSupports=moonmothHabitat.moonmothSupports;}
+ // MOONMOTH_MAIN_END
+ const captureOccluders=[...(moonmothHabitat?.captureOccluders||[]),...(anaxHabitat?.captureOccluders||[]),...(world.captureOccluders||[]),...(xylotrupesHabitat?.captureOccluders||[]),...(orchidMantisHabitat?.captureOccluders||[]),...(giraffeStagHabitat?.captureOccluders||[]),...(giantWaterbugHabitat?.captureOccluders||[]),...(antHabitat?.captureOccluders||[]),...(mantisHabitat?.captureOccluders||[]),...(ladybirdHabitat?.captureOccluders||[]),...(rhinoHabitat?.captureOccluders||[]),...(stagHabitat?.captureOccluders||[]),...(giantStagHabitat?.captureOccluders||[]),...(elephantHabitat?.captureOccluders||[]),...(goliathHabitat?.captureOccluders||[]),...(fiveHornHabitat?.captureOccluders||[]),...(miyamaHabitat?.captureOccluders||[]),...(euchirusHabitat?.captureOccluders||[]),...(metalliferHabitat?.captureOccluders||[]),...(atlasHabitat?.captureOccluders||[]),...(atlasAlternateHabitat?.captureOccluders||[]),...(beeHabitat?.captureOccluders||[]),...(swallowtailHabitat?.captureOccluders||[]),...(jewelHabitat?.captureOccluders||[])];
  habitatOptions.hasLineOfSight=createCaptureVisibility(captureOccluders);
  simulation=createInsects(world.heightAt,individualHabitatOptions(next,habitatOptions,activeOuting,world.heightAt));
  models=new Map();for(const item of simulation.items){const model=createInsectModel(item.species,{sizePermille:item.sizePermille,fieldFlight:item.rhinoFlightEnabled===true});models.set(item.id,model);scene.add(model);}
@@ -171,7 +252,7 @@ function resetPlayer(){
 function start(){
  if(state.mode==='error'||outingChanging||expedition.pending&&!expedition.snapshot)return;
  if(state.mode==='title'){const selected=habitatId($('habitat-select')?.value);const nextOuting=expedition.snapshot,changedOuting=(activeOuting?.worldSeed??null)!==(nextOuting?.worldSeed??null)||(activeOuting?.outingCounter??null)!==(nextOuting?.outingCounter??null);activeOuting=nextOuting;if(selected!==state.habitat||changedOuting)activateHabitat(selected);simulation.reset();audio.resetField(state.habitat);state.captures=0;state.seen=[];state.elapsed=0;resetPlayer();}
- state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast(HABITATS[state.habitat].hint,6);
+ state.mode='playing';syncScreens();input.clear();audio.start();requestLock();toast(habitatHint(state.habitat),6);
 }
 function pause({lock=true}={}){
  if(state.mode==='battle'){leaveBattle();return;}
@@ -200,7 +281,7 @@ function travelHabitat(){
  activateHabitat(selected);resetPlayer();state.elapsed=0;
  audio.resetField(state.habitat);$('habitat-select').value=state.habitat;syncTravelChoice();
  // Reuse settings/input/audio recovery, but do not re-lock after a menu change.
- resume({lock:false});toast(`${HABITATS[selected].name}へ。${HABITATS[selected].hint}`,6);
+ resume({lock:false});toast(`${HABITATS[selected].name}へ。${habitatHint(selected)}`,6);
 }
 function title(){
  if(outingChanging)return;
@@ -238,7 +319,11 @@ function showInspection(item){
  state.mode='inspect';replaceArmed=null;state.player.speed=0;unlock();input.clear();audio.inspect();
  if(inspectModel){inspectScene.remove(inspectModel);inspectModel.traverse(o=>{o.geometry?.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});}
  inspectModel=createInsectModel(item.species,{inspection:true,sizePermille:item.sizePermille});
- const scales={butterfly:5.1,dragonfly:4.7,cicada:6.1,morpho:3.4,grasshopper:4.4,hercules:3.8,leafinsect:4,waterstrider:4,leafcutterant:4,firefly:4,dungbeetle:4,divingbeetle:4,mantis:4,ladybird:12,rhino:4,stag:4,giantstag:4,elephant:3.4,goliath:3.6,fivehorn:3.4,miyama:4,euchirus:3,manticora:3.2,rainbowstag:3.2,metallifer:3.4,atlas:3.4,bee:8,swallowtail:4,jewel:6,longhorn:6};inspectModel.scale.setScalar((scales[item.species]||5)*individualScale(item));inspectScene.add(inspectModel);
+ if(item.species==='giraffestag')inspectModel.userData.inspectionCenter=inspectModel.worldToLocal(new THREE.Box3().setFromObject(inspectModel).getCenter(new THREE.Vector3()));
+ // MOONMOTH_MAIN_BEGIN
+ if(item.species==='moonmoth')inspectModel.userData.inspectionCenter=inspectModel.worldToLocal(new THREE.Box3().setFromObject(inspectModel).getCenter(new THREE.Vector3()));
+ // MOONMOTH_MAIN_END
+ const scales={moonmoth:3.6,anax:3.8,xylotrupes:3.4,orchidmantis:4.8,tigerbeetle:4.8,giraffestag:3.4,butterfly:5.1,dragonfly:4.7,cicada:6.1,morpho:3.4,grasshopper:4.4,hercules:3.8,leafinsect:4,waterstrider:4,leafcutterant:4,firefly:4,dungbeetle:4,divingbeetle:4,giantwaterbug:3.4,wetapunga:3,mantis:4,ladybird:12,rhino:4,stag:4,giantstag:4,elephant:3.4,goliath:3.6,fivehorn:3.4,miyama:4,euchirus:3,manticora:3.2,rainbowstag:3.2,europestag:3.2,metallifer:3.4,atlas:3.4,bee:8,swallowtail:4,jewel:6,longhorn:6};inspectModel.scale.setScalar((scales[item.species]||5)*individualScale(item));inspectScene.add(inspectModel);
  inspectTurn=-.45;inspectTilt=.3;positionInspector();
  const data=SPECIES[item.species];$('insect-name').textContent=data.name||data.label;$('insect-size').textContent=(data.size||'').replace('試作表示は','基準模型の表示は');$('insect-description').textContent=data.observation||data.description||'';$('insect-hint').textContent=data.hint||'';
  refreshCapturedChoices(item);refreshIndividualSize();
@@ -255,7 +340,7 @@ function swing(){
  if(result.ok){
   capturedMeasurement=result.item.encounterId?expedition.measure(result.item.encounterId):null;
   state.captures++;if(!state.seen.includes(result.item.species))state.seen.push(result.item.species);
-  journal.record({species:result.item.species,location:result.item.species==='rainbowstag'?'北東オーストラリア・雨林の倒木（再現区画）':result.item.species==='manticora'?'南部アフリカ草地区画・露出した土':result.item.species==='euchirus'?'東南アジア林・生木の樹皮面':result.item.species==='miyama'?'温帯の林縁・生木の樹皮面':result.item.species==='fivehorn'?'東南アジア林・生木の斜め太枝':result.item.species==='goliath'?'中部アフリカ森林縁・生木の樹液跡':result.item.species==='elephant'?'中米熱帯林・低い傾斜枝':result.item.species==='giantstag'?'夜の林縁・樹皮の隙間':result.item.species==='atlas'?'東南アジア林・三本角の観察枝':result.item.species==='metallifer'?'東南アジア林・低い観察枝':result.item.species==='longhorn'?'温帯の林縁・太い幹':result.item.species==='jewel'?'温帯の草地・若木の葉':result.item.species==='swallowtail'?'温帯の草地・池岸':result.item.species==='bee'?'温帯の草地・西の花群':['rhino','stag'].includes(result.item.species)?'夜の林縁・樹液のある木':locationLabel(result.item.x,result.item.z),x:Math.round(result.item.x*10)/10,z:Math.round(result.item.z*10)/10});
+  journal.record({species:result.item.species,location:result.item.species==='moonmoth'?'夜の林縁・道沿いの細い枝':result.item.species==='anax'?'温帯の草地・池の西岸':result.item.species==='xylotrupes'?'豪州参考区画・観察用の低い枝':result.item.species==='orchidmantis'?'東南アジア林・道沿いの広い葉（再現区画）':result.item.species==='tigerbeetle'?'温帯の草地・東の土道':result.item.species==='giraffestag'?'フローレス島参考・林縁の低い枝（再現区画）':result.item.species==='wetapunga'?'ニュージーランド北部・枯れ葉の下の枝（再現区画）':result.item.species==='giantwaterbug'?'温帯の草地・池岸の水草':result.item.species==='europestag'?'欧州の広葉樹林縁・夕方の倒木（再現区画）':result.item.species==='rainbowstag'?'北東オーストラリア・雨林の倒木（再現区画）':result.item.species==='manticora'?'南部アフリカ草地区画・露出した土':result.item.species==='euchirus'?'東南アジア林・生木の樹皮面':result.item.species==='miyama'?'温帯の林縁・生木の樹皮面':result.item.species==='fivehorn'?'東南アジア林・生木の斜め太枝':result.item.species==='goliath'?'中部アフリカ森林縁・生木の樹液跡':result.item.species==='elephant'?'中米熱帯林・低い傾斜枝':result.item.species==='giantstag'?'夜の林縁・樹皮の隙間':result.item.species==='atlas'?'東南アジア林・三本角の観察枝':result.item.species==='metallifer'?'東南アジア林・低い観察枝':result.item.species==='longhorn'?'温帯の林縁・太い幹':result.item.species==='jewel'?'温帯の草地・若木の葉':result.item.species==='swallowtail'?'温帯の草地・池岸':result.item.species==='bee'?'温帯の草地・西の花群':['rhino','stag'].includes(result.item.species)?'夜の林縁・樹液のある木':locationLabel(result.item.x,result.item.z),x:Math.round(result.item.x*10)/10,z:Math.round(result.item.z*10)/10});
   captureDelay=.28;audio.capture();toast('そっと、つかまえた。',.6);
  }else {simulation.startleFromNet?.(state.player,direction());toast(result.reason,2.4);}
 }
@@ -282,7 +367,7 @@ function interact(){
 }
 function release({lock=true}={}){
  if(state.mode!=='inspect')return;
- const item=simulation.release(state.player);state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(item?.species==='rainbowstag'?`${SPECIES.rainbowstag.name}を、倒木へそっと返しました。`:item?.species==='manticora'?`${SPECIES.manticora.name}を、地面へそっと返しました。`:item?.species==='euchirus'?`${SPECIES.euchirus.name}を、樹皮の面へそっと返しました。`:item?.species==='miyama'?`${SPECIES.miyama.name}を、樹皮の面へそっと返しました。`:item?.species==='fivehorn'?`${SPECIES.fivehorn.name}を、斜めの太枝へそっと返しました。`:item?.species==='goliath'?`${SPECIES.goliath.name}を、森林縁の枝へそっと返しました。`:item?.species==='elephant'?`${SPECIES.elephant.name}を、傾斜枝へそっと返しました。`:item?.species==='giantstag'?`${SPECIES.giantstag.name}を、樹皮のそばへそっと返しました。`:item?.species==='atlas'?`${SPECIES.atlas.name}を、枝へそっと返しました。`:item?.species==='metallifer'?`${SPECIES.metallifer.name}を、東南アジア林の枝へそっと返しました。`:item?.species==='longhorn'?`${SPECIES.longhorn.name}を、太い幹へそっと返しました。`:item?.species==='jewel'?`${SPECIES.jewel.name}を、若木の葉へそっと返しました。`:item?.species==='swallowtail'?`${SPECIES.swallowtail.name}を、池岸へそっと返しました。`:item?.species==='bee'?`${SPECIES.bee.name}を、花のそばへそっと返しました。`:item?.species==='stag'?`${SPECIES.stag.name}を、樹液のある木へそっと返しました。`:item?.species==='rhino'?`${SPECIES.rhino.name}を、樹液のある木へそっと返しました。`:item?.species==='ladybird'?`${SPECIES.ladybird.name}を、草むらへそっと返しました。`:item?.species==='mantis'?`${SPECIES.mantis.name}を、草葉へそっと返しました。`:item?.species==='divingbeetle'?`${SPECIES.divingbeetle.name}を、池へそっと返しました。`:item?.species==='dungbeetle'?`${SPECIES.dungbeetle.name}を、球のそばへそっと返しました。`:item?.species==='firefly'?`${SPECIES.firefly.name}を、夜の湿地へそっと返しました。`:item?.species==='leafcutterant'?`${SPECIES.leafcutterant.name}を、地面へそっと返しました。`:item?.species==='waterstrider'?`${SPECIES.waterstrider.name}を、水面へそっと返しました。`:item?.species==='leafinsect'?`${SPECIES.leafinsect.name}を、葉の上へそっと返しました。`:item?.species==='grasshopper'?'ショウリョウバッタが、草むらへ跳んでいきました。':item?.species==='hercules'?'ヘラクレスオオカブトが、木陰へ歩いていきました。':`${SPECIES[item?.species]?.name||'虫'}が、野原へ飛び立ちました。`,3.8);
+ const item=simulation.release(state.player);state.mode='playing';state.cooldown=.8;state.swing=0;input.clear();audio.start();audio.release();syncScreens();restoreControl(lock);toast(item?.species==='xylotrupes'?`${SPECIES.xylotrupes.name}を、もとの枝へそっと返しました。`:item?.species==='orchidmantis'?`${SPECIES.orchidmantis.name}を、もとの葉へそっと返しました。`:item?.species==='tigerbeetle'?`${SPECIES.tigerbeetle.name}を、土道へそっと返しました。`:item?.species==='giraffestag'?`${SPECIES.giraffestag.name}を、もとの枝へそっと返しました。`:item?.species==='wetapunga'?'ウェタプンガを、もとの枝へそっと返しました。':item?.species==='giantwaterbug'?`${SPECIES.giantwaterbug.name}を、池へそっと返しました。`:item?.species==='europestag'?`${SPECIES.europestag.name}を、倒木へそっと返しました。`:item?.species==='rainbowstag'?`${SPECIES.rainbowstag.name}を、倒木へそっと返しました。`:item?.species==='manticora'?`${SPECIES.manticora.name}を、地面へそっと返しました。`:item?.species==='euchirus'?`${SPECIES.euchirus.name}を、樹皮の面へそっと返しました。`:item?.species==='miyama'?`${SPECIES.miyama.name}を、樹皮の面へそっと返しました。`:item?.species==='fivehorn'?`${SPECIES.fivehorn.name}を、斜めの太枝へそっと返しました。`:item?.species==='goliath'?`${SPECIES.goliath.name}を、森林縁の枝へそっと返しました。`:item?.species==='elephant'?`${SPECIES.elephant.name}を、傾斜枝へそっと返しました。`:item?.species==='giantstag'?`${SPECIES.giantstag.name}を、樹皮のそばへそっと返しました。`:item?.species==='atlas'?`${SPECIES.atlas.name}を、枝へそっと返しました。`:item?.species==='metallifer'?`${SPECIES.metallifer.name}を、東南アジア林の枝へそっと返しました。`:item?.species==='longhorn'?`${SPECIES.longhorn.name}を、太い幹へそっと返しました。`:item?.species==='jewel'?`${SPECIES.jewel.name}を、若木の葉へそっと返しました。`:item?.species==='swallowtail'?`${SPECIES.swallowtail.name}を、池岸へそっと返しました。`:item?.species==='bee'?`${SPECIES.bee.name}を、花のそばへそっと返しました。`:item?.species==='stag'?`${SPECIES.stag.name}を、樹液のある木へそっと返しました。`:item?.species==='rhino'?`${SPECIES.rhino.name}を、樹液のある木へそっと返しました。`:item?.species==='ladybird'?`${SPECIES.ladybird.name}を、草むらへそっと返しました。`:item?.species==='mantis'?`${SPECIES.mantis.name}を、草葉へそっと返しました。`:item?.species==='divingbeetle'?`${SPECIES.divingbeetle.name}を、池へそっと返しました。`:item?.species==='dungbeetle'?`${SPECIES.dungbeetle.name}を、球のそばへそっと返しました。`:item?.species==='firefly'?`${SPECIES.firefly.name}を、夜の湿地へそっと返しました。`:item?.species==='leafcutterant'?`${SPECIES.leafcutterant.name}を、地面へそっと返しました。`:item?.species==='waterstrider'?`${SPECIES.waterstrider.name}を、水面へそっと返しました。`:item?.species==='leafinsect'?`${SPECIES.leafinsect.name}を、葉の上へそっと返しました。`:item?.species==='grasshopper'?'ショウリョウバッタが、草むらへ跳んでいきました。':item?.species==='hercules'?'ヘラクレスオオカブトが、木陰へ歩いていきました。':`${SPECIES[item?.species]?.name||'虫'}が、野原へ飛び立ちました。`,3.8);
 }
 function locationLabel(x,z){if(world.locationLabel)return world.locationLabel(x,z);return Math.hypot(x-24,z+20)<16?'水辺の草むら':Math.hypot(x+10,z+8)<10?'大きな木の下':z<-32?'森の入り口':'風の通る野原';}
 function openJournal(speciesId){
@@ -431,7 +516,35 @@ function positionInspector(){
   if(inspectModel.userData.species==='longhorn')inspectModel.scale.setScalar(Math.min(6,inspectCamera.aspect*10.7));
   if(inspectModel.userData.species==='swallowtail')inspectModel.scale.setScalar(Math.min(4,inspectCamera.aspect*6.2));
   if(inspectModel.userData.species==='bee')inspectModel.scale.setScalar(Math.min(8,inspectCamera.aspect*16));
-  if(inspectModel.userData.species==='rainbowstag')inspectModel.scale.setScalar(Math.min(3.2,inspectCamera.aspect*5));
+  if(inspectModel.userData.species==='wetapunga')inspectModel.scale.setScalar(Math.min(3,inspectCamera.aspect*3.1));
+  if(inspectModel.userData.species==='giantwaterbug')inspectModel.scale.setScalar(Math.min(3.4,inspectCamera.aspect*5));
+  // MOONMOTH_MAIN_BEGIN
+  if(inspectModel.userData.species==='moonmoth'){
+   inspectModel.scale.setScalar(Math.min(3.6,inspectCamera.aspect*4.8));
+   const centre=inspectModel.userData.inspectionCenter;
+   if(centre)inspectModel.position.sub(centre.clone().multiplyScalar(inspectModel.scale.x).applyEuler(new THREE.Euler(inspectTilt,inspectTurn,0)));
+  }
+  // MOONMOTH_MAIN_END
+  // ANAX_MAIN_BEGIN
+  if(inspectModel.userData.species==='anax')inspectModel.scale.setScalar(Math.min(3.8,inspectCamera.aspect*5));
+  // ANAX_MAIN_END
+  // TIGER_BEETLE_MAIN_BEGIN
+  if(inspectModel.userData.species==='tigerbeetle')inspectModel.scale.setScalar(Math.min(4.8,inspectCamera.aspect*7.5));
+  // TIGER_BEETLE_MAIN_END
+  // ORCHID_MANTIS_MAIN_BEGIN
+  if(inspectModel.userData.species==='orchidmantis')inspectModel.scale.setScalar(Math.min(4.8,inspectCamera.aspect*7));
+  // ORCHID_MANTIS_MAIN_END
+  if(inspectModel.userData.species==='europestag')inspectModel.scale.setScalar(Math.min(3.2*(inspectModel.userData.individualScale||1),inspectCamera.aspect*4.3));
+  if(inspectModel.userData.species==='giraffestag'){
+   inspectModel.scale.setScalar(Math.min(3.4*(inspectModel.userData.individualScale||1),inspectCamera.aspect*4.3));
+   // Rotate around the actual long-jaw model's centre only in the inspector.
+   const centre=inspectModel.userData.inspectionCenter;
+   if(centre)inspectModel.position.sub(centre.clone().multiplyScalar(inspectModel.scale.x).applyEuler(new THREE.Euler(inspectTilt,inspectTurn,0)));
+  }
+  // XYLOTRUPES_MAIN_BEGIN
+  if(inspectModel.userData.species==='xylotrupes')inspectModel.scale.setScalar(Math.min(3.4*(inspectModel.userData.individualScale||1),inspectCamera.aspect*4.4));
+  // XYLOTRUPES_MAIN_END
+  if(inspectModel.userData.species==='rainbowstag')inspectModel.scale.setScalar(Math.min(3.2*(inspectModel.userData.individualScale||1),inspectCamera.aspect*5));
   if(inspectModel.userData.species==='manticora')inspectModel.scale.setScalar(Math.min(3.2*(inspectModel.userData.individualScale||1),inspectCamera.aspect*5));
   if(inspectModel.userData.species==='euchirus')inspectModel.scale.setScalar(Math.min(2.8,inspectCamera.aspect*3.2));
   if(['metallifer','atlas','elephant','goliath','fivehorn','miyama'].includes(inspectModel.userData.species))inspectModel.scale.setScalar(Math.min(3.4*(inspectModel.userData.individualScale||1),inspectCamera.aspect*(inspectModel.userData.species==='atlas'?4.2:4.5)));
@@ -440,7 +553,7 @@ function positionInspector(){
  }
 }
 function resize(){if(!renderer)return;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();positionInspector();}
-function collides(x,z){for(const c of [...(world.colliders||[]),...(rhinoHabitat?.colliders||[]),...(stagHabitat?.colliders||[]),...(giantStagHabitat?.colliders||[]),...(elephantHabitat?.colliders||[]),...(goliathHabitat?.colliders||[]),...(fiveHornHabitat?.colliders||[]),...(miyamaHabitat?.colliders||[]),...(metalliferHabitat?.colliders||[]),...(atlasHabitat?.colliders||[]),...(jewelHabitat?.colliders||[])])if(Math.hypot(x-c.x,z-c.z)<c.r+.28)return true;return false;}
+function collides(x,z){for(const c of [...(moonmothHabitat?.colliders||[]),...(anaxHabitat?.colliders||[]),...(world.colliders||[]),...(xylotrupesHabitat?.colliders||[]),...(orchidMantisHabitat?.colliders||[]),...(giraffeStagHabitat?.colliders||[]),...(rhinoHabitat?.colliders||[]),...(stagHabitat?.colliders||[]),...(giantStagHabitat?.colliders||[]),...(elephantHabitat?.colliders||[]),...(goliathHabitat?.colliders||[]),...(fiveHornHabitat?.colliders||[]),...(miyamaHabitat?.colliders||[]),...(metalliferHabitat?.colliders||[]),...(atlasHabitat?.colliders||[]),...(atlasAlternateHabitat?.colliders||[]),...(jewelHabitat?.colliders||[])])if(Math.hypot(x-c.x,z-c.z)<c.r+.28)return true;return false;}
 function updatePlayer(dt,actions){
  const p=state.player;
  p.yaw-=actions.yaw*.0022*state.sensitivity;p.pitch=Math.max(-1.35,Math.min(1.32,p.pitch-actions.pitch*.0022*state.sensitivity));p.quiet=actions.quiet;

@@ -1,40 +1,120 @@
-import {createRainbowStagStudy} from './rainbow-stag-study.js?v=0.41.0&b=bed5219b02cd';
-import {createManticoraStudy} from './manticora-study.js?v=0.41.0&b=bed5219b02cd';
-import {createEuchirusStudy} from './euchirus-study.js?v=0.41.0&b=bed5219b02cd';
-import {createMiyamaStudy} from './miyama-study.js?v=0.41.0&b=bed5219b02cd';
-import {createFiveHornStudy} from './five-horn-study.js?v=0.41.0&b=bed5219b02cd';
-import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import {createGoliathStudy} from './goliath-study.js?v=0.41.0&b=bed5219b02cd';
-import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import {createElephantStudy} from './elephant-study.js?v=0.41.0&b=bed5219b02cd';
-import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import {createGiantStagStudy} from './giant-stag-study.js?v=0.41.0&b=bed5219b02cd';
-import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.41.0&b=bed5219b02cd';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import { individualScale } from './individual-layout.js?v=0.41.0&b=bed5219b02cd';
+// MOONMOTH_FIELD_BEGIN
+import {createMoonmothStudy} from './moonmoth-study.js?v=0.64.0&b=3616c2fe808e';
+import {MOONMOTH_PERCH,MOONMOTH_FLIGHT} from './moonmoth-layout.js?v=0.64.0&b=3616c2fe808e';
+// MOONMOTH_FIELD_END
+// ANAX_FIELD_BEGIN
+import {createAnaxStudy} from './anax-study.js?v=0.64.0&b=3616c2fe808e';
+import {ANAX_PERCH,ANAX_PATROL} from './anax-layout.js?v=0.64.0&b=3616c2fe808e';
+// ANAX_FIELD_END
+// XYLOTRUPES_FIELD_BEGIN
+import {createXylotrupesStudy} from './xylotrupes-study.js?v=0.64.0&b=3616c2fe808e';
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+import {XYLOTRUPES_SUPPORT,XYLOTRUPES_SITES} from './xylotrupes-layout.js?v=0.64.0&b=3616c2fe808e';
+// XYLOTRUPES_INDIVIDUAL_END
+// XYLOTRUPES_FIELD_END
+// ORCHID_MANTIS_BEGIN
+import {createOrchidMantisStudy} from './orchid-mantis-study.js?v=0.64.0&b=3616c2fe808e';
+import {ORCHID_MANTIS_SUPPORT} from './orchid-mantis-layout.js?v=0.64.0&b=3616c2fe808e';
+// ORCHID_MANTIS_END
+// TIGER_BEETLE_BEGIN
+import {createTigerBeetleStudy} from './tiger-beetle-study.js?v=0.64.0&b=3616c2fe808e';
+import {TIGER_BEETLE_STOPS} from './tiger-beetle-layout.js?v=0.64.0&b=3616c2fe808e';
+// TIGER_BEETLE_END
+// GIRAFFE_INDIVIDUAL_BEGIN
+import {GIRAFFE_STAG_BRANCH,GIRAFFE_STAG_SUPPORT,GIRAFFE_STAG_SITES} from './giraffe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+// GIRAFFE_INDIVIDUAL_END
+// GIRAFFE_STAG_BEGIN
+import {createGiraffeStagStudy} from './giraffe-stag-study.js?v=0.64.0&b=3616c2fe808e';
+// GIRAFFE_STAG_END
+// EUROPE_INDIVIDUAL_BEGIN
+import {EUROPE_STAG_LANE,EUROPE_STAG_SITES} from './europe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+// EUROPE_INDIVIDUAL_END
+import {createEuropeStagStudy} from './europe-stag-study.js?v=0.64.0&b=3616c2fe808e';
+// RAINBOW_INDIVIDUAL_BEGIN
+import {RAINBOW_LANE,RAINBOW_STAG_SITES} from './rainbow-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+// RAINBOW_INDIVIDUAL_END
+import {createRainbowStagStudy} from './rainbow-stag-study.js?v=0.64.0&b=3616c2fe808e';
+import {createManticoraStudy} from './manticora-study.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusStudy} from './euchirus-study.js?v=0.64.0&b=3616c2fe808e';
+import {createMiyamaStudy} from './miyama-study.js?v=0.64.0&b=3616c2fe808e';
+import {createFiveHornStudy} from './five-horn-study.js?v=0.64.0&b=3616c2fe808e';
+import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.64.0&b=3616c2fe808e';
+// GOLIATH_INDIVIDUAL_BEGIN
+import {GOLIATH_INDIVIDUAL_OFFSETS,GOLIATH_SITES,FOREST_TREES,GOLIATH_RETREAT_BOUNDS} from './goliath-layout.js?v=0.64.0&b=3616c2fe808e';
+// GOLIATH_INDIVIDUAL_END
+import {createGoliathStudy} from './goliath-study.js?v=0.64.0&b=3616c2fe808e';
+import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createElephantStudy} from './elephant-study.js?v=0.64.0&b=3616c2fe808e';
+import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createGiantStagStudy} from './giant-stag-study.js?v=0.64.0&b=3616c2fe808e';
+import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.64.0&b=3616c2fe808e';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { individualScale } from './individual-layout.js?v=0.64.0&b=3616c2fe808e';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.41.0&b=bed5219b02cd';
-import { createLonghornStudy } from './longhorn-study.js?v=0.41.0&b=bed5219b02cd';
-import { createJewelStudy } from './jewel-study.js?v=0.41.0&b=bed5219b02cd';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.41.0&b=bed5219b02cd';
-import { createBeeStudy } from './bee-study.js?v=0.41.0&b=bed5219b02cd';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.41.0&b=bed5219b02cd';
-import { createStagStudy } from './stag-study.js?v=0.41.0&b=bed5219b02cd';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import { createRhinoStudy } from './rhino-study.js?v=0.41.0&b=bed5219b02cd';
-import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.41.0&b=bed5219b02cd';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.41.0&b=bed5219b02cd';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import { createMantisStudy } from './mantis-study.js?v=0.41.0&b=bed5219b02cd';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import { createDivingStudy } from './diving-study.js?v=0.41.0&b=bed5219b02cd';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.41.0&b=bed5219b02cd';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.41.0&b=bed5219b02cd';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.64.0&b=3616c2fe808e';
+import { createLonghornStudy } from './longhorn-study.js?v=0.64.0&b=3616c2fe808e';
+import { createJewelStudy } from './jewel-study.js?v=0.64.0&b=3616c2fe808e';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.64.0&b=3616c2fe808e';
+import { createBeeStudy } from './bee-study.js?v=0.64.0&b=3616c2fe808e';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.64.0&b=3616c2fe808e';
+import { createStagStudy } from './stag-study.js?v=0.64.0&b=3616c2fe808e';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { createRhinoStudy } from './rhino-study.js?v=0.64.0&b=3616c2fe808e';
+import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.64.0&b=3616c2fe808e';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.64.0&b=3616c2fe808e';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { createMantisStudy } from './mantis-study.js?v=0.64.0&b=3616c2fe808e';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { createDivingStudy } from './diving-study.js?v=0.64.0&b=3616c2fe808e';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.64.0&b=3616c2fe808e';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.64.0&b=3616c2fe808e';
+// GIANT_WATERBUG_BEGIN
+import {createGiantWaterbugStudy} from './giant-waterbug-study.js?v=0.64.0&b=3616c2fe808e';
+import {GIANT_WATERBUG_HOME as WATERBUG_HOME,GIANT_WATERBUG_ENVELOPE as WATERBUG_ENVELOPE,GIANT_WATERBUG_RETREAT as WATERBUG_RETREAT,GIANT_WATERBUG_REST_PITCH as WATERBUG_PITCH,GIANT_WATERBUG_WATER_Y as WATERBUG_WATER_Y} from './giant-waterbug-layout.js?v=0.64.0&b=3616c2fe808e';
+// GIANT_WATERBUG_END
+// WETAPUNGA_BEGIN
+import {createWetapungaStudy} from './wetapunga-study.js?v=0.64.0&b=3616c2fe808e';
+import {WETAPUNGA_DIMENSIONS as WETAPUNGA} from './wetapunga-kinematics.js?v=0.64.0&b=3616c2fe808e';
+// WETAPUNGA_END
+// TIGER_BEETLE_BEGIN
+// Sophiodela japonica is appended without changing existing species metadata.
+// TIGER_BEETLE_END
 export const SPECIES = Object.freeze({
-  rainbowstag:{name:'ニジイロクワガタ（雄）',label:'ニジイロクワガタ',scientificName:'Phalacrognathus muelleri',size:'試作表示は胴と頭が約18cm、大顎先まで約27cm。実物の寸法ではなく表示補正です。今回は固定の未計測個体です。',observation:'北東オーストラリアの熱帯雨林にすむクワガタで、幼虫は腐朽した木で育ちます。丸みのある背と、光の角度で変わる色を見比べてみましょう。成虫を低い倒木に置いた短い歩行はゲーム上の観察配置です。成虫の食事・活動時刻や、野生の反応速度は再現していません。',hint:'雨林の低い倒木を横から見て。丸い背と、前方へ伸びる大顎を探して。',color:'#68854e'},
+  // MOONMOTH_FIELD_BEGIN
+  moonmoth:{name:'オオミズアオ（雄）',label:'オオミズアオ',scientificName:'Actias aliena',size:'試作表示は胴と頭が約16cm、開翅幅は約42cm、尾までの前後長は約32cm。自然の実寸ではない固定の未計測個体です。',observation:'淡い青緑色の4枚の翅と、後翅から伸びる2本の尾状突起が目印です。雄は羽毛状の触角を持ちます。夜に灯火へ飛来することがあり、成虫は口が退化して物を食べません。枝で休む姿と、この試作の短い飛行・警戒時間は観察しやすくしたゲーム上の表現です。',hint:'夜の林縁で、淡い翅と長い尾を探そう。枝で休むときは、静かに近づいてみよう。',color:'#bfdac1'},
+  // MOONMOTH_FIELD_END
+  // ANAX_FIELD_BEGIN
+  anax:{name:'ギンヤンマ（雄）',label:'ギンヤンマ',scientificName:'Anax parthenope julius / Anax julius',size:'試作表示は頭から腹端まで約28cm、開翅幅は約48cm。実物の寸法ではない固定の未計測個体です。',observation:'緑色の胸と、雄の腹のつけ根にある青色が目印です。明るい池の上を巡回し、休むときは枝や茎につかまります。この試作の巡回コースと休む時間は、観察しやすくしたゲーム上の表現です。国内参照資料は Anax parthenope julius、Anax julius とする分類もあります。',hint:'池の西岸で長い腹と広い4枚の翅を探そう。茎で休むときは、静かに近づいてみよう。',color:'#65a946'},
+  // ANAX_FIELD_END
+  // ORCHID_MANTIS_BEGIN
+  orchidmantis:{name:'ハナカマキリ（成虫雌）',label:'ハナカマキリ',scientificName:'Hymenopus coronatus',size:'試作の胴と頭は約22cm。輪郭を見比べるための表示補正で、実物の寸法ではありません。今回は固定の未計測個体です。',observation:'マレー半島の森林で記録されるカマキリです。雌の淡い前翅と、中脚・後脚の花弁のような広がりを見比べてみましょう。この葉上の短い歩行と捕獲脚の姿勢変化は観察用のゲーム表現で、自然の反応速度を測ったものではありません。',hint:'林の入口近く、緑の葉にとまる淡い輪郭を探して。前の折り畳んだ脚を横からそっと見てみよう。',color:'#ead8cf'},
+  // ORCHID_MANTIS_END
+  // TIGER_BEETLE_BEGIN
+  tigerbeetle:{name:'ハンミョウ（ナミハンミョウ）',label:'ハンミョウ',scientificName:'Sophiodela japonica',size:'試作の胴と頭は約18cm。見つけやすくした表示補正で、実物の寸法ではありません。今回は固定の未計測個体です。',observation:'本州・四国・九州の林道や裸地などで見られます。青・赤・緑の光沢、大きな眼と顎、長い脚が特徴です。近づくと短く飛んで先の地面へ降りる姿が知られています。飛ぶ経路や反応の秒数はゲーム上の調整です。',hint:'東の土道を探して。飛んだ先を追い、静かに近づいて止まった姿をねらおう。',color:'#267e8a'},
+  // TIGER_BEETLE_END
+  // GIRAFFE_STAG_BEGIN
+  // GIRAFFE_INDIVIDUAL_BEGIN
+  giraffestag:{name:'ギラファノコギリクワガタ（雄）',label:'ギラファノコギリクワガタ',scientificName:'Prosopocoilus giraffa',size:'試作表示は頭と胴が約20cm、大顎先まで約40cm。実物の寸法ではなく表示補正です。新しい散策の保存成功後は大きさの表示指数を記録します（同種の基準100）。以前の固定個体は未計測のままです。',observation:'インドネシアのフローレス島で採集された雄の標本を参考にしています。長く伸びた大顎の形を、いろいろな向きから観察してみよう。この林の枝や歩く動きは、観察しやすくしたゲーム用の参考再現です。',hint:'観察用の低い横枝を横から探して。長い大顎の先まで、そっと見比べてみよう。',color:'#29251f'},
+  // GIRAFFE_INDIVIDUAL_END
+  // GIRAFFE_STAG_END
+  // WETAPUNGA_BEGIN
+  wetapunga:{name:'ジャイアント・ウェタ（ウェタプンガ・雌）',label:'ウェタプンガ',scientificName:'Deinacrida heteracantha',size:'試作の頭と胴の表示長は約26cm（脚・触角・産卵管を除く表示補正で、実物の体長ではありません）。今回は固定の未計測個体です。',observation:'ニュージーランド北部の林にすむ、翅のない直翅類です。昼は枯れ葉の陰などに隠れ、夜に歩き回ります。この模型は雌の一表現で、腹端の産卵管は産卵に使う器官です。',hint:'シダの枯れ葉の下を、横からそっとのぞいて。長い触角と、棘のある後脚を探してみよう。',color:'#8b6241'},
+  // WETAPUNGA_END
+  // GIANT_WATERBUG_BEGIN
+  giantwaterbug:{name:'タガメ',label:'タガメ',scientificName:'Kirkaldyia deyrolli',size:'自然の体長の紹介目安は45〜70mm。試作の頭と胴の表示長は約24cm（脚と呼吸管を除く表示補正であり、実寸ではありません）。今回は固定の未計測個体です。',observation:'水草などにつかまって休みます。太い鎌状の前脚が目立ちます。尾の呼吸管を水面へ出して呼吸します。',hint:'池の浅い水草を、岸からそっと見下ろして。頭を下げ、尾を水面へ向けた姿を探してみよう。',color:'#796c45'},
+  // GIANT_WATERBUG_END
+  europestag:{name:'ヨーロッパミヤマクワガタ（雄）',label:'ヨーロッパミヤマクワガタ',scientificName:'Lucanus cervus',size:'雄の実物は大顎を含め35〜75mmと紹介されています。試作表示の基準は胴と頭が約19cm、大顎先まで約32cm。表示補正のサイズ指数100〜115は実寸や強さとは別で、新しい遠征では個体差を記録します。以前の固定個体は未計測のままです。',observation:'ヨーロッパの広葉樹林や公園で見られ、幼虫は地面近くの腐朽した木で育ちます。雄は黒い頭胸と栗色の上翅、鹿角状の赤褐色の大顎が特徴です。薄暮に活動し、成虫は樹液などの液体を口にします。この再現区画では低い倒木上の短い歩行と退避だけを表し、飛行や食餌は再現していません。反応の秒数と歩速はゲーム上の調整です。',hint:'夕方の広葉樹林縁。低い倒木を横から探し、黒い頭と栗色の背、大きな顎を見比べて。',color:'#713e2c'},
+  // RAINBOW_INDIVIDUAL_BEGIN
+  // XYLOTRUPES_FIELD_BEGIN
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+  xylotrupes:{name:'オーストラリアのサイカブト（雄）',label:'豪州サイカブト',scientificName:'Xylotrupes australicus',size:'試作表示は胴と頭が約20cm、角込みの前後長が約28cm。実物の寸法ではなく表示補正です。旧散策の固定個体は未計測です。明示的に次の散策へ進み保存が成功した後は、同種の表示指数100〜115で個体差を記録します。',observation:'オーストラリアのクイーンズランドの資料がある甲虫です。雄の頭角と胸角、幅広い胴を見比べてみましょう。低い枝と短い歩行・退避はゲーム上の観察配置です。成虫の食事・活動時刻・自然の微環境や反応速度は再現していません。',hint:'豪州参考区画の短い観察枝を横から見て。上下の角と、枝を支える6本の脚を探してみよう。',color:'#493a31'},
+// XYLOTRUPES_INDIVIDUAL_END
+  // XYLOTRUPES_FIELD_END
+  rainbowstag:{name:'ニジイロクワガタ（雄）',label:'ニジイロクワガタ',scientificName:'Phalacrognathus muelleri',size:'試作表示は胴と頭が約18cm、大顎先まで約27cm。実物の寸法ではなく表示補正です。新しい散策の保存成功後は表示指数100〜115の個体差があります。以前の固定個体は未計測のままです。',observation:'北東オーストラリアの熱帯雨林にすむクワガタで、幼虫は腐朽した木で育ちます。丸みのある背と、光の角度で変わる色を見比べてみましょう。成虫を低い倒木に置いた短い歩行はゲーム上の観察配置です。成虫の食事・活動時刻や、野生の反応速度は再現していません。',hint:'雨林の低い倒木を横から見て。丸い背と、前方へ伸びる大顎を探して。',color:'#68854e'},
+  // RAINBOW_INDIVIDUAL_END
   butterfly: { name: 'モンシロチョウ', label: 'モンシロチョウ', size: '初期試作の野外表示サイズ：開いた翅が約32cm（実際の虫の実寸ではありません）', observation: '白い翅の先に黒い模様。花のまわりをゆっくり飛び、蜜を吸うときは同じ場所にとまります。翅の開き方にも注目してみましょう。', hint: '草花の上でひと休み。ゆっくり近づくと観察できます。', color: '#f5efd5' },
   dragonfly: { name: 'アキアカネ', label: 'アキアカネ', size: '初期試作の野外表示サイズ：開いた翅が約40cm（実際の虫の実寸ではありません）', observation: '赤みのある細長い腹と、透きとおる四枚の翅。枝先などにとまると翅を横に開きます。飛び立ったあと、近くのとまり場所に戻ることもあります。', hint: '池のほとりの草先を探して。とまった瞬間がねらい目です。', color: '#b95136' },
   cicada: { name: 'アブラゼミ', label: 'アブラゼミ', size: '初期試作の野外表示サイズ：頭・触角から翅先まで約22.9cm（実際の虫の実寸ではありません）', observation: '茶色の翅を屋根のように重ねて、木の幹にとまっています。木肌に似た色なので、輪郭や大きな目を手がかりに探してみましょう。', hint: '大きな木の幹に注目。足音をひそめると逃げにくくなります。', color: '#8b6244' },
@@ -59,7 +139,9 @@ export const SPECIES = Object.freeze({
   metallifer: { name: 'メタリフェルホソアカクワガタ（雄）', label: 'メタリフェルホソアカクワガタ', scientificName: 'Cyclommatus metallifer', size: '試作の表示寸法は胴と頭が約16cm、大顎を含む前後長が約36.7cm（脚を含む外形は約38.6cm）。見分けるための表示補正であり、実物の寸法ではありません。', observation: 'インドネシア原産のクワガタです。雄の長い大顎と、内側の大きな歯を見比べてみましょう。低い枝は観察用の配置です。この試作の短い前進・後退と顎の反応はゲーム上の表現で、野外の活動時刻・食性・逃避を確定した再現ではありません。飛行と摂食は扱いません。', hint: '東南アジア林の入口近く、低い太枝を見て。金褐色の体と、長く伸びた左右の大顎を探してみよう。', color: '#98784b' },
   giantstag: { name: 'オオクワガタ（雄）', label: 'オオクワガタ', scientificName: 'Dorcus hopei binodulosus（参照標本の表記）', size: '雄の資料例は大顎先端から上翅末端まで27〜76.1mm。すべての個体の最小最大値ではありません。模型は胴と頭約18.5cm、大顎込み約29cmの表示補正で、実寸ではありません。大きさ指数は同種のゲーム内比較です。以前の未計測個体の値は作り直しません。', observation: '黒い幅広の頭と、内側に大きな歯がある太い大顎をもつクワガタです。昼は樹洞などに隠れ、夜に広葉樹の樹液を利用します。大顎の長さや形は個体により異なります。この試作は低い樹皮際を短く歩き、近づくと顎を構えて隙間側へ退く観察用の表現です。人への反応距離・速さはゲーム調整で、飛行・摂食は再現していません。', hint: '夜の樹液の木、左の低い樹皮際を見て。隙間へ退いたら横へ回るか、少し離れて待ち、静かに近づこう。', color: '#303b3a' },
   elephant: { name: 'ゾウカブト（雄）', label: 'ゾウカブト', scientificName: 'Megasoma elephas', size: '資料の雄79標本では角込み53〜137mm、角を除く体長41〜90mm。細かな測定端点は未確認で、すべての個体の範囲ではありません。模型は胴頭約23cm、体軸方向の角込み約35cmという表示補正で、実寸ではありません。今回は固定の未計測個体です。', observation: '中南米の熱帯林にすむ、幅広く丸い体のカブトムシです。雄の前へ伸びて先が上を向く頭角と、左右の短い胸角を見比べてみましょう。短い毛に覆われた体表を、試作では色むらと鈍い反射で近似しています。成虫が生木の枝で樹液を利用する観察記録があり、腐朽木で育つ幼虫とは暮らしが異なります。低い傾斜枝の登降と接近への反応は観察用のゲーム表現で、飛行・摂食は再現していません。', hint: '中米熱帯林の入口から左へ。果実のある倒木のさらに西、低い斜めの枝で丸い体を探そう。', color: '#88704b' },
-  goliath:{name:'ゴライアスオオツノハナムグリ（雄）',label:'ゴライアス',scientificName:'Goliathus goliatus',size:'試作表示は胴と頭が約22cm、頭角の先まで約25.5cm。自然の体長・体重を表す値ではありません',observation:'中部アフリカの熱帯森林にすむ大きなハナムグリの仲間です。雄の頭には短いY字の角があり、雄同士の争いに使われます。白黒の縦模様のある前胸と、褐色の上翅を見比べてみましょう。成虫は樹液を利用します。この区画はカメルーンの森林縁を参考にした観察用の低い枝です。樹液跡は目印で、摂食や飛翔の動作はまだ再現していません。速度や接近反応はゲーム上の調整です。',hint:'明るい林縁の太い生木。白黒の胸と、短いY字の角を探して。',color:'#766040'},
+  // GOLIATH_INDIVIDUAL_BEGIN
+  goliath:{name:'ゴライアスオオツノハナムグリ（雄）',label:'ゴライアス',scientificName:'Goliathus goliatus',size:'試作表示は胴と頭が約22cm、頭角の先まで約25.5cm。自然の体長・体重を表す値ではありません。新しい散策の保存成功後は表示指数100〜115の個体差があります。以前の固定個体は未計測のままです。',observation:'中部アフリカの熱帯森林にすむ大きなハナムグリの仲間です。雄の頭には短いY字の角があり、雄同士の争いに使われます。白黒の縦模様のある前胸と、褐色の上翅を見比べてみましょう。成虫は樹液を利用します。この区画はカメルーンの森林縁を参考にした観察用の低い枝です。樹液跡は目印で、摂食や飛翔の動作はまだ再現していません。速度や接近反応はゲーム上の調整です。',hint:'明るい林縁の太い生木。白黒の胸と、短いY字の角を探して。',color:'#766040'},
+  // GOLIATH_INDIVIDUAL_END
   fivehorn:{name:'ゴホンヅノカブト（雄）',label:'ゴホンヅノカブト',scientificName:'Eupatorus gracilicornis',size:'試作表示は胴と頭が約22cm、体軸方向の角先まで約35cm。自然の体長ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'タイやベトナムなどの森林で記録されるカブトムシです。雄は頭に1本、前胸に4本の角を持ちます。弓状に立ち上がる頭角と、その後ろに並ぶ二対の角を、向きを変えて見比べてみましょう。黒い頭胸部と黄褐色の上翅を自作模型で近似しました。低い斜め枝の登り下りは観察用の配置と動作で、野生での典型的な高さや姿勢を示すものではありません。飛行・摂食はまだ再現していません。',hint:'東南アジア林の低い斜めの太枝。黄褐色の背と、立ち上がる五本の角を探して。',color:'#a98b4c'},
   miyama:{name:'ミヤマクワガタ（雄）',label:'ミヤマクワガタ',scientificName:'Lucanus maculifemoratus',size:'試作表示は胴と頭が約19cm、大顎先まで約30cm。実物の寸法ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'日本の雑木林やブナ林で見られ、成虫はクヌギなどの樹液を利用します。大きな雄では頭の後ろが左右へ張り出します。黒褐色の体にある短い金色の毛を、試作では控えめな同じ面の色むらで近似しています。大顎だけでなく、頭と胸の輪郭を横から見比べてみましょう。低い樹皮面と短い歩行は観察用の配置で、野生の典型的な高さや人への反応速度を再現したものではありません。飛行・摂食はまだ再現していません。',hint:'温帯の林縁の生木。樹皮に沿う体と、大顎より後ろで左右へ張り出す頭を探して。',color:'#66533b'}, 
   euchirus:{name:'テナガコガネ（E. longimanus・雄）',label:'テナガコガネ',scientificName:'Euchirus longimanus',size:'胴と頭を約18cmで表示。長い前脚は3節の長さの合計が約37cm。実物の測定値ではなく、見分けるための表示補正です。今回は固定の未計測個体です。',observation:'インドネシアにすむ大型のコガネムシの仲間です。雄の非常に長い前脚は、頭の角ではなく胸から伸びています。丸い前胸、黄褐色の上翅と暗い会合線、短い中脚・後脚を見比べてみましょう。この低い幹と短い歩行・相撲はゲーム上の表現で、野生の生息位置や闘争を再現したものではありません。',hint:'東南アジア林の奥の生木。二本の長い前脚を探して。',color:'#856044'},
@@ -79,20 +161,197 @@ const homes = [
   ['butterfly', -6.8, 8.4, 1.2]
 ];
 
-export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes, extraHomes = [], individuals = [], grasshopperSupports = [], herculesSupports = [], leafSupports = [], striderSupports = [], antSupports = [], fireflySupports = [], dungSupports = [], divingSupports = [], mantisSupports = [], ladybirdSupports = [], rhinoSupports = [], stagSupports = [], metalliferSupports = [], atlasSupports = [], giantStagSupports = [], elephantSupports = [], goliathSupports = [], fiveHornSupports = [], beeSupports = [], swallowtailSupports = [], jewelSupports = [], longhornSupports = [], miyamaSupports = [], euchirusSupports = [], manticoraSupports = [], rainbowStagSupports = [], logFruitStation = null, bounds = 75, hasLineOfSight = () => true } = {}) {
+// TIGER_BEETLE_BEGIN
+// ORCHID_MANTIS_BEGIN
+// XYLOTRUPES_FIELD_BEGIN
+// BUTTERFLY_AMBIENT_BEGIN
+// ANAX_FIELD_BEGIN
+// MOONMOTH_FIELD_BEGIN
+export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes, extraHomes = [], individuals = [], dragonflyAmbient = [], butterflyAmbient = [], grasshopperSupports = [], herculesSupports = [], leafSupports = [], striderSupports = [], antSupports = [], fireflySupports = [], dungSupports = [], divingSupports = [], giantWaterbugSupports = [], mantisSupports = [], ladybirdSupports = [], rhinoSupports = [], stagSupports = [], metalliferSupports = [], atlasSupports = [], giantStagSupports = [], elephantSupports = [], goliathSupports = [], fiveHornSupports = [], beeSupports = [], swallowtailSupports = [], jewelSupports = [], longhornSupports = [], miyamaSupports = [], euchirusSupports = [], manticoraSupports = [], rainbowStagSupports = [], xylotrupesSupports = [], europeStagSupports = [], wetapungaSupports = [], giraffeStagSupports = [], tigerBeetleSupports = [], orchidMantisSupports = [], anaxSupports = [], moonmothSupports = [], logFruitStation = null, bounds = 75, hasLineOfSight = () => true } = {}) {
+// MOONMOTH_FIELD_END
+// ANAX_FIELD_END
+// BUTTERFLY_AMBIENT_END
+// XYLOTRUPES_FIELD_END
+// ORCHID_MANTIS_END
+// TIGER_BEETLE_END
   // Optional geometry adapter: the pure simulation never reads renderer meshes.
   if (typeof hasLineOfSight !== 'function') throw new TypeError('Invalid line-of-sight adapter');
   const validHomes = rows => Array.isArray(rows) && rows.every(row => Array.isArray(row) && typeof row[0] === 'string' && Object.prototype.hasOwnProperty.call(SPECIES,row[0]) && row.length === 4 && [row[1],row[2],row[3]].every(Number.isFinite));
   if (!validHomes(habitatHomes) || !validHomes(extraHomes) || !(habitatHomes.length+extraHomes.length)) throw new TypeError('Invalid habitat homes');
   const initialHomes = [...habitatHomes,...extraHomes].map(row=>[...row]);
+  // BUTTERFLY_AMBIENT_BEGIN
+  const butterflyTimings = new Map();
+  try {
+    if (!Array.isArray(butterflyAmbient) || Object.getPrototypeOf(butterflyAmbient) !== Array.prototype || ![0,8].includes(butterflyAmbient.length) || Reflect.ownKeys(butterflyAmbient).length !== butterflyAmbient.length + 1) throw new Error();
+    for (let i = 0; i < butterflyAmbient.length; i++) {
+      const entry = Object.getOwnPropertyDescriptor(butterflyAmbient, String(i));
+      if (!entry || !('value' in entry)) throw new Error();
+      const value = entry.value, keys = ['runtimeSlotId','restSeconds','offsetSeconds'];
+      if (!value || ![Object.prototype,null].includes(Object.getPrototypeOf(value)) || Reflect.ownKeys(value).length !== keys.length || !keys.every(key => Object.getOwnPropertyDescriptor(value,key) && 'value' in Object.getOwnPropertyDescriptor(value,key))) throw new Error();
+      const {runtimeSlotId,restSeconds,offsetSeconds} = value, first = runtimeSlotId === 'insect-1';
+      if (typeof runtimeSlotId !== 'string' || !/^insect-([1-7]|18)$/.test(runtimeSlotId) || butterflyTimings.has(runtimeSlotId) || !Number.isInteger(restSeconds) || restSeconds < (first ? 12 : 9) || restSeconds > (first ? 14 : 13) || !Number.isFinite(offsetSeconds) || offsetSeconds < 0 || offsetSeconds >= restSeconds - 2 || first && offsetSeconds !== 0) throw new Error();
+      const index = Number(runtimeSlotId.slice(7)) - 1;
+      if (!initialHomes[index] || !homes[index].every((part,j) => initialHomes[index][j] === part)) throw new Error();
+      butterflyTimings.set(runtimeSlotId, Object.freeze({restSeconds,offsetSeconds}));
+    }
+  } catch { throw new TypeError('Invalid butterfly ambient profiles'); }
+  // BUTTERFLY_AMBIENT_END
+  // A timing-only sidecar. Copy owned data; never change identity, size or phase.
+  const dragonflyTimings = new Map();
+  try {
+    if (!Array.isArray(dragonflyAmbient) || Object.getPrototypeOf(dragonflyAmbient) !== Array.prototype || dragonflyAmbient.length > 6 || Reflect.ownKeys(dragonflyAmbient).length !== dragonflyAmbient.length + 1) throw new Error();
+    for (let i = 0; i < dragonflyAmbient.length; i++) {
+      const entry = Object.getOwnPropertyDescriptor(dragonflyAmbient, String(i));
+      if (!entry || !('value' in entry)) throw new Error();
+      const value = entry.value, keys = ['runtimeSlotId','restSeconds','offsetSeconds'];
+      if (!value || ![Object.prototype,null].includes(Object.getPrototypeOf(value)) || Reflect.ownKeys(value).length !== keys.length || !keys.every(key => Object.getOwnPropertyDescriptor(value,key) && 'value' in Object.getOwnPropertyDescriptor(value,key))) throw new Error();
+      const {runtimeSlotId,restSeconds,offsetSeconds} = value;
+      if (typeof runtimeSlotId !== 'string' || !/^insect-(8|9|10|11|12|13)$/.test(runtimeSlotId) || dragonflyTimings.has(runtimeSlotId) || !Number.isInteger(restSeconds) || restSeconds < 8 || restSeconds > 12 || !Number.isFinite(offsetSeconds) || offsetSeconds < 0 || offsetSeconds >= restSeconds + 6) throw new Error();
+      const index = Number(runtimeSlotId.slice(7)) - 1;
+      if (!initialHomes[index] || !homes[index].every((part,j) => initialHomes[index][j] === part)) throw new Error();
+      dragonflyTimings.set(runtimeSlotId, Object.freeze({restSeconds,offsetSeconds}));
+    }
+  } catch { throw new TypeError('Invalid dragonfly ambient profiles'); }
+  // XYLOTRUPES_FIELD_BEGIN
+  const australiaPair=initialHomes.length===2&&initialHomes[0][0]==='rainbowstag'&&initialHomes[1][0]==='xylotrupes';
+  // XYLOTRUPES_FIELD_END
   const profiles=new Map();
   if(!Array.isArray(individuals)||individuals.length>6)throw new TypeError('Invalid individual profiles');
+  // GOLIATH_INDIVIDUAL_BEGIN
+  const goliathForest=initialHomes.length===2&&initialHomes.every(row=>row[0]==='goliath');
+  if(goliathForest){
+    if(Object.getPrototypeOf(individuals)!==Array.prototype||individuals.length>2||Reflect.ownKeys(individuals).length!==individuals.length+1)throw new TypeError('Invalid goliath individual profiles');
+    for(let i=0;i<individuals.length;i++){const d=Object.getOwnPropertyDescriptor(individuals,String(i));if(!d||!('value'in d))throw new TypeError('Invalid goliath profile accessor');}
+  }
+  // GOLIATH_INDIVIDUAL_END
+  // RAINBOW_INDIVIDUAL_BEGIN
+  // XYLOTRUPES_FIELD_BEGIN
+  if(australiaPair||initialHomes.length===1&&initialHomes[0][0]==='rainbowstag'){
+  // XYLOTRUPES_FIELD_END
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+    if(Object.getPrototypeOf(individuals)!==Array.prototype||individuals.length>(australiaPair?2:1)||Reflect.ownKeys(individuals).length!==individuals.length+1)throw new TypeError('Invalid rainbow-stag individual profiles');
+// XYLOTRUPES_INDIVIDUAL_END
+    for(let i=0;i<individuals.length;i++){const d=Object.getOwnPropertyDescriptor(individuals,String(i));if(!d||!('value'in d))throw new TypeError('Invalid rainbow-stag individual profile accessor');}
+  }
+  // RAINBOW_INDIVIDUAL_END
+  // GIRAFFE_INDIVIDUAL_BEGIN
+  // Only Flores enforces a plain, owned dense profile array here; old regions keep their contract.
+  if(initialHomes.length===1&&initialHomes[0][0]==='giraffestag'){
+    if(Object.getPrototypeOf(individuals)!==Array.prototype||individuals.length>1||Reflect.ownKeys(individuals).length!==individuals.length+1)throw new TypeError('Invalid giraffe-stag individual profiles');
+    for(let i=0;i<individuals.length;i++){const d=Object.getOwnPropertyDescriptor(individuals,String(i));if(!d||!('value'in d))throw new TypeError('Invalid giraffe-stag individual profile accessor');}
+  }
+  // GIRAFFE_INDIVIDUAL_END
   for(const e of individuals){
+    // XYLOTRUPES_INDIVIDUAL_BEGIN
+    const xylDescriptor=e&&Object.getOwnPropertyDescriptor(e,'species');
+    if(xylDescriptor?.value==='xylotrupes'){
+      const keys=['species','habitat','runtimeSlotId','populationSlotId','encounterId','sizePermille','motionSeed','siteIndex','measureVersion'];
+      if(![Object.prototype,null].includes(Object.getPrototypeOf(e))||Reflect.ownKeys(e).length!==keys.length||!keys.every(k=>Object.hasOwn(e,k)&&'value'in Object.getOwnPropertyDescriptor(e,k)))throw new TypeError('Invalid xylotrupes individual profile');
+      const match=typeof e.encounterId==='string'&&/^g10-[0-9a-f]{8}-o([1-9][0-9]{0,15})-australia-xylotrupes$/.exec(e.encounterId);
+      if(!australiaPair||e.habitat!=='australia'||e.runtimeSlotId!=='insect-2'||e.populationSlotId!=='xylotrupes'||!match||!Number.isSafeInteger(Number(match[1]))||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||!Number.isInteger(e.siteIndex)||e.siteIndex<0||e.siteIndex>=XYLOTRUPES_SITES.length)throw new TypeError('Xylotrupes individual does not match Australia slot');
+      profiles.set(e.runtimeSlotId,{...e});continue;
+    }
+    // XYLOTRUPES_INDIVIDUAL_END
+    // GOLIATH_INDIVIDUAL_BEGIN
+    const goliathDescriptor=e&&Object.getOwnPropertyDescriptor(e,'species');
+    if(goliathForest&&goliathDescriptor?.value!=='goliath')throw new TypeError('Invalid goliath profile species');
+    if(goliathDescriptor?.value==='goliath'){
+      const keys=['species','habitat','runtimeSlotId','populationSlotId','encounterId','sizePermille','motionSeed','siteIndex','measureVersion'];
+      if(![Object.prototype,null].includes(Object.getPrototypeOf(e))||Reflect.ownKeys(e).length!==keys.length||!keys.every(k=>Object.hasOwn(e,k)&&'value'in Object.getOwnPropertyDescriptor(e,k)))throw new TypeError('Invalid goliath individual profile');
+      const match=typeof e.encounterId==='string'&&/^g9-[0-9a-f]{8}-o([1-9][0-9]{0,15})-forest-goliath-([ab])$/.exec(e.encounterId),n=e.runtimeSlotId==='insect-1'?0:e.runtimeSlotId==='insect-2'?1:-1,letter=n===0?'a':'b';
+      if(!goliathForest||n<0||e.habitat!=='forest'||e.populationSlotId!=='goliath-'+letter||!match||match[2]!==letter||!Number.isSafeInteger(Number(match[1]))||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||!Number.isInteger(e.siteIndex)||e.siteIndex<0||e.siteIndex>=GOLIATH_INDIVIDUAL_OFFSETS.length)throw new TypeError('Goliath individual does not match forest slot');
+      profiles.set(e.runtimeSlotId,{...e});continue;
+    }
+    // GOLIATH_INDIVIDUAL_END
+    // RAINBOW_INDIVIDUAL_BEGIN
+    const rainbowDescriptor=e&&Object.getOwnPropertyDescriptor(e,'species');
+    // XYLOTRUPES_FIELD_BEGIN
+    if((australiaPair||initialHomes.length===1&&initialHomes[0][0]==='rainbowstag')&&rainbowDescriptor?.value!=='rainbowstag')throw new TypeError('Invalid rainbow-stag individual profile species');
+    // XYLOTRUPES_FIELD_END
+    if(rainbowDescriptor?.value==='rainbowstag'){
+      const keys=['species','habitat','runtimeSlotId','populationSlotId','encounterId','sizePermille','motionSeed','siteIndex','measureVersion'];
+      if(![Object.prototype,null].includes(Object.getPrototypeOf(e))||Reflect.ownKeys(e).length!==keys.length||!keys.every(k=>Object.hasOwn(e,k)&&'value'in Object.getOwnPropertyDescriptor(e,k)))throw new TypeError('Invalid rainbow-stag individual profile');
+      const match=typeof e.encounterId==='string'&&/^g8-[0-9a-f]{8}-o([1-9][0-9]{0,15})-australia-rainbowstag$/.exec(e.encounterId);
+      // XYLOTRUPES_FIELD_BEGIN
+      if(e.habitat!=='australia'||e.runtimeSlotId!=='insect-1'||e.populationSlotId!=='rainbowstag'||(!australiaPair&&(initialHomes.length!==1||initialHomes[0][0]!=='rainbowstag'))||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||!Number.isInteger(e.siteIndex)||e.siteIndex<0||e.siteIndex>=RAINBOW_STAG_SITES.length||!match||!Number.isSafeInteger(Number(match[1])))throw new TypeError('Rainbow-stag individual profile does not match home');
+      // XYLOTRUPES_FIELD_END
+      profiles.set(e.runtimeSlotId,{...e});continue;
+    }
+    // RAINBOW_INDIVIDUAL_END
+    // GIRAFFE_INDIVIDUAL_BEGIN
+    const giraffeDescriptor=e&&Object.getOwnPropertyDescriptor(e,'species');
+    if(initialHomes.length===1&&initialHomes[0][0]==='giraffestag'&&giraffeDescriptor?.value!=='giraffestag')throw new TypeError('Invalid giraffe-stag individual profile species');
+    if(giraffeDescriptor?.value==='giraffestag'){
+      const keys=['species','habitat','runtimeSlotId','populationSlotId','encounterId','sizePermille','motionSeed','siteIndex','measureVersion'];
+      if(![Object.prototype,null].includes(Object.getPrototypeOf(e))||Reflect.ownKeys(e).length!==keys.length||!keys.every(k=>Object.hasOwn(e,k)&&'value'in Object.getOwnPropertyDescriptor(e,k)))throw new TypeError('Invalid giraffe-stag individual profile');
+      const match=typeof e.encounterId==='string'&&/^g7-[0-9a-f]{8}-o([1-9][0-9]{0,15})-flores-giraffestag$/.exec(e.encounterId);
+      if(e.habitat!=='flores'||e.runtimeSlotId!=='insect-1'||e.populationSlotId!=='giraffestag'||initialHomes.length!==1||initialHomes[0][0]!=='giraffestag'||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||!Number.isInteger(e.siteIndex)||e.siteIndex<0||e.siteIndex>=GIRAFFE_STAG_SITES.length||!match||!Number.isSafeInteger(Number(match[1])))throw new TypeError('Giraffe-stag individual profile does not match home');
+      profiles.set(e.runtimeSlotId,{...e});continue;
+    }
+    // GIRAFFE_INDIVIDUAL_END
+    // EUROPE_INDIVIDUAL_BEGIN
+    // Only the new Europe profile has this stricter, nine-key contract.
+    const speciesDescriptor=e&&Object.getOwnPropertyDescriptor(e,'species');
+    if(speciesDescriptor&&!('value'in speciesDescriptor))throw new TypeError('Invalid individual profile accessor');
+    if(speciesDescriptor?.value==='europestag'){
+      const keys=['species','habitat','runtimeSlotId','populationSlotId','encounterId','sizePermille','motionSeed','siteIndex','measureVersion'];
+      if(![Object.prototype,null].includes(Object.getPrototypeOf(e))||Reflect.ownKeys(e).length!==keys.length||!keys.every(k=>Object.hasOwn(e,k)&&'value'in Object.getOwnPropertyDescriptor(e,k)))throw new TypeError('Invalid europe-stag individual profile');
+      if(e.habitat!=='europe'||e.runtimeSlotId!=='insect-1'||e.populationSlotId!=='europestag'||initialHomes.length!==1||initialHomes[0][0]!=='europestag'||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||![0,1,2].includes(e.siteIndex)||typeof e.encounterId!=='string'||!/^g6-[0-9a-f]{8}-o[1-9][0-9]{0,15}-europe-europestag$/.test(e.encounterId))throw new TypeError('Europe-stag individual profile does not match home');
+      profiles.set(e.runtimeSlotId,{...e});continue;
+    }
+    // EUROPE_INDIVIDUAL_END
     const index=Number(e?.runtimeSlotId?.replace('insect-',''))-1;
     if(!e||!/^insect-[1-9]\d{0,5}$/.test(e.runtimeSlotId)||!['hercules','rhino','stag','metallifer','giantstag','atlas','manticora'].includes(e.species)||initialHomes[index]?.[0]!==e.species||profiles.has(e.runtimeSlotId)||!Number.isInteger(e.sizePermille)||e.sizePermille<1000||e.sizePermille>1150||!Number.isInteger(e.motionSeed)||e.motionSeed<0||e.motionSeed>0xffffffff||e.measureVersion!==1||typeof e.encounterId!=='string'||!(e.species==='manticora'?e.runtimeSlotId==='insect-2'&&Number.isInteger(e.siteIndex)&&e.siteIndex>=0&&e.siteIndex<=2&&/^g4-[0-9a-f]{8}-o[1-9][0-9]{0,15}-savanna-manticora$/.test(e.encounterId):e.species==='atlas'?e.runtimeSlotId==='insect-5'&&/^g3-[0-9a-f]{8}-o[1-9][0-9]{0,15}-understory-atlas$/.test(e.encounterId):e.species==='giantstag'?e.runtimeSlotId==='insect-6'&&/^g2-[0-9a-f]{8}-o[1-9][0-9]{0,15}-night-giantstag$/.test(e.encounterId):/^g1-[0-9a-f]{8}-o[1-9][0-9]{0,15}-(tropical|night|understory)-(hercules-a|hercules-b|rhino|stag|metallifer)$/.test(e.encounterId)))throw new TypeError('Individual profile does not match home');
     profiles.set(e.runtimeSlotId,{...e});
   }
+  // XYLOTRUPES_INDIVIDUAL_BEGIN
+  if(profiles.get('insect-2')?.species==='xylotrupes'&&profiles.get('insect-1')?.species!=='rainbowstag')throw new TypeError('Xylotrupes individual requires paired rainbow profile');
+  // XYLOTRUPES_INDIVIDUAL_END
   const flightBounds = Number.isFinite(bounds) && bounds > 6 ? Math.min(75, bounds) : 75;
+  // MOONMOTH_FIELD_BEGIN
+  const moonmothGroups=new Map(),moonmothStudies=new Map();
+  try{
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=(v,n)=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||n!==undefined&&v.length!==n||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    const point=(p,expected,keys)=>{record(p,keys);for(const k of keys)if(!Number.isFinite(p[k])||Math.abs(p[k]-expected[k])>1e-9)throw new Error();return{...p};};
+    const groups=array(moonmothSupports).map(g=>{record(g,['perch','flight']);record(g.perch,['position','orientation','normal']);const perch={position:point(g.perch.position,MOONMOTH_PERCH.position,['x','y','z']),orientation:point(g.perch.orientation,MOONMOTH_PERCH.orientation,['x','y','z','w']),normal:point(g.perch.normal,MOONMOTH_PERCH.normal,['x','y','z'])},flight=array(g.flight,MOONMOTH_FLIGHT.length).map((p,i)=>point(p,MOONMOTH_FLIGHT[i],['x','y','z']));if([perch.position,...flight].some(p=>Math.abs(p.x)>flightBounds||Math.abs(p.z)>flightBounds))throw new Error();const copy={perch,flight};createMoonmothStudy(copy);return copy;});
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='moonmoth');if(rows.length!==groups.length||rows.length>1)throw new Error();
+    if(rows.length){const{row:[,x,z,a],index}=rows[0],p=groups[0].perch.position;if(index!==6||initialHomes.length!==7||!['firefly','firefly','firefly','rhino','stag','giantstag'].every((species,i)=>initialHomes[i][0]===species)||profiles.has('insect-7')||Math.hypot(p.x-x,p.y-heightAt(x,z)-a,p.z-z)>1e-6)throw new Error();moonmothGroups.set(index,groups[0]);}
+  }catch{throw new TypeError('Invalid Moonmoth supports');}
+  // MOONMOTH_FIELD_END
+  // ANAX_FIELD_BEGIN
+  const anaxGroups=new Map(),anaxStudies=new Map();
+  try{
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=(v,n)=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||n!==undefined&&v.length!==n||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    const point=(p,expected,keys)=>{record(p,keys);for(const k of keys)if(!Number.isFinite(p[k])||Math.abs(p[k]-expected[k])>1e-9)throw new Error();return{...p};};
+    const groups=array(anaxSupports).map(g=>{record(g,['perch','patrol']);record(g.perch,['position','orientation','normal']);const perch={position:point(g.perch.position,ANAX_PERCH.position,['x','y','z']),orientation:point(g.perch.orientation,ANAX_PERCH.orientation,['x','y','z','w']),normal:point(g.perch.normal,ANAX_PERCH.normal,['x','y','z'])},patrol=array(g.patrol,ANAX_PATROL.length).map((p,i)=>point(p,ANAX_PATROL[i],['x','y','z']));if([perch.position,...patrol].some(p=>Math.abs(p.x)>flightBounds||Math.abs(p.z)>flightBounds))throw new Error();const copy={perch,patrol};createAnaxStudy(copy);return copy;});
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='anax');if(rows.length!==groups.length||rows.length>1)throw new Error();
+    if(rows.length){const{row:[,x,z,a],index}=rows[0],p=groups[0].perch.position;if(index!==32||initialHomes.length!==33||initialHomes[31][0]!=='tigerbeetle'||profiles.has('insect-33')||Math.hypot(p.x-x,p.y-heightAt(x,z)-a,p.z-z)>1e-6)throw new Error();anaxGroups.set(index,groups[0]);}
+  }catch{throw new TypeError('Invalid Anax supports');}
+  // ANAX_FIELD_END
+  // ORCHID_MANTIS_BEGIN
+  const orchidMantisGroups=new Map(),orchidMantises=new Map();
+  try{
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    const groups=array(orchidMantisSupports).map(g=>{record(g,['position','orientation','retreatBounds']);record(g.position,['x','y','z']);record(g.orientation,['x','y','z','w']);record(g.retreatBounds,['min','max']);for(const key of['position','orientation','retreatBounds'])for(const k of Object.keys(g[key]))if(!Number.isFinite(g[key][k])||Math.abs(g[key][k]-ORCHID_MANTIS_SUPPORT[key][k])>1e-9)throw new Error();if(Math.abs(g.position.x)>flightBounds||Math.abs(g.position.z)>flightBounds)throw new Error();const copy={position:{...g.position},orientation:{...g.orientation},retreatBounds:{...g.retreatBounds}};createOrchidMantisStudy(copy);return copy;});
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='orchidmantis');if(rows.length!==groups.length||rows.length>1)throw new Error();
+    if(rows.length){const{row:[,x,z,a],index}=rows[0],p=groups[0].position;if(index!==7||initialHomes.length!==8||profiles.has('insect-8')||Math.hypot(p.x-x,p.y-heightAt(x,z)-a,p.z-z)>1e-6)throw new Error();orchidMantisGroups.set(index,groups[0]);}
+  }catch{throw new TypeError('Invalid orchid-mantis supports');}
+  // ORCHID_MANTIS_END
+  // TIGER_BEETLE_BEGIN
+  const tigerBeetleGroups=new Map(),tigerBeetles=new Map();
+  try{
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=(v,length)=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||(length!==undefined&&v.length!==length)||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    const groups=array(tigerBeetleSupports).map(g=>{record(g,['stops']);const stops=array(g.stops,3).map((s,i)=>{record(s,['position','orientation']);record(s.position,['x','y','z']);record(s.orientation,['x','y','z','w']);for(const key of['position','orientation'])for(const k of Object.keys(s[key]))if(!Number.isFinite(s[key][k])||Math.abs(s[key][k]-TIGER_BEETLE_STOPS[i][key][k])>1e-9)throw new Error();if(Math.abs(s.position.x)>flightBounds||Math.abs(s.position.z)>flightBounds)throw new Error();return{position:{...s.position},orientation:{...s.orientation}};});createTigerBeetleStudy({stops});return{stops};});
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='tigerbeetle');if(rows.length!==groups.length||rows.length>1)throw new Error();
+    // ANAX_FIELD_BEGIN
+    if(rows.length){const{row:[,x,z,a],index}=rows[0],p=groups[0].stops[0].position;if(index!==31||(initialHomes.length!==32&&!(initialHomes.length===33&&initialHomes[32][0]==='anax'))||profiles.has('insect-32')||Math.hypot(p.x-x,p.y-heightAt(x,z)-a,p.z-z)>1e-6)throw new Error();tigerBeetleGroups.set(index,groups[0]);}
+    // ANAX_FIELD_END
+  }catch{throw new TypeError('Invalid tiger-beetle supports');}
+  // TIGER_BEETLE_END
   const hopperSupports = new Map(), hoppers = new Map();
   try {
     if (!Array.isArray(grasshopperSupports)) throw new Error();
@@ -262,6 +521,30 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='divingbeetle');if(rows.length!==groups.length)throw new Error();
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],group=groups[0];if(Math.hypot(group.home.x-x,group.home.y-heightAt(x,z)-altitude,group.home.z-z)>1e-6)throw new Error();divingGroups.set(index,group);}
   } catch { throw new TypeError('Invalid diving beetle supports'); }
+  // GIANT_WATERBUG_BEGIN
+  const giantWaterbugGroups=new Map(),giantWaterbugs=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const point=v=>{record(v,['x','y','z']);if(!Object.values(v).every(Number.isFinite))throw new Error();return{...v};};
+    if(!Array.isArray(giantWaterbugSupports)||Object.getPrototypeOf(giantWaterbugSupports)!==Array.prototype||giantWaterbugSupports.length>1||Reflect.ownKeys(giantWaterbugSupports).length!==giantWaterbugSupports.length+1)throw new Error();
+    const groups=Array.from({length:giantWaterbugSupports.length},(_,i)=>{
+      const d=Object.getOwnPropertyDescriptor(giantWaterbugSupports,String(i));if(!d||!('value'in d))throw new Error();
+      const g=d.value;record(g,['home','center','waterY','pitch','heading','orientation','axis','support','radius','groundAnchor','envelope']);
+      const home=point(g.home),axis=point(g.axis),support=point(g.support),groundAnchor=point(g.groundAnchor);
+      record(g.center,['x','z']);record(g.orientation,['pitch','yaw','roll']);record(g.envelope,['minX','maxX','minZ','maxZ','maxDepth','groundMargin','retreat']);
+      const orientation={...g.orientation},retreat=point(g.envelope.retreat),envelope={...g.envelope,retreat};
+      if(![g.center.x,g.center.z,g.waterY,g.pitch,g.heading,g.radius,...Object.values(orientation),...Object.entries(envelope).filter(([k])=>k!=='retreat').map(([,v])=>v)].every(Number.isFinite))throw new Error();
+      if(Math.hypot(home.x-WATERBUG_HOME.x,home.y-WATERBUG_HOME.y,home.z-WATERBUG_HOME.z)>1e-7||g.center.x!==home.x||g.center.z!==home.z||g.waterY!==WATERBUG_WATER_Y||g.pitch!==WATERBUG_PITCH||g.heading!==0||orientation.pitch!==g.pitch||orientation.yaw!==g.heading||orientation.roll!==0||g.radius<=0||g.radius>.02||Math.abs(Math.hypot(axis.x,axis.y,axis.z)-1)>1e-6||groundAnchor.y>=home.y)throw new Error();
+      if(!Object.entries(WATERBUG_ENVELOPE).every(([k,v])=>envelope[k]===v)||!Object.entries(WATERBUG_RETREAT).every(([k,v])=>retreat[k]===v)||Math.abs(home.x)+Math.max(Math.abs(envelope.minX),Math.abs(envelope.maxX))>flightBounds||Math.abs(home.z)+Math.max(Math.abs(envelope.minZ),Math.abs(envelope.maxZ))>flightBounds)throw new Error();
+      const ground=heightAt(home.x,home.z);if(!Number.isFinite(ground)||ground>=home.y)throw new Error();
+      const copied={position:home,orientation,waterY:g.waterY,envelope,seed:1};
+      const initial=createGiantWaterbugStudy(copied).state.position;if(Math.hypot(initial.x-home.x,initial.y-home.y,initial.z-home.z)>1e-7)throw new Error();
+      return copied;
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='giantwaterbug');if(rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],group=groups[0];if(index!==30||Math.hypot(group.position.x-x,group.position.y-heightAt(x,z)-altitude,group.position.z-z)>1e-7)throw new Error();giantWaterbugGroups.set(index,group);}
+  } catch { throw new TypeError('Invalid giant waterbug supports'); }
+  // GIANT_WATERBUG_END
   const mantisGroups=new Map(),mantises=new Map();
   try {
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
@@ -360,25 +643,144 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='euchirus');if(groups.length>1||rows.length!==groups.length)throw new Error();
     if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();euchirusGroups.set(index,g);}
   } catch { throw new TypeError('Invalid euchirus supports'); }
+  // XYLOTRUPES_FIELD_BEGIN
+  const xylotrupesGroups=new Map(),xylotrupesStudies=new Map();
+  try{
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    if(!Array.isArray(xylotrupesSupports)||Object.getPrototypeOf(xylotrupesSupports)!==Array.prototype||Reflect.ownKeys(xylotrupesSupports).length!==xylotrupesSupports.length+1||xylotrupesSupports.length>1)throw new Error();
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='xylotrupes');
+    if(rows.length!==xylotrupesSupports.length||rows.length&&(!australiaPair||rows[0].index!==1))throw new Error();
+    if(rows.length){
+      const descriptor=Object.getOwnPropertyDescriptor(xylotrupesSupports,'0');if(!descriptor||!('value'in descriptor))throw new Error();const g=descriptor.value;
+      record(g,['home','orientation','axis','retreatBounds']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);record(g.axis,['x','y','z']);record(g.retreatBounds,['min','max']);
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+      const profile=profiles.get('insect-2'),measured=profile?.species==='xylotrupes',factor=measured?profile.sizePermille/1000:1,site=measured?XYLOTRUPES_SITES[profile.siteIndex]:0;
+      const expected=measured?{...XYLOTRUPES_SUPPORT,home:{x:XYLOTRUPES_SUPPORT.home.x+site,y:XYLOTRUPES_SUPPORT.home.y+.055*(factor-1),z:XYLOTRUPES_SUPPORT.home.z},retreatBounds:{min:-.12-site,max:.12-site}}:XYLOTRUPES_SUPPORT;
+      for(const key of['home','orientation','axis','retreatBounds'])for(const k of Object.keys(expected[key]))if(!Number.isFinite(g[key][k])||Math.abs(g[key][k]-expected[key][k])>1e-10)throw new Error();
+// XYLOTRUPES_INDIVIDUAL_END
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+      const {row:[,x,z,altitude]}=rows[0],ground=heightAt(x,z);if(!Number.isFinite(ground)||Math.hypot(g.home.x-x,g.home.y-ground-altitude,g.home.z-z)>1e-7||Math.abs(x)+.12>flightBounds||Math.abs(z)>flightBounds)throw new Error();
+// XYLOTRUPES_INDIVIDUAL_END
+      const support={home:{...g.home},orientation:{...g.orientation},axis:{...g.axis},retreatBounds:{...g.retreatBounds}};
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+      createXylotrupesStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds,...(measured?{scale:factor,motionSeed:profile.motionSeed}:{})});xylotrupesGroups.set(1,support);
+// XYLOTRUPES_INDIVIDUAL_END
+    }
+  }catch{throw new TypeError('Invalid xylotrupes supports');}
+  // XYLOTRUPES_FIELD_END
   // Rainbow fixed-log support: the habitat owns actual mesh contact; this map
   // rejects malformed or contradictory pure support records before reset.
   const rainbowStagGroups=new Map(),rainbowStags=new Map();
   try {
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
     const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    // RAINBOW_INDIVIDUAL_BEGIN
+    const rainbowProfile=profiles.get('insect-1'),rainbowMeasured=rainbowProfile?.species==='rainbowstag';
+    // RAINBOW_INDIVIDUAL_END
     const groups=array(rainbowStagSupports).map(g=>{
       record(g,['home','orientation','axis','retreatBounds']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);record(g.axis,['x','y','z']);record(g.retreatBounds,['min','max']);
       const home={...g.home},orientation={...g.orientation},axis={...g.axis},retreatBounds={...g.retreatBounds},ground=heightAt(home.x,home.z);
+      // RAINBOW_INDIVIDUAL_BEGIN
+      if(rainbowMeasured){
+        const site=RAINBOW_STAG_SITES[rainbowProfile.siteIndex],factor=rainbowProfile.sizePermille/1000,L=RAINBOW_LANE;
+        if(![...Object.values(home),...Object.values(axis),...Object.values(retreatBounds),ground].every(Number.isFinite)||Math.hypot(home.x-L.surface.x-site,home.y-L.surface.y-L.rootAboveSupport*factor,home.z-L.surface.z)>1e-7||Math.hypot(axis.x-1,axis.y,axis.z)>1e-8||Math.abs(home.x+axis.x*retreatBounds.min-L.min)>1e-10||Math.abs(home.x+axis.x*retreatBounds.max-L.max)>1e-10)throw new Error();
+      }else{
       if(![...Object.values(home),...Object.values(axis),...Object.values(retreatBounds),ground].every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||home.y<ground+.05-1e-8||home.y>ground+1.5||retreatBounds.min<-.34-1e-10||retreatBounds.max>.34+1e-10)throw new Error();
-      const q=createRainbowStagStudy({position:home,orientation,retreatBounds}).state.orientation,expected={x:2*(q.x*q.z+q.w*q.y),y:2*(q.y*q.z-q.w*q.x),z:1-2*(q.x*q.x+q.y*q.y)};
+      }
+      // RAINBOW_INDIVIDUAL_END
+      // RAINBOW_INDIVIDUAL_BEGIN
+      const q=createRainbowStagStudy({position:home,orientation,retreatBounds,...(rainbowMeasured?{scale:rainbowProfile.sizePermille/1000,motionSeed:rainbowProfile.motionSeed}:{})}).state.orientation,expected={x:2*(q.x*q.z+q.w*q.y),y:2*(q.y*q.z-q.w*q.x),z:1-2*(q.x*q.x+q.y*q.y)};
+      // RAINBOW_INDIVIDUAL_END
       if(Math.hypot(axis.x-expected.x,axis.y-expected.y,axis.z-expected.z)>1e-8)throw new Error();
       for(const d of[retreatBounds.min,retreatBounds.max]){const x=home.x+axis.x*d,z=home.z+axis.z*d;if(Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||!Number.isFinite(heightAt(x,z)))throw new Error();}
       return{home,orientation,axis,retreatBounds};
     });
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='rainbowstag');if(groups.length>1||rows.length!==groups.length)throw new Error();
-    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();rainbowStagGroups.set(index,g);}
+    // RAINBOW_INDIVIDUAL_BEGIN
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if((rainbowMeasured&&(index!==0||(profiles.size!==1&&!(australiaPair&&profiles.size===2&&profiles.get('insect-2')?.species==='xylotrupes'))))||Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();rainbowStagGroups.set(index,g);}
+// XYLOTRUPES_INDIVIDUAL_END
+    // RAINBOW_INDIVIDUAL_END
   }catch{throw new TypeError('Invalid rainbow-stag supports');}
   // End rainbow fixed-log support.
+  // GIRAFFE_STAG_BEGIN
+  const giraffeStagGroups=new Map(),giraffeStags=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    // GIRAFFE_INDIVIDUAL_BEGIN
+    const giraffeProfile=profiles.get('insect-1'),giraffeMeasured=giraffeProfile?.species==='giraffestag';
+    // GIRAFFE_INDIVIDUAL_END
+    const groups=array(giraffeStagSupports).map(g=>{
+      record(g,['home','orientation','axis','retreatBounds']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);record(g.axis,['x','y','z']);record(g.retreatBounds,['min','max']);
+      const home={...g.home},orientation={...g.orientation},axis={...g.axis},retreatBounds={...g.retreatBounds},ground=heightAt(home.x,home.z);
+      // GIRAFFE_INDIVIDUAL_BEGIN
+      if(![...Object.values(home),...Object.values(axis),...Object.values(retreatBounds),ground].every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||home.y<ground+.060-1e-8||Math.hypot(axis.x-1,axis.y,axis.z)>1e-8)throw new Error();
+      if(giraffeMeasured){
+        const site=GIRAFFE_STAG_SITES[giraffeProfile.siteIndex],factor=giraffeProfile.sizePermille/1000,lane=GIRAFFE_STAG_SUPPORT.retreatBounds;
+        if(Math.hypot(home.x-site,home.y-GIRAFFE_STAG_BRANCH.top-.060*factor,home.z)>1e-7||Math.abs(home.x+axis.x*retreatBounds.min-lane.min)>1e-10||Math.abs(home.x+axis.x*retreatBounds.max-lane.max)>1e-10)throw new Error();
+      }else if(Math.hypot(home.x,home.y-.86,home.z)>1e-7||Math.abs(retreatBounds.min+.24)>1e-10||Math.abs(retreatBounds.max-.24)>1e-10)throw new Error();
+      // GIRAFFE_INDIVIDUAL_END
+      // GIRAFFE_INDIVIDUAL_BEGIN
+      const q=createGiraffeStagStudy({position:home,orientation,retreatBounds,...(giraffeMeasured?{scale:giraffeProfile.sizePermille/1000,motionSeed:giraffeProfile.motionSeed}:{})}).state.orientation,expected={x:2*(q.x*q.z+q.w*q.y),y:2*(q.y*q.z-q.w*q.x),z:1-2*(q.x*q.x+q.y*q.y)};
+      // GIRAFFE_INDIVIDUAL_END
+      if(Math.hypot(axis.x-expected.x,axis.y-expected.y,axis.z-expected.z)>1e-8)throw new Error();
+      for(const d of[retreatBounds.min,retreatBounds.max]){const x=home.x+axis.x*d,z=home.z+axis.z*d;if(Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||!Number.isFinite(heightAt(x,z)))throw new Error();}
+      return{home,orientation,axis,retreatBounds};
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='giraffestag');if(groups.length>1||rows.length!==groups.length)throw new Error();
+    // GIRAFFE_INDIVIDUAL_BEGIN
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(index!==0||initialHomes.length!==1||(giraffeMeasured?profiles.size!==1:profiles.size!==0)||Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();giraffeStagGroups.set(index,g);}
+    // GIRAFFE_INDIVIDUAL_END
+  }catch{throw new TypeError('Invalid giraffe-stag supports');}
+  // GIRAFFE_STAG_END
+  // Europe fixed-log support: the habitat owns actual mesh contact; this map
+  // rejects malformed or contradictory pure support records before reset.
+  const europeStagGroups=new Map(),europeStags=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    // EUROPE_INDIVIDUAL_BEGIN
+    const europeProfile=profiles.get('insect-1'),measured=europeProfile?.species==='europestag';
+    // EUROPE_INDIVIDUAL_END
+    const groups=array(europeStagSupports).map(g=>{
+      record(g,['home','orientation','axis','retreatBounds']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);record(g.axis,['x','y','z']);record(g.retreatBounds,['min','max']);
+      const home={...g.home},orientation={...g.orientation},axis={...g.axis},retreatBounds={...g.retreatBounds},ground=heightAt(home.x,home.z);
+      if(![...Object.values(home),...Object.values(axis),...Object.values(retreatBounds),ground].every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||home.y<ground+.055-1e-8||home.y>ground+1.5||(!measured&&(retreatBounds.min<-.34-1e-10||retreatBounds.max>.34+1e-10)))throw new Error();
+      const q=createEuropeStagStudy({position:home,orientation,retreatBounds}).state.orientation,expected={x:2*(q.x*q.z+q.w*q.y),y:2*(q.y*q.z-q.w*q.x),z:1-2*(q.x*q.x+q.y*q.y)};
+      if(Math.hypot(axis.x-expected.x,axis.y-expected.y,axis.z-expected.z)>1e-8)throw new Error();
+      // EUROPE_INDIVIDUAL_BEGIN
+      if(measured){
+        const lane=EUROPE_STAG_LANE,site=EUROPE_STAG_SITES[europeProfile.siteIndex],scale=europeProfile.sizePermille/1000;
+        // Relative bounds may reach +/- .46, but both physical ends stay fixed.
+        if(Math.hypot(axis.x-1,axis.y,axis.z)>1e-8||Math.hypot(home.x-lane.surface.x-site,home.y-lane.surface.y-lane.rootAboveSupport*scale,home.z-lane.surface.z)>1e-7||Math.abs(home.x+axis.x*retreatBounds.min-lane.surface.x-lane.min)>1e-8||Math.abs(home.x+axis.x*retreatBounds.max-lane.surface.x-lane.max)>1e-8)throw new Error();
+      }
+      // EUROPE_INDIVIDUAL_END
+      for(const d of[retreatBounds.min,retreatBounds.max]){const x=home.x+axis.x*d,z=home.z+axis.z*d;if(Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||!Number.isFinite(heightAt(x,z)))throw new Error();}
+      return{home,orientation,axis,retreatBounds};
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='europestag');if(groups.length>1||rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();europeStagGroups.set(index,g);}
+  }catch{throw new TypeError('Invalid europe-stag supports');}
+  // End europe fixed-log support.
+  // WETAPUNGA_BEGIN
+  const wetapungaGroups=new Map(),wetapungas=new Map();
+  try {
+    const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
+    const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||v.length>1||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value'in d))throw new Error();return d.value;});};
+    const groups=array(wetapungaSupports).map(g=>{
+      record(g,['home','orientation','axis','normal','retreatBounds']);record(g.home,['x','y','z']);record(g.orientation,['x','y','z','w']);record(g.axis,['x','y','z']);record(g.normal,['x','y','z']);record(g.retreatBounds,['min','max']);
+      const home={...g.home},orientation={...g.orientation},axis={...g.axis},normal={...g.normal},retreatBounds={...g.retreatBounds},ground=heightAt(home.x,home.z);
+      if(![...Object.values(home),...Object.values(orientation),...Object.values(axis),...Object.values(normal),...Object.values(retreatBounds),ground].every(Number.isFinite)||Math.abs(home.x)>flightBounds||Math.abs(home.z)>flightBounds||home.y<ground+WETAPUNGA.rootAboveSupport-1e-8||home.y>ground+1.5||retreatBounds.min<-.24-1e-10||retreatBounds.max>.24+1e-10)throw new Error();
+      const study=createWetapungaStudy({position:home,orientation,retreatBounds}),q=study.state.orientation,expectedAxis={x:2*(q.x*q.z+q.w*q.y),y:2*(q.y*q.z-q.w*q.x),z:1-2*(q.x*q.x+q.y*q.y)},expectedNormal={x:2*(q.x*q.y-q.w*q.z),y:1-2*(q.x*q.x+q.z*q.z),z:2*(q.y*q.z+q.w*q.x)};
+      if(Math.hypot(axis.x-expectedAxis.x,axis.y-expectedAxis.y,axis.z-expectedAxis.z)>1e-8||Math.hypot(normal.x-expectedNormal.x,normal.y-expectedNormal.y,normal.z-expectedNormal.z)>1e-8)throw new Error();
+      for(const d of[retreatBounds.min,retreatBounds.max]){const x=home.x+axis.x*d,z=home.z+axis.z*d;if(Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||!Number.isFinite(heightAt(x,z)))throw new Error();}
+      return{home,orientation,axis,normal,retreatBounds};
+    });
+    const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='wetapunga');if(rows.length!==groups.length)throw new Error();
+    if(rows.length){const{row:[,x,z,altitude],index}=rows[0],g=groups[0];if(index!==0||initialHomes.length!==1||Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();wetapungaGroups.set(index,g);}
+  }catch{throw new TypeError('Invalid wetapunga supports');}
+  // WETAPUNGA_END
   const manticoraGroups=new Map(),manticoras=new Map();
   const manticoraIndex=initialHomes.findIndex(row=>row[0]==='manticora'),manticoraScale=individualScale(profiles.get(`insect-${manticoraIndex+1}`));
   try {
@@ -484,12 +886,24 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   try {
     const record=(v,keys)=>{if(!v||![Object.prototype,null].includes(Object.getPrototypeOf(v))||Reflect.ownKeys(v).length!==keys.length||!keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value' in Object.getOwnPropertyDescriptor(v,k)))throw new Error();};
     const array=v=>{if(!Array.isArray(v)||Object.getPrototypeOf(v)!==Array.prototype||Reflect.ownKeys(v).length!==v.length+1)throw new Error();return Array.from({length:v.length},(_,i)=>{const d=Object.getOwnPropertyDescriptor(v,String(i));if(!d||!('value' in d))throw new Error();return d.value;});};
-    const groups=array(goliathSupports).map(g=>{
+    // GOLIATH_INDIVIDUAL_BEGIN
+    const measuredGoliath=[...profiles.values()].some(e=>e.species==='goliath');
+    const groups=array(goliathSupports).map((g,n)=>{
+    // GOLIATH_INDIVIDUAL_END
       record(g,['home','heading','retreatBounds']);record(g.home,['x','y','z']);record(g.retreatBounds,['min','max']);
       const home={...g.home},heading=g.heading,retreatBounds={...g.retreatBounds},{x,y,z}=home,ground=heightAt(x,z);
       if(![x,y,z,heading,ground,retreatBounds.min,retreatBounds.max].every(Number.isFinite)||Math.abs(x)>flightBounds||Math.abs(z)>flightBounds||y<ground+GOLIATH.rootAboveSupport||y>ground+3)throw new Error();
       for(const d of [retreatBounds.min,retreatBounds.max])if(Math.abs(x+Math.sin(heading)*d)>flightBounds||Math.abs(z+Math.cos(heading)*d)>flightBounds)throw new Error();
-      createGoliathStudy({position:home,heading,retreatBounds});return{home,heading,retreatBounds};
+      // GOLIATH_INDIVIDUAL_BEGIN
+      const candidate=profiles.get('insect-'+(n+1)),profile=candidate?.species==='goliath'?candidate:null;
+      if(measuredGoliath){
+        const site=GOLIATH_SITES[n],tree=site&&FOREST_TREES.find(t=>t.id===site.treeId),factor=profile?profile.sizePermille/1000:1,offset=profile?GOLIATH_INDIVIDUAL_OFFSETS[profile.siteIndex]:0;
+        if(!goliathForest||!site||!tree)throw new Error();
+        const baseY=heightAt(tree.x,tree.z)+site.surfaceAboveGround,ax=Math.sin(site.heading),az=Math.cos(site.heading),along=(x-site.x)*ax+(z-site.z)*az;
+        if(!Number.isFinite(baseY)||Math.hypot(x-site.x-ax*offset,y-baseY-GOLIATH.rootAboveSupport*factor,z-site.z-az*offset)>1e-7||Math.abs(heading-site.heading)>1e-10||Math.abs(along+retreatBounds.min-GOLIATH_RETREAT_BOUNDS.min)>1e-10||Math.abs(along+retreatBounds.max-GOLIATH_RETREAT_BOUNDS.max)>1e-10)throw new Error();
+      }
+      createGoliathStudy({position:home,heading,retreatBounds,...(profile?{scale:profile.sizePermille/1000,motionSeed:profile.motionSeed}:{})});return{home,heading,retreatBounds};
+      // GOLIATH_INDIVIDUAL_END
     });
     const rows=initialHomes.map((row,index)=>({row,index})).filter(({row})=>row[0]==='goliath');if(groups.length>2||rows.length!==groups.length)throw new Error();
     for(let n=0;n<rows.length;n++){const{row:[,x,z,altitude],index}=rows[n],g=groups[n];if(Math.hypot(g.home.x-x,g.home.y-heightAt(x,z)-altitude,g.home.z-z)>1e-6)throw new Error();goliathGroups.set(index,g);}
@@ -535,7 +949,31 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   const eye = p => ({ x: p.x, y: Number.isFinite(p.y) ? p.y : heightAt(p.x, p.z) + 1.65, z: p.z });
   function reset() {
     logFruit=null;logVisit=null;logCooldown=0;
-    bait = null; baitCooldown.clear(); hoppers.clear(); beetles.clear(); leaves.clear(); striders.clear(); ants.clear(); fireflies.clear(); dungStudies.clear(); divers.clear(); mantises.clear(); ladybirds.clear(); rhinos.clear(); stags.clear(); metallifers.clear(); atlases.clear(); giantStags.clear(); elephants.clear(); goliaths.clear(); fiveHorns.clear(); bees.clear(); swallowtails.clear(); jewels.clear(); longhorns.clear(); miyamas.clear(); euchiruses.clear(); manticoras.clear(); rainbowStags.clear();
+    // XYLOTRUPES_FIELD_BEGIN
+    xylotrupesStudies.clear();
+    // XYLOTRUPES_FIELD_END
+    bait = null; baitCooldown.clear(); hoppers.clear(); beetles.clear(); leaves.clear(); striders.clear(); ants.clear(); fireflies.clear(); dungStudies.clear(); divers.clear(); mantises.clear(); ladybirds.clear(); rhinos.clear(); stags.clear(); metallifers.clear(); atlases.clear(); giantStags.clear(); elephants.clear(); goliaths.clear(); fiveHorns.clear(); bees.clear(); swallowtails.clear(); jewels.clear(); longhorns.clear(); miyamas.clear(); euchiruses.clear(); manticoras.clear(); rainbowStags.clear(); europeStags.clear();
+    // GIANT_WATERBUG_BEGIN
+    giantWaterbugs.clear();
+    // GIANT_WATERBUG_END
+    // WETAPUNGA_BEGIN
+    wetapungas.clear();
+    // WETAPUNGA_END
+    // GIRAFFE_STAG_BEGIN
+    giraffeStags.clear();
+    // GIRAFFE_STAG_END
+    // TIGER_BEETLE_BEGIN
+    tigerBeetles.clear();
+    // TIGER_BEETLE_END
+    // ORCHID_MANTIS_BEGIN
+    orchidMantises.clear();
+    // ORCHID_MANTIS_END
+    // ANAX_FIELD_BEGIN
+    anaxStudies.clear();
+    // ANAX_FIELD_END
+    // MOONMOTH_FIELD_BEGIN
+    moonmothStudies.clear();
+    // MOONMOTH_FIELD_END
     time = 0; held = null; catches = 0; previousPlayer = null; caughtFrom = null; items.length = 0;
     initialHomes.forEach(([species, x, z, altitude], index) => {
       const y = heightAt(x, z) + altitude;
@@ -546,9 +984,37 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         fleeX: x, fleeZ: z, age: 0, beginner: index === 0,
         homeHeading: species === 'cicada' ? Math.atan2(x + 10, z + 8) + Math.PI : index * 2.399,
         alert: 0, nextScareAt: 0, settleUntil: 0, departures: 0, excursion: null });
+      // BUTTERFLY_AMBIENT_BEGIN
+      if (species === 'butterfly') {
+        const item = items[items.length - 1];
+        item.butterflyArriving = false; item.butterflyWingBlend = 0;
+      }
+      // BUTTERFLY_AMBIENT_END
+      // DRAGONFLY_LANDING_BEGIN
+      if (species === 'dragonfly') {
+        const item = items[items.length - 1];
+        item.dragonflyArriving = false; item.dragonflyWingBlend = 0;
+      }
+      // DRAGONFLY_LANDING_END
       const profile=profiles.get(`insect-${index+1}`);
       if(profile){const item=items[items.length-1];Object.assign(item,{encounterId:profile.encounterId,sizePermille:profile.sizePermille,measureVersion:1,motionSeed:profile.motionSeed,populationSlotId:profile.populationSlotId});item.phase=item.wingPhase=profile.motionSeed/4294967296*TAU;}
       if (CAPTURE_AWARENESS[species]) clearAwareness(items[items.length - 1]);
+      // MOONMOTH_FIELD_BEGIN
+      if(species==='moonmoth'){const item=items[items.length-1];moonmothStudies.set(item.id,{study:createMoonmothStudy(moonmothGroups.get(index))});syncMoonmoth(item);item.homeHeading=item.heading;}
+      // MOONMOTH_FIELD_END
+      // ANAX_FIELD_BEGIN
+      if(species==='anax'){const item=items[items.length-1];anaxStudies.set(item.id,{study:createAnaxStudy(anaxGroups.get(index))});syncAnax(item);item.homeHeading=item.heading;}
+      // ANAX_FIELD_END
+      // TIGER_BEETLE_BEGIN
+      if(species==='tigerbeetle'){
+        const item=items[items.length-1],support=tigerBeetleGroups.get(index);tigerBeetles.set(item.id,{study:createTigerBeetleStudy({stops:support.stops})});syncTigerBeetle(item);item.homeHeading=item.heading;
+      }
+      // TIGER_BEETLE_END
+      // ORCHID_MANTIS_BEGIN
+      if(species==='orchidmantis'){
+        const item=items[items.length-1],support=orchidMantisGroups.get(index);orchidMantises.set(item.id,{study:createOrchidMantisStudy(support)});syncOrchidMantis(item);item.homeHeading=item.heading;
+      }
+      // ORCHID_MANTIS_END
       if (species === 'grasshopper') {
         const item=items[items.length-1];item.airborne=false;item.jumpProgress=0;item.jumpStart=null;item.jumpEnd=null;
         hoppers.set(item.id,{points:hopperSupports.get(index),perchIndex:0,jump:null});
@@ -591,9 +1057,32 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         const item=items[items.length-1],support=euchirusGroups.get(index);
         euchiruses.set(item.id,{study:createEuchirusStudy({position:support.home,orientation:support.orientation}),near:false});syncEuchirus(item);
       }
+      // XYLOTRUPES_FIELD_BEGIN
+      if(species==='xylotrupes'){
+        const item=items[items.length-1],support=xylotrupesGroups.get(index);
+// XYLOTRUPES_INDIVIDUAL_BEGIN
+        xylotrupesStudies.set(item.id,{study:createXylotrupesStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds,...(profile?.species==='xylotrupes'?{scale:profile.sizePermille/1000,motionSeed:profile.motionSeed}:{})})});syncXylotrupes(item);
+// XYLOTRUPES_INDIVIDUAL_END
+      }
+      // XYLOTRUPES_FIELD_END
       if(species==='rainbowstag'){
         const item=items[items.length-1],support=rainbowStagGroups.get(index);
-        rainbowStags.set(item.id,{study:createRainbowStagStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds})});syncRainbowStag(item);
+        // RAINBOW_INDIVIDUAL_BEGIN
+        const profile=profiles.get(item.id);
+        rainbowStags.set(item.id,{study:createRainbowStagStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds,...(profile?{scale:profile.sizePermille/1000,motionSeed:profile.motionSeed}:{})})});syncRainbowStag(item);
+        // RAINBOW_INDIVIDUAL_END
+      }
+      // GIRAFFE_STAG_BEGIN
+      if(species==='giraffestag'){
+        const item=items[items.length-1],support=giraffeStagGroups.get(index);
+        // GIRAFFE_INDIVIDUAL_BEGIN
+        giraffeStags.set(item.id,{study:createGiraffeStagStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds,...(profile?{scale:profile.sizePermille/1000,motionSeed:profile.motionSeed}:{})})});syncGiraffeStag(item);
+        // GIRAFFE_INDIVIDUAL_END
+      }
+      // GIRAFFE_STAG_END
+      if(species==='europestag'){
+        const item=items[items.length-1],support=europeStagGroups.get(index);
+        europeStags.set(item.id,{study:createEuropeStagStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds,...(profile?{scale:profile.sizePermille/1000,motionSeed:profile.motionSeed}:{})})});syncEuropeStag(item);
       }
       if(species==='manticora'){
         const item=items[items.length-1],support=manticoraGroups.get(index);
@@ -622,7 +1111,10 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       }
       if (species === 'goliath') {
         const item=items[items.length-1],support=goliathGroups.get(index);
-        goliaths.set(item.id,{study:createGoliathStudy({position:support.home,heading:support.heading,retreatBounds:support.retreatBounds})});syncGoliath(item);item.homeHeading=item.heading;
+        // GOLIATH_INDIVIDUAL_BEGIN
+        const profile=profiles.get(item.id);
+        goliaths.set(item.id,{study:createGoliathStudy({position:support.home,heading:support.heading,retreatBounds:support.retreatBounds,...(profile?{scale:profile.sizePermille/1000,motionSeed:profile.motionSeed}:{})})});syncGoliath(item);item.homeHeading=item.heading;
+        // GOLIATH_INDIVIDUAL_END
       }
       if (species === 'elephant') {
         const item=items[items.length-1],support=elephantGroups.get(index);
@@ -648,6 +1140,16 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         const item=items[items.length-1],support=beeGroups.get(index);
         bees.set(item.id,{study:createBeeStudy(support.flowers),near:false});syncBee(item);item.homeHeading=item.heading;
       }
+      // GIANT_WATERBUG_BEGIN
+      if(species==='giantwaterbug'){
+        const item=items[items.length-1];giantWaterbugs.set(item.id,{study:createGiantWaterbugStudy(giantWaterbugGroups.get(index)),disturbed:false});syncGiantWaterbug(item);item.homeHeading=item.heading;
+      }
+      // GIANT_WATERBUG_END
+      // WETAPUNGA_BEGIN
+      if(species==='wetapunga'){
+        const item=items[items.length-1],support=wetapungaGroups.get(index);wetapungas.set(item.id,{study:createWetapungaStudy({position:support.home,orientation:support.orientation,retreatBounds:support.retreatBounds})});item.heading=item.homeHeading=Math.atan2(support.axis.x,support.axis.z);syncWetapunga(item);
+      }
+      // WETAPUNGA_END
       if (species === 'divingbeetle') {
         const item=items[items.length-1],support=divingGroups.get(index);
         divers.set(item.id,{study:createDivingStudy(support),disturbed:false});syncDiving(item);item.homeHeading=item.heading;
@@ -680,6 +1182,17 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     longhorn.study.update(dt);syncLonghorn(item);
   }
 
+  // XYLOTRUPES_FIELD_BEGIN
+  function syncXylotrupes(item){
+    const s=xylotrupesStudies.get(item.id).study.state,q=s.orientation;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...q};item.heading=Math.atan2(2*(q.x*q.z+q.w*q.y),1-2*(q.x*q.x+q.y*q.y));
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.xylotrupesPhase=s.phase;item.headLift=s.headLift;item.warningBlend=s.warningBlend;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateXylotrupes(item,dt,player,p){
+    if(dt<=0)return;const beetle=xylotrupesStudies.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncXylotrupes(item);
+  }
+  // XYLOTRUPES_FIELD_END
   function syncRainbowStag(item){
     const s=rainbowStags.get(item.id).study.state;
     item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};
@@ -688,6 +1201,62 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   }
   function updateRainbowStag(item,dt,player,p){
     if(dt<=0)return;const beetle=rainbowStags.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncRainbowStag(item);
+  }
+
+  // ORCHID_MANTIS_BEGIN
+  function syncOrchidMantis(item){
+    const s=orchidMantises.get(item.id).study.state,q=s.orientation;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...q};item.heading=Math.atan2(2*(q.x*q.z+q.w*q.y),1-2*(q.x*q.x+q.y*q.y));
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.forePose=s.forePose;item.orchidMantisPhase=s.phase;item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateOrchidMantis(item,dt,player,p){
+    if(dt<=0)return;const mantis=orchidMantises.get(item.id);if(branchThreat(item,player,p))mantis.study.disturb(p);mantis.study.update(dt);syncOrchidMantis(item);
+  }
+  // ORCHID_MANTIS_END
+  // WETAPUNGA_BEGIN
+  // TIGER_BEETLE_BEGIN
+  function syncTigerBeetle(item){
+    const s=tigerBeetles.get(item.id).study.state,q=s.orientation;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...q};item.heading=Math.atan2(2*(q.x*q.z+q.w*q.y),1-2*(q.x*q.x+q.y*q.y));
+    item.walkPhase=s.walkPhase;item.walkSpeed=0;item.flightPose={...s.flightPose};item.tigerBeetlePhase=s.phase;item.tigerBeetleStop=s.stopIndex;item.tigerBeetleTarget=s.targetIndex;
+    item.state=item.caught?'caught':s.phase;item.resting=!['takeoff','flying','landing'].includes(s.phase);item.flightBlend=s.flightPose.elytra;item.warningBlend=s.phase==='warning'?s.flightPose.elytra/.12:0;
+  }
+  function updateTigerBeetle(item,dt,player,p){
+    if(dt<=0)return;const beetle=tigerBeetles.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncTigerBeetle(item);
+  }
+  // TIGER_BEETLE_END
+  function syncWetapunga(item){
+    const s=wetapungas.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.wetapungaPhase=s.phase;
+    item.state=item.caught?'caught':s.phase;item.resting=s.phase==='resting'||item.caught;
+  }
+  function updateWetapunga(item,dt,player,p){
+    if(dt<=0)return;const bug=wetapungas.get(item.id);
+    // Reuse established moving/quiet radii and real LOS, but only this study
+    // owns its signed continuous half-step finish / backwards branch walk.
+    if(branchThreat(item,player,p))bug.study.disturb({x:p.x,z:p.z});bug.study.update(dt);syncWetapunga(item);
+  }
+  // WETAPUNGA_END
+  // GIRAFFE_STAG_BEGIN
+  function syncGiraffeStag(item){
+    const s=giraffeStags.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.giraffeStagPhase=s.phase;item.jawOpen=s.jawOpen;item.warningBlend=s.warningBlend;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateGiraffeStag(item,dt,player,p){
+    if(dt<=0)return;const beetle=giraffeStags.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncGiraffeStag(item);
+  }
+
+  // GIRAFFE_STAG_END
+  function syncEuropeStag(item){
+    const s=europeStags.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};
+    item.walkPhase=s.walkPhase;item.walkSpeed=s.walkSpeed;item.direction=s.direction;item.europeStagPhase=s.phase;item.jawOpen=s.jawOpen;item.warningBlend=s.warningBlend;
+    item.state=item.caught?'caught':s.phase;item.resting=!['walking','retreating'].includes(s.phase);
+  }
+  function updateEuropeStag(item,dt,player,p){
+    if(dt<=0)return;const beetle=europeStags.get(item.id);if(branchThreat(item,player,p))beetle.study.disturb(p);beetle.study.update(dt);syncEuropeStag(item);
   }
 
   function syncManticora(item){
@@ -741,6 +1310,28 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   }
   // Branch reactions are enabled only by a measured support envelope. Their
   // warning radii/speeds are game tuning, not wild reaction-distance claims.
+  // ANAX_FIELD_BEGIN
+  function syncAnax(item){
+    const s=anaxStudies.get(item.id).study.state,q=s.orientation;item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...q};item.heading=Math.atan2(2*(q.x*q.z+q.w*q.y),1-2*(q.x*q.x+q.y*q.y));
+    item.anaxPhase=s.phase;item.anaxPhaseTime=s.phaseTime;item.legTuck=s.legTuck;item.flightBlend=s.flightBlend;item.wingPhase=s.wingPhase;item.warningBlend=s.phase==='warning'?s.flightBlend:0;item.resting=['resting','warning'].includes(s.phase);item.state=item.caught?'caught':s.phase==='takeoff'||s.phase==='patrol'?'flying':s.phase;
+  }
+  function updateAnax(item,dt,player,p){
+    if(dt<=0)return;const entry=anaxStudies.get(item.id),speed=Number.isFinite(player?.speed)?Math.max(0,player.speed):0,radius=player?.quiet?.8:speed>4?3:1.9;
+    if(p&&item.anaxPhase==='resting'&&Math.hypot(p.x-item.x,p.z-item.z)<radius&&Math.abs(p.y-item.y)<2.5&&(speed>.12||Math.hypot(p.x-item.x,p.z-item.z)<.55)&&hasLineOfSight(p,item)===true)entry.study.disturb(p);
+    entry.study.update(dt);syncAnax(item);
+  }
+  // ANAX_FIELD_END
+  // MOONMOTH_FIELD_BEGIN
+  function syncMoonmoth(item){
+    const s=moonmothStudies.get(item.id).study.state,q=s.orientation;item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...q};item.heading=Math.atan2(2*(q.x*q.z+q.w*q.y),1-2*(q.x*q.x+q.y*q.y));
+    item.moonmothPhase=s.phase;item.moonmothPhaseTime=s.phaseTime;item.legTuck=s.legTuck;item.flightBlend=s.flightBlend;item.wingPhase=s.wingPhase;item.warningBlend=s.warningBlend;item.resting=['resting','warning'].includes(s.phase);item.state=item.caught?'caught':s.phase==='takeoff'||s.phase==='flight'?'flying':s.phase;
+  }
+  function updateMoonmoth(item,dt,player,p){
+    if(dt<=0)return;const entry=moonmothStudies.get(item.id),speed=Number.isFinite(player?.speed)?Math.max(0,player.speed):0,radius=player?.quiet?.75:speed>4?2.8:1.8;
+    if(p&&item.moonmothPhase==='resting'&&Math.hypot(p.x-item.x,p.z-item.z)<radius&&Math.abs(p.y-item.y)<2.5&&(speed>.12||Math.hypot(p.x-item.x,p.z-item.z)<.55)&&hasLineOfSight(p,item)===true)entry.study.disturb(p);
+    entry.study.update(dt);syncMoonmoth(item);
+  }
+  // MOONMOTH_FIELD_END
   function branchThreat(item,player,p) {
     if(!p)return false;const distance=Math.hypot(p.x-item.x,p.z-item.z),speed=Number.isFinite(player?.speed)?Math.max(0,player.speed):0;
     const radius=player?.quiet?1.05:speed>4?4.0:3.0;
@@ -899,6 +1490,25 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     mantis.study.update(dt);syncMantis(item);
   }
 
+  // GIANT_WATERBUG_BEGIN
+  function syncGiantWaterbug(item){
+    const s=giantWaterbugs.get(item.id).study.state;
+    item.x=s.position.x;item.y=s.position.y;item.z=s.position.z;item.orientation={...s.orientation};item.heading=s.heading;item.pitch=s.pitch;
+    item.grip=s.grip;item.stroke=s.stroke;item.strokeStrength=s.strokeStrength;item.forelegFold=s.forelegFold;item.giantWaterbugPhase=s.phase;
+    item.state=item.caught?'caught':s.phase;item.resting=item.caught||s.phase==='resting'||s.phase==='warning';
+  }
+  function updateGiantWaterbug(item,dt,player,p){
+    if(dt<=0)return;
+    const bug=giantWaterbugs.get(item.id);
+    // Display-game tuning, not measured biology. Quiet shore approach stays fair.
+    const speed=Number.isFinite(player?.speed)?Math.max(0,player.speed):0,distance=p?Math.hypot(p.x-item.x,p.z-item.z):Infinity;
+    const quietApproach=!!previousPlayer&&p&&Math.hypot(previousPlayer.x-item.x,previousPlayer.z-item.z)-distance>dt*.01;
+    const radius=player?.quiet?.9:speed>4?3.8:3.0;
+    const near=!!p&&speed>.12&&(!player.quiet||quietApproach)&&distance<radius&&Math.abs(p.y-item.y)<2.5&&hasLineOfSight(p,item)===true;
+    if(!near)bug.disturbed=false;else if(!bug.disturbed&&bug.study.disturb('fast-approach'))bug.disturbed=true;
+    bug.study.update(dt);syncGiantWaterbug(item);
+  }
+  // GIANT_WATERBUG_END
   function syncDiving(item) {
     const state=divers.get(item.id).study.state;
     item.x=state.position.x;item.y=state.position.y;item.z=state.position.z;item.heading=state.heading;item.pitch=state.pitch;
@@ -939,6 +1549,18 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     return { x: clamp(item.home.x + dx * scale, -flightBounds, flightBounds), y: point.y, z: clamp(item.home.z + dz * scale, -flightBounds, flightBounds) };
   }
   function depart(item, reason, player) {
+    // MOONMOTH_FIELD_BEGIN
+    if(item.species==='moonmoth'){moonmothStudies.get(item.id).study.release();syncMoonmoth(item);return;}
+    // MOONMOTH_FIELD_END
+    // ANAX_FIELD_BEGIN
+    if(item.species==='anax'){anaxStudies.get(item.id).study.release();syncAnax(item);return;}
+    // ANAX_FIELD_END
+    // TIGER_BEETLE_BEGIN
+    if(item.species==='tigerbeetle'){tigerBeetles.get(item.id).study.release();syncTigerBeetle(item);return;}
+    // TIGER_BEETLE_END
+    // ORCHID_MANTIS_BEGIN
+    if(item.species==='orchidmantis'){orchidMantises.get(item.id).study.release();syncOrchidMantis(item);return;}
+    // ORCHID_MANTIS_END
     if (item.species === 'swallowtail') { swallowtails.get(item.id).study.release();syncSwallowtail(item);return; }
     if (item.species === 'bee') { bees.get(item.id).study.release();syncBee(item);return; }
     if (item.species === 'stag') { stags.get(item.id).study.release();syncStag(item);return; }
@@ -948,7 +1570,17 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if (item.species === 'elephant') { elephants.get(item.id).study.release();syncElephant(item);return; }
     if (item.species === 'giantstag') { giantStags.get(item.id).study.release();syncGiantStag(item);return; }
     if (item.species === 'atlas') { atlases.get(item.id).study.release();syncAtlas(item);return; }
+    // XYLOTRUPES_FIELD_BEGIN
+    if(item.species==='xylotrupes'){xylotrupesStudies.get(item.id).study.release();syncXylotrupes(item);return;}
+    // XYLOTRUPES_FIELD_END
     if(item.species==='rainbowstag'){rainbowStags.get(item.id).study.release();syncRainbowStag(item);return;}
+    // WETAPUNGA_BEGIN
+    if(item.species==='wetapunga'){wetapungas.get(item.id).study.release();syncWetapunga(item);return;}
+    // WETAPUNGA_END
+    // GIRAFFE_STAG_BEGIN
+    if(item.species==='giraffestag'){giraffeStags.get(item.id).study.release();syncGiraffeStag(item);return;}
+    // GIRAFFE_STAG_END
+    if(item.species==='europestag'){europeStags.get(item.id).study.release();syncEuropeStag(item);return;}
     if(item.species==='manticora'){manticoras.get(item.id).study.release();syncManticora(item);return;}
     if (item.species === 'euchirus') { euchiruses.get(item.id).study.release();syncEuchirus(item);return; }
     if (item.species === 'miyama') { miyamas.get(item.id).study.release();syncMiyama(item);return; }
@@ -957,6 +1589,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if (item.species === 'rhino') { rhinos.get(item.id).study.release();syncRhino(item);return; }
     if (item.species === 'ladybird') { ladybirds.get(item.id).study.release();syncLadybird(item);return; }
     if (item.species === 'mantis') { mantises.get(item.id).study.release();syncMantis(item);return; }
+    // GIANT_WATERBUG_BEGIN
+    if(item.species==='giantwaterbug'){giantWaterbugs.get(item.id).study.release();syncGiantWaterbug(item);return;}
+    // GIANT_WATERBUG_END
     if (item.species === 'divingbeetle') { divers.get(item.id).study.release();syncDiving(item);return; }
     if (item.species === 'dungbeetle') { dungStudies.get(item.id).study.release();syncDung(item);return; }
     if (item.species === 'grasshopper') { beginJump(item,reason,player); return; }
@@ -1143,7 +1778,11 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     item.z=jump.start.z+(jump.end.z-jump.start.z)*u;
     item.y=jump.start.y+(jump.end.y-jump.start.y)*u+4*jump.lift*u*(1-u);
     const heading=Math.atan2(jump.end.x-jump.start.x,jump.end.z-jump.start.z);
-    item.heading+=Math.atan2(Math.sin(heading-item.heading),Math.cos(heading-item.heading))*(1-Math.exp(-dt*10));
+    // GRASSHOPPER_LAUNCH_BEGIN
+    // The departure tick has u=0 and all six feet still on their support.
+    // Turn only after root travel starts; u=1 still completes the airborne approach.
+    if(u>0)item.heading+=Math.atan2(Math.sin(heading-item.heading),Math.cos(heading-item.heading))*(1-Math.exp(-dt*10));
+    // GRASSHOPPER_LAUNCH_END
     item.jumpProgress=u;item.airborne=true;item.resting=false;item.state='jumping';item.flightBlend=0;
     if(u>=1){item.x=jump.end.x;item.y=jump.end.y;item.z=jump.end.z;hopper.perchIndex=jump.index;hopper.jump=null;item.jumpStart=null;item.jumpEnd=null;item.state='resting';item.resting=true;item.airborne=false;item.jumpProgress=0;item.nextScareAt=time+1.7;item.alert=0;}
   }
@@ -1356,17 +1995,52 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         Math.hypot(direction.x,direction.y,direction.z) < .001) return null;
     const list = candidates(p,direction).filter(({item,distance,dot}) =>
       (item.species!=='atlas'||atlasFacesThreat(item,p))&&
-      ((CAPTURE_AWARENESS[item.species] && !awarenessInFlight(item) && !awarenessSettling(item) && time >= item.nextScareAt) || herculesNetEligible(item) || (item.species==='rainbowstag'&&!['warning','retreating'].includes(item.rainbowStagPhase)) || (item.species==='manticora'&&!['warning','running'].includes(item.manticoraPhase)) || (item.species==='euchirus'&&!['warning','retreating'].includes(item.euchirusPhase)) || (item.species==='miyama'&&!['warning','retreating'].includes(item.miyamaPhase)) || (item.species==='fivehorn'&&!['warning','retreating'].includes(item.fiveHornPhase)) || (item.species==='goliath'&&!['warning','retreating'].includes(item.goliathPhase)) || (item.species==='elephant'&&!['warning','retreating'].includes(item.elephantPhase)) || (item.species==='giantstag'&&!['warning','retreating'].includes(item.giantStagPhase)) || (item.species==='atlas'&&!['warning','retreating'].includes(item.atlasPhase)) || (item.species==='rhino'&&rhinos.get(item.id)?.reactive) || (item.species==='stag'&&stags.get(item.id)?.reactive)) && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
+      // TIGER_BEETLE_BEGIN
+      // ORCHID_MANTIS_BEGIN
+      // XYLOTRUPES_FIELD_BEGIN
+      // ANAX_FIELD_BEGIN
+      // MOONMOTH_FIELD_BEGIN
+      ((item.species==='moonmoth'&&item.moonmothPhase==='resting') || (item.species==='anax'&&item.anaxPhase==='resting') || (CAPTURE_AWARENESS[item.species] && !awarenessInFlight(item) && !awarenessSettling(item) && time >= item.nextScareAt) || (item.species==='giantwaterbug'&&item.giantWaterbugPhase==='resting') || (item.species==='wetapunga'&&!['finishing','retreating'].includes(item.wetapungaPhase)) || (item.species==='tigerbeetle'&&item.tigerBeetlePhase==='resting') || (item.species==='orchidmantis'&&!['warning','retreating'].includes(item.orchidMantisPhase)) || herculesNetEligible(item) || (item.species==='xylotrupes'&&!['warning','retreating'].includes(item.xylotrupesPhase)) || (item.species==='rainbowstag'&&!['warning','retreating'].includes(item.rainbowStagPhase)) || (item.species==='giraffestag'&&!['warning','retreating'].includes(item.giraffeStagPhase)) || (item.species==='europestag'&&!['warning','retreating'].includes(item.europeStagPhase)) || (item.species==='manticora'&&!['warning','running'].includes(item.manticoraPhase)) || (item.species==='euchirus'&&!['warning','retreating'].includes(item.euchirusPhase)) || (item.species==='miyama'&&!['warning','retreating'].includes(item.miyamaPhase)) || (item.species==='fivehorn'&&!['warning','retreating'].includes(item.fiveHornPhase)) || (item.species==='goliath'&&!['warning','retreating'].includes(item.goliathPhase)) || (item.species==='elephant'&&!['warning','retreating'].includes(item.elephantPhase)) || (item.species==='giantstag'&&!['warning','retreating'].includes(item.giantStagPhase)) || (item.species==='atlas'&&!['warning','retreating'].includes(item.atlasPhase)) || (item.species==='rhino'&&rhinos.get(item.id)?.reactive) || (item.species==='stag'&&stags.get(item.id)?.reactive)) && distance <= NET_STARTLE.range && dot >= NET_STARTLE.minDot);
+      // MOONMOTH_FIELD_END
+      // ANAX_FIELD_END
+      // XYLOTRUPES_FIELD_END
+      // ORCHID_MANTIS_END
+      // TIGER_BEETLE_END
     list.sort((a,b) => a.distance-b.distance);
     const item = list.find(candidate => hasLineOfSight(p,candidate.item) === true)?.item;
     if (!item) return null;
+    // ANAX_FIELD_BEGIN
+    // MOONMOTH_FIELD_BEGIN
+    if(item.species==='moonmoth'){if(!moonmothStudies.get(item.id).study.disturb(p))return null;syncMoonmoth(item);return item;}
+    // MOONMOTH_FIELD_END
+    if(item.species==='anax'){if(!anaxStudies.get(item.id).study.disturb(p))return null;syncAnax(item);return item;}
+    // ANAX_FIELD_END
+    // ORCHID_MANTIS_BEGIN
+    if(item.species==='orchidmantis'){if(!orchidMantises.get(item.id).study.disturb(p))return null;syncOrchidMantis(item);return item;}
+    // ORCHID_MANTIS_END
+    // GIANT_WATERBUG_BEGIN
+    // TIGER_BEETLE_BEGIN
+    if(item.species==='tigerbeetle'){if(!tigerBeetles.get(item.id).study.disturb(p))return null;syncTigerBeetle(item);return item;}
+    // TIGER_BEETLE_END
+    if(item.species==='giantwaterbug'){if(!giantWaterbugs.get(item.id).study.disturb('net-miss'))return null;syncGiantWaterbug(item);return item;}
+    // GIANT_WATERBUG_END
+    // WETAPUNGA_BEGIN
+    if(item.species==='wetapunga'){if(!wetapungas.get(item.id).study.disturb({x:p.x,z:p.z}))return null;syncWetapunga(item);return item;}
+    // WETAPUNGA_END
     if(item.species==='hercules'){
       // A fruit visitor finishes the existing grounded stop/return sequence.
       // Do not replace its active move or create a second route owner.
       if(logVisit?.id===item.id){requestLogReturn();return item;}
       return beginBeetleWalk(item,'net-miss',p)?item:null;
     }
+    // XYLOTRUPES_FIELD_BEGIN
+    if(item.species==='xylotrupes'){if(!xylotrupesStudies.get(item.id).study.disturb(p))return null;syncXylotrupes(item);return item;}
+    // XYLOTRUPES_FIELD_END
     if(item.species==='rainbowstag'){if(!rainbowStags.get(item.id).study.disturb(p))return null;syncRainbowStag(item);return item;}
+    // GIRAFFE_STAG_BEGIN
+    if(item.species==='giraffestag'){if(!giraffeStags.get(item.id).study.disturb(p))return null;syncGiraffeStag(item);return item;}
+    // GIRAFFE_STAG_END
+    if(item.species==='europestag'){if(!europeStags.get(item.id).study.disturb(p))return null;syncEuropeStag(item);return item;}
     if(item.species==='manticora'){if(!manticoras.get(item.id).study.disturb(p))return null;syncManticora(item);return item;}
     if(item.species==='euchirus'){if(!euchiruses.get(item.id).study.disturb(p))return null;syncEuchirus(item);return item;}
     if(item.species==='miyama'){if(!miyamas.get(item.id).study.disturb(p))return null;syncMiyama(item);return item;}
@@ -1511,7 +2185,19 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     updateBait(player,p);
     if(dt>0)updateLogFruit(p);
     for (const item of items) {
+      // ANAX_FIELD_BEGIN
+      if(item.species==='anax'){if(!item.caught){item.age+=dt;updateAnax(item,dt,player,p);}continue;}
+      // ANAX_FIELD_END
+      // MOONMOTH_FIELD_BEGIN
+      if(item.species==='moonmoth'){if(!item.caught){item.age+=dt;updateMoonmoth(item,dt,player,p);}continue;}
+      // MOONMOTH_FIELD_END
       item.age += dt;
+      // TIGER_BEETLE_BEGIN
+      if(item.species==='tigerbeetle'){if(!item.caught)updateTigerBeetle(item,dt,player,p);continue;}
+      // TIGER_BEETLE_END
+      // ORCHID_MANTIS_BEGIN
+      if(item.species==='orchidmantis'){if(!item.caught)updateOrchidMantis(item,dt,player,p);continue;}
+      // ORCHID_MANTIS_END
       if (item.species === 'swallowtail') { if (!item.caught) updateSwallowtail(item,dt,player,p); continue; }
       if (item.species === 'bee') { if (!item.caught) updateBee(item,dt,player,p); continue; }
       if (item.species === 'stag') { if (!item.caught) updateStag(item,dt,player,p); continue; }
@@ -1521,7 +2207,17 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (item.species === 'elephant') { if (!item.caught) updateElephant(item,dt,player,p); continue; }
       if (item.species === 'giantstag') { if (!item.caught) updateGiantStag(item,dt,player,p); continue; }
       if (item.species === 'atlas') { if (!item.caught) updateAtlas(item,dt,player,p); continue; }
+    // XYLOTRUPES_FIELD_BEGIN
+      if(item.species==='xylotrupes'){if(!item.caught)updateXylotrupes(item,dt,player,p);continue;}
+    // XYLOTRUPES_FIELD_END
       if(item.species==='rainbowstag'){if(!item.caught)updateRainbowStag(item,dt,player,p);continue;}
+      // WETAPUNGA_BEGIN
+      if(item.species==='wetapunga'){if(!item.caught)updateWetapunga(item,dt,player,p);continue;}
+      // WETAPUNGA_END
+      // GIRAFFE_STAG_BEGIN
+      if(item.species==='giraffestag'){if(!item.caught)updateGiraffeStag(item,dt,player,p);continue;}
+      // GIRAFFE_STAG_END
+      if(item.species==='europestag'){if(!item.caught)updateEuropeStag(item,dt,player,p);continue;}
       if(item.species==='manticora'){if(!item.caught)updateManticora(item,dt,player,p);continue;}
       if (item.species === 'euchirus') { if (!item.caught) updateEuchirus(item,dt,player,p); continue; }
       if (item.species === 'miyama') { if (!item.caught) updateMiyama(item,dt,player,p); continue; }
@@ -1530,6 +2226,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       if (item.species === 'rhino') { if (!item.caught) updateRhino(item,dt,player,p); continue; }
       if (item.species === 'ladybird') { if (!item.caught) updateLadybird(item,dt,player,p); continue; }
       if (item.species === 'mantis') { if (!item.caught) updateMantis(item,dt,player,p); continue; }
+      // GIANT_WATERBUG_BEGIN
+      if(item.species==='giantwaterbug'){if(!item.caught)updateGiantWaterbug(item,dt,player,p);continue;}
+      // GIANT_WATERBUG_END
       if (item.species === 'divingbeetle') { if (!item.caught) updateDiving(item,dt,player,p); continue; }
       if (item.species === 'dungbeetle') { if (!item.caught) { dungStudies.get(item.id).study.update(dt);syncDung(item); } continue; }
       if (item.species === 'grasshopper') { if (!item.caught) updateGrasshopper(item,dt,player,p); continue; }
@@ -1584,10 +2283,13 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
         if (settling && homeDistance > .055) {
           resting = false; landing = true; item.state = 'landing'; flightStrength = clamp(homeDistance/.55, 0, .5);
         } else if (!settling && item.species !== 'cicada') {
-          // Ordinary unprovoked perch / loop timing stays the same as v0.1.5.
-          const period = item.species === 'morpho' ? 22 : item.species === 'butterfly' ? 17 : 15;
-          const cycle = (time + (item.beginner ? 0 : item.phase * 2)) % period;
-          const restTime = item.species === 'morpho' ? 13 : item.species === 'butterfly' ? 11 : 9;
+          // BUTTERFLY_AMBIENT_BEGIN
+          // Only canonical meadow dragonflies/white butterflies use timing sidecars.
+          const ambient = item.species === 'dragonfly' ? dragonflyTimings.get(item.id) : item.species === 'butterfly' ? butterflyTimings.get(item.id) : null;
+          // BUTTERFLY_AMBIENT_END
+          const period = ambient ? ambient.restSeconds + 6 : item.species === 'morpho' ? 22 : item.species === 'butterfly' ? 17 : 15;
+          const cycle = ambient ? (time + ambient.offsetSeconds) % period : (time + (item.beginner ? 0 : item.phase * 2)) % period;
+          const restTime = ambient ? ambient.restSeconds : item.species === 'morpho' ? 13 : item.species === 'butterfly' ? 11 : 9;
           if (cycle > restTime) {
             resting = false;
             const u = (cycle - restTime) / (period - restTime), envelope = Math.sin(u * Math.PI);
@@ -1613,6 +2315,27 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       item.x += dx * smoothing; item.y += (ty - item.y) * smoothing; item.z += dz * smoothing;
       item.resting = resting;
       item.flightBlend += (flightStrength - item.flightBlend) * Math.min(1, dt * 8);
+      // BUTTERFLY_AMBIENT_BEGIN
+      if (item.species === 'butterfly') {
+        const distance = Math.hypot(item.x-item.home.x,item.y-item.home.y,item.z-item.home.z);
+        const ambientReturn = !item.excursion && !atBait && time >= item.settleUntil && resting && item.state === 'resting';
+        item.butterflyArriving = ambientReturn && distance > .005;
+        const u = clamp((distance - .005) / .045, 0, 1);
+        const wingTarget = item.butterflyArriving ? Math.max(flightStrength, .65 * u*u*(3-2*u)) : flightStrength;
+        item.butterflyWingBlend += (wingTarget - item.butterflyWingBlend) * Math.min(1, dt * 8);
+      }
+      // BUTTERFLY_AMBIENT_END
+      // DRAGONFLY_LANDING_BEGIN
+      // Render-only: never feed arrival back into awareness, heading or capture.
+      if (item.species === 'dragonfly') {
+        const distance = Math.hypot(item.x-item.home.x,item.y-item.home.y,item.z-item.home.z);
+        const ambientReturn = !item.excursion && !atBait && time >= item.settleUntil && resting && item.state === 'resting';
+        item.dragonflyArriving = ambientReturn && distance > .005;
+        const u = clamp((distance - .005) / .045, 0, 1);
+        const wingTarget = item.dragonflyArriving ? Math.max(flightStrength, .65 * u*u*(3-2*u)) : flightStrength;
+        item.dragonflyWingBlend += (wingTarget - item.dragonflyWingBlend) * Math.min(1, dt * 8);
+      }
+      // DRAGONFLY_LANDING_END
     }
     previousPlayer = p;
   }
@@ -1657,6 +2380,18 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
       return { ok: false, reason: target ? target.reason : '空振り。虫に向かって、もう少し近くで' };
     }
     held = candidate.item; if (CAPTURE_AWARENESS[held.species]) clearAwareness(held); if (bait?.visitorId === held.id) detachVisitor(); held.caught = true; held.state = 'caught'; caughtFrom = eye(player); catches++;
+    // MOONMOTH_FIELD_BEGIN
+    if(held.species==='moonmoth'){moonmothStudies.get(held.id).study.capture();syncMoonmoth(held);}
+    // MOONMOTH_FIELD_END
+    // ANAX_FIELD_BEGIN
+    if(held.species==='anax'){anaxStudies.get(held.id).study.capture();syncAnax(held);}
+    // ANAX_FIELD_END
+    // TIGER_BEETLE_BEGIN
+    if(held.species==='tigerbeetle'){tigerBeetles.get(held.id).study.capture();syncTigerBeetle(held);}
+    // TIGER_BEETLE_END
+    // ORCHID_MANTIS_BEGIN
+    if(held.species==='orchidmantis'){orchidMantises.get(held.id).study.capture();syncOrchidMantis(held);}
+    // ORCHID_MANTIS_END
     if (held.species === 'swallowtail') { swallowtails.get(held.id).study.capture();syncSwallowtail(held); }
     if (held.species === 'bee') { bees.get(held.id).study.capture();syncBee(held); }
     if (held.species === 'stag') { stags.get(held.id).study.capture();syncStag(held); }
@@ -1666,7 +2401,17 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if (held.species === 'elephant') { elephants.get(held.id).study.capture();syncElephant(held); }
     if (held.species === 'giantstag') { giantStags.get(held.id).study.capture();syncGiantStag(held); }
     if (held.species === 'atlas') { atlases.get(held.id).study.capture();syncAtlas(held); }
+    // XYLOTRUPES_FIELD_BEGIN
+    if(held.species==='xylotrupes'){xylotrupesStudies.get(held.id).study.capture();syncXylotrupes(held);}
+    // XYLOTRUPES_FIELD_END
     if(held.species==='rainbowstag'){rainbowStags.get(held.id).study.capture();syncRainbowStag(held);}
+    // WETAPUNGA_BEGIN
+    if(held.species==='wetapunga'){wetapungas.get(held.id).study.capture();syncWetapunga(held);}
+    // WETAPUNGA_END
+    // GIRAFFE_STAG_BEGIN
+    if(held.species==='giraffestag'){giraffeStags.get(held.id).study.capture();syncGiraffeStag(held);}
+    // GIRAFFE_STAG_END
+    if(held.species==='europestag'){europeStags.get(held.id).study.capture();syncEuropeStag(held);}
     if(held.species==='manticora'){manticoras.get(held.id).study.capture();syncManticora(held);}
     if (held.species === 'euchirus') { euchiruses.get(held.id).study.capture();syncEuchirus(held); }
     if (held.species === 'miyama') { miyamas.get(held.id).study.capture();syncMiyama(held); }
@@ -1675,6 +2420,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if (held.species === 'rhino') { rhinos.get(held.id).study.capture();syncRhino(held); }
     if (held.species === 'ladybird') { ladybirds.get(held.id).study.capture();syncLadybird(held); }
     if (held.species === 'mantis') { mantises.get(held.id).study.capture();syncMantis(held); }
+    // GIANT_WATERBUG_BEGIN
+    if(held.species==='giantwaterbug'){giantWaterbugs.get(held.id).study.capture();syncGiantWaterbug(held);}
+    // GIANT_WATERBUG_END
     if (held.species === 'divingbeetle') { divers.get(held.id).study.capture();syncDiving(held); }
     if (held.species === 'dungbeetle') { dungStudies.get(held.id).study.capture();syncDung(held); }
     if (held.species === 'grasshopper') { hoppers.get(held.id).jump=null;held.airborne=false;held.jumpProgress=0;held.resting=true; }
@@ -1704,7 +2452,14 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     if(item.species==='rhino')rhinos.get(item.id).study.capture();
     if(item.species==='stag')stags.get(item.id).study.capture();
     if(item.species==='metallifer')metallifers.get(item.id).study.capture();
+    // XYLOTRUPES_FIELD_BEGIN
+    if(item.species==='xylotrupes')xylotrupesStudies.get(item.id).study.capture();
+    // XYLOTRUPES_FIELD_END
     if(item.species==='rainbowstag')rainbowStags.get(item.id).study.capture();
+    // GIRAFFE_STAG_BEGIN
+    if(item.species==='giraffestag')giraffeStags.get(item.id).study.capture();
+    // GIRAFFE_STAG_END
+    if(item.species==='europestag')europeStags.get(item.id).study.capture();
     if(item.species==='manticora')manticoras.get(item.id).study.capture();
     if(item.species==='euchirus')euchiruses.get(item.id).study.capture();
     if(item.species==='miyama')miyamas.get(item.id).study.capture();
@@ -1717,7 +2472,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
   }
   function setCompanions(origins=[],player) {
     if(!Array.isArray(origins))throw new TypeError('Invalid companion origins');
-    companionOrigins=origins.filter(o=>o&&['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag'].includes(o.species)&&typeof o.id==='string').map(o=>({id:o.id,species:o.species}));
+    // XYLOTRUPES_FIELD_BEGIN
+    companionOrigins=origins.filter(o=>o&&['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','xylotrupes','europestag','giraffestag'].includes(o.species)&&typeof o.id==='string').map(o=>({id:o.id,species:o.species}));
+    // XYLOTRUPES_FIELD_END
     for(const item of items){
       const retained=companionOrigins.some(o=>o.id===item.id&&o.species===item.species);
       if(retained&&item!==held)markCompanion(item);
@@ -1725,7 +2482,9 @@ export function createInsects(heightAt = () => 0, { homes: habitatHomes = homes,
     }
   }
   function retain() {
-    if(!held||!['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag'].includes(held.species))return null;
+    // XYLOTRUPES_FIELD_BEGIN
+    if(!held||!['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','xylotrupes','europestag','giraffestag'].includes(held.species))return null;
+    // XYLOTRUPES_FIELD_END
     const item=held;held=null;caughtFrom=null;markCompanion(item);
     if(!companionOrigins.some(o=>o.id===item.id))companionOrigins.push({id:item.id,species:item.species});
     return item;

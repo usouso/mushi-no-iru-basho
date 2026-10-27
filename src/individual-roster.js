@@ -3,12 +3,12 @@
  * not imported again. Unknown data/conflicts stay read-only, with session edits
  * still available. Persistence needs Web Locks, not a promise of browser support.
  */
-import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.41.0&b=bed5219b02cd';
+import { COMPANION_KEY as V1_KEY, COMPANION_SPECIES as V1_SPECIES } from './companion-roster.js?v=0.64.0&b=3616c2fe808e';
 export const COMPANION_KEY = 'mushi-companions-v2';
 export const COMPANION_VERSION = 2;
 export const LEGACY_COMPANION_KEY = V1_KEY;
-export const COMPANION_SPECIES = Object.freeze([...V1_SPECIES,'atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);
-const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory',atlas:'understory',giantstag:'night',elephant:'tropical',goliath:'forest',fivehorn:'understory',miyama:'meadow',euchirus:'understory',manticora:'savanna',rainbowstag:'australia'});
+export const COMPANION_SPECIES = Object.freeze([...V1_SPECIES,'atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','europestag','giraffestag','xylotrupes']);
+const origins = Object.freeze({hercules:'tropical',rhino:'night',stag:'night',metallifer:'understory',atlas:'understory',giantstag:'night',elephant:'tropical',goliath:'forest',fivehorn:'understory',miyama:'meadow',euchirus:'understory',manticora:'savanna',rainbowstag:'australia',europestag:'europe',giraffestag:'flores',xylotrupes:'australia'});
 const legacyFields = ['id','species','originHabitat','originIndividualId','capturedAt'];
 const entryFields = [...legacyFields,'originKind','originEncounterId','sizePermille','measureVersion'];
 const copy = entries => entries.map(entry => ({...entry}));
@@ -16,10 +16,30 @@ const timestamp = value => Number.isSafeInteger(value) && value >= 0;
 const own = (object,key) => Object.prototype.hasOwnProperty.call(object,key);
 export function isCompanionSpecies(species){return typeof species === 'string' && own(origins,species);}
 function fields(value,names){return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === names.length && Object.keys(value).every(key=>names.includes(key));}
-function originValid(entry){return isCompanionSpecies(entry?.species) && entry.originHabitat === origins[entry.species] && typeof entry.originIndividualId === 'string' && /^insect-[1-9]\d{0,5}$/.test(entry.originIndividualId) && (entry.species!=='atlas'||entry.originIndividualId==='insect-5') && (entry.species!=='giantstag'||entry.originIndividualId==='insect-6') && (entry.species!=='elephant'||entry.originIndividualId==='insect-11') && (entry.species!=='goliath'||['insect-1','insect-2'].includes(entry.originIndividualId)) && (entry.species!=='fivehorn'||entry.originIndividualId==='insect-6') && (entry.species!=='miyama'||entry.originIndividualId==='insect-30') && (entry.species!=='euchirus'||entry.originIndividualId==='insect-7') && (entry.species!=='manticora'||entry.originIndividualId==='insect-2') && (entry.species!=='rainbowstag'||entry.originIndividualId==='insect-1');}
+function originValid(entry){return isCompanionSpecies(entry?.species) && entry.originHabitat === origins[entry.species] && typeof entry.originIndividualId === 'string' && /^insect-[1-9]\d{0,5}$/.test(entry.originIndividualId) && (entry.species!=='atlas'||entry.originIndividualId==='insect-5') && (entry.species!=='giantstag'||entry.originIndividualId==='insect-6') && (entry.species!=='elephant'||entry.originIndividualId==='insect-11') && (entry.species!=='goliath'||['insect-1','insect-2'].includes(entry.originIndividualId)) && (entry.species!=='fivehorn'||entry.originIndividualId==='insect-6') && (entry.species!=='miyama'||entry.originIndividualId==='insect-30') && (entry.species!=='euchirus'||entry.originIndividualId==='insect-7') && (entry.species!=='manticora'||entry.originIndividualId==='insect-2') && (entry.species!=='rainbowstag'||entry.originIndividualId==='insect-1') && (entry.species!=='europestag'||entry.originIndividualId==='insect-1') && (entry.species!=='giraffestag'||entry.originIndividualId==='insect-1') && (entry.species!=='xylotrupes'||entry.originIndividualId==='insect-2');}
 function legacyValid(entry){return fields(entry,legacyFields) && V1_SPECIES.includes(entry.species) && originValid(entry) && entry.id === `${entry.originHabitat}/${entry.originIndividualId}` && timestamp(entry.capturedAt);}
 function encounterValid(entry){
  if(typeof entry.originEncounterId!=='string')return false;
+ if(entry.species==='xylotrupes'){
+  const xylotrupes=/^g10-[0-9a-f]{8}-o([1-9][0-9]{0,15})-australia-xylotrupes$/.exec(entry.originEncounterId);
+  return !!xylotrupes&&Number.isSafeInteger(Number(xylotrupes[1]))&&entry.originHabitat==='australia'&&entry.originIndividualId==='insect-2';
+ }
+ if(entry.species==='goliath'){
+  const goliath=/^g9-[0-9a-f]{8}-o([1-9][0-9]{0,15})-forest-goliath-([ab])$/.exec(entry.originEncounterId);
+  return !!goliath&&Number.isSafeInteger(Number(goliath[1]))&&entry.originHabitat==='forest'&&entry.originIndividualId===(goliath[2]==='a'?'insect-1':'insect-2');
+ }
+ if(entry.species==='rainbowstag'){
+  const rainbow=/^g8-[0-9a-f]{8}-o([1-9][0-9]{0,15})-australia-rainbowstag$/.exec(entry.originEncounterId);
+  return !!rainbow&&Number.isSafeInteger(Number(rainbow[1]))&&entry.originHabitat==='australia';
+ }
+ if(entry.species==='giraffestag'){
+  const giraffe=/^g7-[0-9a-f]{8}-o([1-9][0-9]{0,15})-flores-giraffestag$/.exec(entry.originEncounterId);
+  return !!giraffe&&Number.isSafeInteger(Number(giraffe[1]))&&entry.originHabitat==='flores';
+ }
+ if(entry.species==='europestag'){
+  const europe=/^g6-[0-9a-f]{8}-o([1-9][0-9]{0,15})-europe-europestag$/.exec(entry.originEncounterId);
+  return !!europe&&Number.isSafeInteger(Number(europe[1]))&&entry.originHabitat==='europe';
+ }
  if(entry.species==='manticora'){
   const manticora=/^g4-[0-9a-f]{8}-o([1-9][0-9]{0,15})-savanna-manticora$/.exec(entry.originEncounterId);
   return !!manticora&&Number.isSafeInteger(Number(manticora[1]))&&entry.originHabitat==='savanna';

@@ -15,13 +15,24 @@ export const EXPEDITION_SLOTS=Object.freeze([
  {populationSlotId:'metallifer',species:'metallifer',habitat:'understory',runtimeSlotId:'insect-4'},
  {populationSlotId:'giantstag',species:'giantstag',habitat:'night',runtimeSlotId:'insect-6'},
  {populationSlotId:'atlas',species:'atlas',habitat:'understory',runtimeSlotId:'insect-5'},
- {populationSlotId:'manticora',species:'manticora',habitat:'savanna',runtimeSlotId:'insect-2'}
+ {populationSlotId:'manticora',species:'manticora',habitat:'savanna',runtimeSlotId:'insect-2'},
+ {populationSlotId:'europestag',species:'europestag',habitat:'europe',runtimeSlotId:'insect-1'},
+ {populationSlotId:'giraffestag',species:'giraffestag',habitat:'flores',runtimeSlotId:'insect-1'},
+ {populationSlotId:'rainbowstag',species:'rainbowstag',habitat:'australia',runtimeSlotId:'insect-1'},
+ {populationSlotId:'goliath-a',species:'goliath',habitat:'forest',runtimeSlotId:'insect-1'},
+ {populationSlotId:'goliath-b',species:'goliath',habitat:'forest',runtimeSlotId:'insect-2'},
+ {populationSlotId:'xylotrupes',species:'xylotrupes',habitat:'australia',runtimeSlotId:'insect-2'}
 ].map(Object.freeze));
 const legacySlots=EXPEDITION_SLOTS.slice(0,5);
 const generationTwoSlots=EXPEDITION_SLOTS.slice(0,6);
 const generationThreeSlots=EXPEDITION_SLOTS.slice(0,7);
+const generationFourFiveSlots=EXPEDITION_SLOTS.slice(0,8);
+const generationSixSlots=EXPEDITION_SLOTS.slice(0,9);
+const generationSevenSlots=EXPEDITION_SLOTS.slice(0,10);
+const generationEightSlots=EXPEDITION_SLOTS.slice(0,11);
+const generationNineSlots=EXPEDITION_SLOTS.slice(0,13);
 // Loading an older in-progress outing never appends newly supported species.
-const slotsFor=version=>version===1?legacySlots:version===2?generationTwoSlots:version===3?generationThreeSlots:version===4?EXPEDITION_SLOTS:null;
+const slotsFor=version=>version===1?legacySlots:version===2?generationTwoSlots:version===3?generationThreeSlots:version===4||version===5?generationFourFiveSlots:version===6?generationSixSlots:version===7?generationSevenSlots:version===8?generationEightSlots:version===9?generationNineSlots:version===10?EXPEDITION_SLOTS:null;
 const topFields=['version','generatorVersion','worldSeed','outingCounter','encounters','measuredEncounterIds','best'];
 const encounterFields=['encounterId','species','habitat','runtimeSlotId','populationSlotId','sizePermille','motionSeed','siteIndex','measureVersion'];
 const bestFields=['species','sizePermille','encounterId','capturedAt','measureVersion'];
@@ -35,11 +46,11 @@ function browserLocks(){try{return globalThis.navigator?.locks??null;}catch{retu
 function hasLocks(locks){try{return typeof locks?.request==='function';}catch{return false;}}
 function browserSeed(){const bytes=new Uint32Array(1);globalThis.crypto.getRandomValues(bytes);return bytes[0];}
 const seedHex=seed=>seed.toString(16).padStart(8,'0');
-const slotGeneration=species=>species==='giantstag'?2:species==='atlas'?3:species==='manticora'?4:1;
+const slotGeneration=species=>species==='giantstag'?2:species==='atlas'?3:species==='manticora'?4:species==='europestag'?6:species==='giraffestag'?7:species==='rainbowstag'?8:['goliath','goliath-a','goliath-b'].includes(species)?9:species==='xylotrupes'?10:1;
 function idFor(seed,counter,slot){return`g${slotGeneration(slot.species)}-${seedHex(seed)}-o${counter}-${slot.habitat}-${slot.populationSlotId}`;}
 function idValid(id,seed,counter,speciesId){
  if(typeof id!=='string')return false;
- const match=/^g([1234])-([0-9a-f]{8})-o([1-9][0-9]{0,15})-(tropical|night|understory|savanna)-(hercules-a|hercules-b|rhino|stag|metallifer|giantstag|atlas|manticora)$/.exec(id);
+ const match=/^g(10|[12346789])-([0-9a-f]{8})-o([1-9][0-9]{0,15})-(tropical|night|understory|savanna|europe|flores|australia|forest)-(hercules-a|hercules-b|rhino|stag|metallifer|giantstag|atlas|manticora|europestag|giraffestag|rainbowstag|goliath-a|goliath-b|xylotrupes)$/.exec(id);
  if(!match||match[2]!==seedHex(seed)||!integer(Number(match[3]),1,counter))return false;
  return EXPEDITION_SLOTS.some(slot=>slot.species===speciesId&&slot.habitat===match[4]&&slot.populationSlotId===match[5]&&Number(match[1])===slotGeneration(slot.species));
 }
@@ -57,10 +68,10 @@ function generate(seed,counter,best=[]){
   const n=draw(seed,counter,slot.populationSlotId,'size-value');
   return{encounterId:idFor(seed,counter,slot),species:slot.species,habitat:slot.habitat,runtimeSlotId:slot.runtimeSlotId,populationSlotId:slot.populationSlotId,sizePermille:tail?1126+n%25:1000+n%126,motionSeed:draw(seed,counter,slot.populationSlotId,'motion'),siteIndex:draw(seed,counter,slot.populationSlotId,'site')%3,measureVersion:1};
  });
- return{version:2,legacyImportDone:true,generatorVersion:4,worldSeed:seed,outingCounter:counter,encounters,measuredEncounterIds:[],best:clone(best)};
+ return{version:2,legacyImportDone:true,generatorVersion:10,worldSeed:seed,outingCounter:counter,encounters,measuredEncounterIds:[],best:clone(best)};
 }
 function valid(data,legacy=false){
- if(!fields(data,legacy?topFields:[...topFields,'legacyImportDone'])||data.version!==(legacy?1:2)||(!legacy&&data.legacyImportDone!==true)||![1,2,3,4].includes(data.generatorVersion)||(legacy&&data.generatorVersion!==1)||!uint(data.worldSeed)||!integer(data.outingCounter,1))return false;
+ if(!fields(data,legacy?topFields:[...topFields,'legacyImportDone'])||data.version!==(legacy?1:2)||(!legacy&&data.legacyImportDone!==true)||![1,2,3,4,5,6,7,8,9,10].includes(data.generatorVersion)||(legacy&&data.generatorVersion!==1)||!uint(data.worldSeed)||!integer(data.outingCounter,1))return false;
  const slots=slotsFor(data.generatorVersion),species=new Set(slots.map(s=>s.species));
  if(!Array.isArray(data.encounters)||data.encounters.length!==slots.length||!Array.isArray(data.measuredEncounterIds)||data.measuredEncounterIds.length>slots.length||!Array.isArray(data.best)||data.best.length>species.size)return false;
  if(!data.encounters.every((entry,i)=>{
