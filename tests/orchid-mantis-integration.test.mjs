@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {priorOrchidModel,priorOrchidMain} from './fixtures/orchid-mantis-integration-prior.mjs';
+test('055 factory/main additions alone reverse to exact054; altered extension or old logic is rejected',()=>{for(const[file,fn]of [['insect-models',priorOrchidModel],['main',priorOrchidMain]]){const s=fs.readFileSync(new URL('../src/'+file+'.js',import.meta.url),'utf8');assert.ok(fn(s));assert.throws(()=>fn(s.replace('ORCHID_MANTIS_','BROKEN_')));assert.throws(()=>fn(s+'\n// unrelated alteration\n'));}});

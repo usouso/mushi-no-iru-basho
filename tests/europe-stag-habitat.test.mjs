@@ -1,0 +1,32 @@
+/** Standalone CPU Three geometry, navigation and ownership. No GPU/discovery claim. */
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+const sandbox={console};vm.runInNewContext(fs.readFileSync(new URL('../assets/vendor/three.min.js',import.meta.url),'utf8'),sandbox);const T=sandbox.THREE;globalThis.window={THREE:T};
+const{createEuropeWorld}=await import('../src/world-europe.js'),{createEuropeStagHabitat}=await import('../src/europe-stag-habitat.js'),{EUROPE_ROUTE,EUROPE_SPAWN,EUROPE_STAG_APPROACH,EUROPE_STAG_LANE:L}=await import('../src/europe-stag-layout.js'),{createCaptureVisibility}=await import('../src/capture-visibility.js');
+const fixture=()=>{const scene=new T.Scene(),world=createEuropeWorld(scene),habitat=createEuropeStagHabitat(world,scene);return{scene,world,habitat};};
+const clearance=(p,c)=>Math.hypot(p.x-c.x,p.z-c.z)-c.r-.28;
+test('bounded Europe world has actual matching terrain, one low solid log and no registered population',()=>{
+ const{scene,world,habitat}=fixture();assert.equal(world.regionId,'europe');assert.equal(world.bounds,8);assert.deepEqual(world.spawn,{x:0,z:6});assert.deepEqual(world.insectHomes,[]);assert.equal(world.stats.fallenLogs,1);assert.equal(world.stats.textures,0);assert.equal(world.stats.drawCalls,10);assert.ok(world.stats.triangles<1000);assert.equal(habitat.homes.length,1);assert.equal(habitat.stats.addedMeshes,0);
+ const ray=new T.Raycaster();for(const x of[-8,-3,.12,3,8])for(const z of[-8,-2,.7,4,8]){ray.set(new T.Vector3(x,2,z),new T.Vector3(0,-1,0));ray.far=3;const h=ray.intersectObject(scene.getObjectByName('europe-ground'))[0];assert.ok(h);assert.ok(Math.abs(h.point.y-world.heightAt(x,z))<1e-7);}
+ const a=world.europeStagLog.geometry.attributes.position;for(let i=0;i<a.count;i++){const p=new T.Vector3().fromBufferAttribute(a,i);assert.ok(world.colliders.some(c=>Math.hypot(p.x-c.x,p.z-c.z)<=c.r+1e-7),'solid log footprint covered by existing circle contract');}
+ world.spawn.x=999;assert.equal(EUROPE_SPAWN.x,0);world.dispose();
+});
+test('entry, quiet approach, circling and return remain walkable; actual solid LOS reaches the complete lane',()=>{
+ const{world,habitat}=fixture(),los=createCaptureVisibility(world.captureOccluders),s=habitat.europeStagSupports[0];let min=Infinity,maxReach=0;
+ for(let n=1;n<EUROPE_ROUTE.length;n++)for(let k=0;k<=40;k++){const a=EUROPE_ROUTE[n-1],b=EUROPE_ROUTE[n],p={x:a.x+(b.x-a.x)*k/40,z:a.z+(b.z-a.z)*k/40};assert.ok(Math.abs(p.x)<world.bounds&&Math.abs(p.z)<world.bounds);for(const c of world.colliders){const gap=clearance(p,c);min=Math.min(min,gap);assert.ok(gap>0);}}
+ // Exact closest point on each complete route segment, not just sampled frames.
+ for(let n=1;n<EUROPE_ROUTE.length;n++){const a=EUROPE_ROUTE[n-1],b=EUROPE_ROUTE[n],dx=b.x-a.x,dz=b.z-a.z;for(const c of world.colliders){const t=Math.max(0,Math.min(1,((c.x-a.x)*dx+(c.z-a.z)*dz)/(dx*dx+dz*dz))),p={x:a.x+t*dx,z:a.z+t*dz},gap=clearance(p,c);min=Math.min(min,gap);assert.ok(gap>0);}}
+ for(const d of Array.from({length:9},(_,i)=>L.min+(L.max-L.min)*i/8))for(const height of[1.28,1.65]){const target={x:s.home.x+d,y:s.home.y,z:s.home.z},eye={...EUROPE_STAG_APPROACH,y:height},reach=Math.hypot(eye.x-target.x,eye.y-target.y,eye.z-target.z);maxReach=Math.max(maxReach,reach);assert.ok(reach<2.6);assert.equal(los(eye,target),true);}
+ assert.equal(los({...EUROPE_SPAWN,y:1.65},s.home),true);assert.equal(los({x:0,y:.25,z:2},{x:0,y:.25,z:-2}),false,'log is a real occluder, not transparent scenery');console.log(JSON.stringify({minimumRouteClearance:min,maxCaptureReach:maxReach}));world.dispose();
+});
+test('horizontal lane home is reconstructed from real triangles, quaternion and projected foot envelope stay on the top',()=>{
+ const{world,habitat}=fixture(),s=habitat.europeStagSupports[0],q=new T.Quaternion(s.orientation.x,s.orientation.y,s.orientation.z,s.orientation.w),ray=new T.Raycaster();assert.ok(Math.abs(q.length()-1)<1e-12);assert.ok(new T.Vector3(0,0,1).applyQuaternion(q).distanceTo(new T.Vector3(1,0,0))<1e-12);assert.deepEqual(s.retreatBounds,{min:-.34,max:.34});
+ let rays=0;for(const d of[L.min,-.17,0,.17,L.max])for(const side of[-1,1])for(const z of[-.09,0,.085]){const foot=new T.Vector3(side*.095,-.055,z).applyQuaternion(q).add(new T.Vector3(s.home.x+d,s.home.y,s.home.z));ray.set(foot.clone().add(new T.Vector3(0,.03,0)),new T.Vector3(0,-1,0));ray.far=.06;const hit=ray.intersectObject(world.europeStagLog)[0];assert.ok(hit);assert.ok(hit.face.normal.y>.999999);assert.ok(hit.point.distanceTo(foot)<1e-7);rays++;}
+ const row=habitat.homes[0];assert.equal(row[0],'europestag');assert.ok(Math.abs(world.heightAt(row[1],row[2])+row[3]-s.home.y)<1e-12);assert.equal(rays,30);world.dispose();
+});
+test('wrong worlds are rejected and idempotent disposal owns only its resources and scene atmosphere',()=>{
+ const scene=new T.Scene(),sentinel=new T.Group(),background=new T.Color('#123456'),fog=new T.Fog('#234567',2,9);scene.add(sentinel);scene.background=background;scene.fog=fog;const world=createEuropeWorld(scene),resources=new Set(world.meshes.flatMap(m=>[m.geometry,m.material])),events=new Map([...resources].map(r=>[r,0]));for(const r of resources)r.addEventListener('dispose',()=>events.set(r,events.get(r)+1));
+ assert.throws(()=>createEuropeWorld(null),TypeError);assert.throws(()=>createEuropeStagHabitat({...world,regionId:'understory'},scene),TypeError);assert.throws(()=>createEuropeStagHabitat(world,new T.Scene()),TypeError);assert.throws(()=>createEuropeStagHabitat({...world,captureOccluders:[]},scene),TypeError);assert.throws(()=>createEuropeStagHabitat({...world,heightAt:()=>NaN},scene),/Finite terrain/);
+ world.europeStagLog.position.y=.02;assert.throws(()=>createEuropeStagHabitat(world,scene),/Actual horizontal/);world.europeStagLog.position.y=0;
+ const habitat=createEuropeStagHabitat(world,scene);habitat.dispose();assert.ok(scene.getObjectById(world.europeStagLog.id));world.dispose();world.dispose();assert.equal(scene.children.length,1);assert.equal(scene.children[0],sentinel);assert.equal(scene.background,background);assert.equal(scene.fog,fog);assert.ok([...events.values()].every(n=>n===1));
+ const next=createEuropeWorld(scene),replacement=new T.Color('#abcdef');scene.background=replacement;next.dispose();assert.equal(scene.background,replacement,'do not overwrite later atmosphere ownership');
+});

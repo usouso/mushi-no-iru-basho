@@ -1,26 +1,52 @@
-import {createRainbowStagModel,updateRainbowStagModel} from './rainbow-stag-model.js?v=0.41.0&b=bed5219b02cd';
-import {createManticoraModel,updateManticoraModel} from './manticora-model.js?v=0.41.0&b=bed5219b02cd';
-import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.41.0&b=bed5219b02cd';
-import {createMiyamaModel,updateMiyamaModel} from './miyama-model.js?v=0.41.0&b=bed5219b02cd';
-import {createFiveHornModel,updateFiveHornModel} from './five-horn-model.js?v=0.41.0&b=bed5219b02cd';
-import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.41.0&b=bed5219b02cd';
-import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.41.0&b=bed5219b02cd';
-import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.41.0&b=bed5219b02cd';
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.41.0&b=bed5219b02cd';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.41.0&b=bed5219b02cd';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.41.0&b=bed5219b02cd';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.41.0&b=bed5219b02cd';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.41.0&b=bed5219b02cd';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.41.0&b=bed5219b02cd';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.41.0&b=bed5219b02cd';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.41.0&b=bed5219b02cd';
-import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.41.0&b=bed5219b02cd';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.41.0&b=bed5219b02cd';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.41.0&b=bed5219b02cd';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.41.0&b=bed5219b02cd';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.41.0&b=bed5219b02cd';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import {applyInsectReadability} from './insect-readability.js?v=0.41.0&b=bed5219b02cd';
+// MOONMOTH_MODEL_BEGIN
+import {createMoonmothModel,updateMoonmothModel} from './moonmoth-model.js?v=0.64.0&b=3616c2fe808e';
+// MOONMOTH_MODEL_END
+// ANAX_MODEL_BEGIN
+import {createAnaxModel,updateAnaxModel} from './anax-model.js?v=0.64.0&b=3616c2fe808e';
+// ANAX_MODEL_END
+// XYLOTRUPES_MODEL_BEGIN
+import {createXylotrupesModel,updateXylotrupesModel} from './xylotrupes-model.js?v=0.64.0&b=3616c2fe808e';
+// XYLOTRUPES_MODEL_END
+// ORCHID_MANTIS_MODEL_BEGIN
+import {createOrchidMantisModel,updateOrchidMantisModel} from './orchid-mantis-model.js?v=0.64.0&b=3616c2fe808e';
+// ORCHID_MANTIS_MODEL_END
+// TIGER_BEETLE_MODEL_BEGIN
+import {createTigerBeetleModel,updateTigerBeetleModel} from './tiger-beetle-model.js?v=0.64.0&b=3616c2fe808e';
+// TIGER_BEETLE_MODEL_END
+// CICADA_CLEARANCE_BEGIN
+import {applyCicadaClearance} from './cicada-clearance.js?v=0.64.0&b=3616c2fe808e';
+// CICADA_CLEARANCE_END
+// GIRAFFE_STAG_MODEL_BEGIN
+import {createGiraffeStagModel,updateGiraffeStagModel} from './giraffe-stag-model.js?v=0.64.0&b=3616c2fe808e';
+// GIRAFFE_STAG_MODEL_END
+// WETAPUNGA_MODEL_BEGIN
+import {createWetapungaModel,updateWetapungaModel} from './wetapunga-model.js?v=0.64.0&b=3616c2fe808e';
+// WETAPUNGA_MODEL_END
+import {createGiantWaterbugModel,updateGiantWaterbugModel} from './giant-waterbug-model.js?v=0.64.0&b=3616c2fe808e';
+import {createEuropeStagModel,updateEuropeStagModel} from './europe-stag-model.js?v=0.64.0&b=3616c2fe808e';
+import {createRainbowStagModel,updateRainbowStagModel} from './rainbow-stag-model.js?v=0.64.0&b=3616c2fe808e';
+import {createManticoraModel,updateManticoraModel} from './manticora-model.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.64.0&b=3616c2fe808e';
+import {createMiyamaModel,updateMiyamaModel} from './miyama-model.js?v=0.64.0&b=3616c2fe808e';
+import {createFiveHornModel,updateFiveHornModel} from './five-horn-model.js?v=0.64.0&b=3616c2fe808e';
+import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.64.0&b=3616c2fe808e';
+import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.64.0&b=3616c2fe808e';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.64.0&b=3616c2fe808e';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.64.0&b=3616c2fe808e';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.64.0&b=3616c2fe808e';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.64.0&b=3616c2fe808e';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.64.0&b=3616c2fe808e';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.64.0&b=3616c2fe808e';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.64.0&b=3616c2fe808e';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.64.0&b=3616c2fe808e';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.64.0&b=3616c2fe808e';
+import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.64.0&b=3616c2fe808e';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.64.0&b=3616c2fe808e';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.64.0&b=3616c2fe808e';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.64.0&b=3616c2fe808e';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.64.0&b=3616c2fe808e';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {applyInsectReadability} from './insect-readability.js?v=0.64.0&b=3616c2fe808e';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.
@@ -171,6 +197,19 @@ function dragonfly(root, field = false) {
   }
   root.userData.wings=pivots;
 }
+// CICADA_THORAX_BEGIN
+// Authored cicada-only attachment correction, not measured joint proportions.
+// Keep old addition order, front legs and every lower cylinder bit-for-bit.
+function cicadaThoraxLegs(body,mat) {
+  const scale=1.6;
+  for(const side of[-1,1])for(let n=0;n<3;n++) {
+    const z=(.035-n*.026)*scale;
+    const hip=n===0?[side*.012*scale,0,z]:n===1?[side*.0192,0,.035]:[side*.012,-.020,.020];
+    segment(body,hip,[side*.032*scale,-.02*scale,z-.012*scale],.0015*scale,mat);
+    segment(body,[side*.032*scale,-.02*scale,z-.012*scale],[side*.048*scale,-.025*scale,z+.006*scale],.0011*scale,mat);
+  }
+}
+// CICADA_THORAX_END
 function cicada(root, field = false) {
   const brown=material(field?'#a07a42':'#8d683c'),dark=material(field?'#302113':'#30281b'),eyeMat=material(field?'#27170e':'#3d2516',{roughness:.25});
   ellipsoid(root,[0,0,-.025],[.032,.028,.065],brown);
@@ -202,7 +241,10 @@ function cicada(root, field = false) {
     const mesh=wing(pivot,[[.006,-.026],[.020,-.033],[.035,-.058],[.036,-.084],[.027,-.108],[.015,-.104],[.007,-.070]],hindMaterial);
     mesh.position.y=-.0025;pivots.push(pivot);
   }
-  legs(root,dark,1.6);root.userData.wings=pivots;
+  // CICADA_THORAX_BEGIN
+  cicadaThoraxLegs(root,dark);
+  // CICADA_THORAX_END
+  root.userData.wings=pivots;
 }
 
 // Original morpho silhouette and painted markings, constructed without tracing
@@ -442,7 +484,7 @@ function hercules(root) {
   root.updateMatrixWorld(true);const bodyBounds=new THREE.Box3();
   root.traverse(o=>{if(o.isMesh)bodyBounds.union(new THREE.Box3().setFromObject(o));});root.userData.bodyBounds=bodyBounds;
   for(const part of root.children)if(part.isMesh)part.userData.battleRole='torso';
-  const thoraxHorn=herculesHorn(root,[[0,.055,.030],[0,.080,.135],[0,.063,.237],[0,.035,.310]],.013,black);thoraxHorn.userData.battleRole='thorax-horn';
+  const thoraxHorn=herculesHorn(root,[[0,.030,.030],[0,.080,.135],[0,.063,.237],[0,.035,.310]],.013,black);thoraxHorn.userData.battleRole='thorax-horn';
   const headHorn=herculesHorn(root,[[0,.016,.095],[0,.015,.160],[0,.027,.223],[0,.041,.265]],.009,black);headHorn.userData.battleRole='head-horn';
   const legs=[];
   // A group keeps each deformable leg out of the rigid-body material batching.
@@ -750,13 +792,40 @@ export function createInsectModel(species, { inspection = false, sizePermille = 
   const root = buildInsectModel(species, { inspection, fieldFlight });
   // Individual size is fixed at creation. Inspection framing may scale its root
   // further; animation must never replace that transform or redraw native art.
-  const eligible=['hercules','rhino','stag','metallifer','giantstag','atlas','manticora'].includes(species);
+  // GIRAFFE_INDIVIDUAL_BEGIN
+  // RAINBOW_INDIVIDUAL_BEGIN
+  const eligible=['hercules','rhino','stag','metallifer','giantstag','atlas','manticora','europestag','giraffestag','rainbowstag','goliath','xylotrupes'].includes(species);
+  // RAINBOW_INDIVIDUAL_END
+  // GIRAFFE_INDIVIDUAL_END
   const factor=eligible&&Number.isInteger(sizePermille)&&sizePermille>=1000&&sizePermille<=1150?sizePermille/1000:1;
   root.userData.individualScale=factor;root.scale.setScalar(factor);
   return applyInsectReadability(root, { inspection, species });
 }
 
 function buildInsectModel(species, { inspection = false, fieldFlight = false } = {}) {
+  // MOONMOTH_MODEL_BEGIN
+  if(species==='moonmoth'){const root=createMoonmothModel({inspection});root.userData.modelOnly=false;return root;}
+  // MOONMOTH_MODEL_END
+  // ANAX_MODEL_BEGIN
+  if(species==='anax'){const root=createAnaxModel({inspection});root.userData.modelOnly=false;return root;}
+  // ANAX_MODEL_END
+  // XYLOTRUPES_MODEL_BEGIN
+  if(species==='xylotrupes'){const root=createXylotrupesModel({inspection});root.userData.modelOnly=false;return root;}
+  // XYLOTRUPES_MODEL_END
+  // ORCHID_MANTIS_MODEL_BEGIN
+  if(species==='orchidmantis'){const root=createOrchidMantisModel({inspection});root.userData.modelOnly=false;return root;}
+  // ORCHID_MANTIS_MODEL_END
+  // TIGER_BEETLE_MODEL_BEGIN
+  if(species==='tigerbeetle'){const root=createTigerBeetleModel({inspection});root.userData.modelOnly=false;return root;}
+  // TIGER_BEETLE_MODEL_END
+  // WETAPUNGA_MODEL_BEGIN
+  if(species==='wetapunga')return createWetapungaModel({inspection});
+  // WETAPUNGA_MODEL_END
+  // GIRAFFE_STAG_MODEL_BEGIN
+  if(species==='giraffestag')return createGiraffeStagModel({inspection});
+  // GIRAFFE_STAG_MODEL_END
+  if(species==='giantwaterbug')return createGiantWaterbugModel({inspection});
+  if(species==='europestag'){const root=createEuropeStagModel({inspection});root.userData.species='europestag';root.userData.modelOnly=false;return root;}
   if(species==='rainbowstag'){const root=createRainbowStagModel({inspection});root.userData.species='rainbowstag';return root;}
   if(species==='manticora'){const root=createManticoraModel({inspection});root.userData.species='manticora';return root;}
   if(species==='euchirus'){const root=createEuchirusModel({inspection});root.userData.species='euchirus';return root;}
@@ -818,6 +887,46 @@ function buildInsectModel(species, { inspection = false, fieldFlight = false } =
 }
 
 export function updateInsectModel(group, item, time = 0, support = null) {
+  // MOONMOTH_MODEL_BEGIN
+  if(group.userData.species==='moonmoth'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateMoonmothModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,legTuck:item.legTuck,flightBlend:item.flightBlend,wingPhase:item.wingPhase,warningBlend:item.warningBlend,caught:item.caught});
+  }
+  // MOONMOTH_MODEL_END
+  // ANAX_MODEL_BEGIN
+  if(group.userData.species==='anax'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateAnaxModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,legTuck:item.legTuck,flightBlend:item.flightBlend,wingPhase:item.wingPhase,caught:item.caught},time);
+  }
+  // ANAX_MODEL_END
+  // XYLOTRUPES_MODEL_BEGIN
+  if(group.userData.species==='xylotrupes'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateXylotrupesModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,headLift:item.headLift,warningBlend:item.warningBlend,caught:item.caught});
+  }
+  // XYLOTRUPES_MODEL_END
+  // ORCHID_MANTIS_MODEL_BEGIN
+  if(group.userData.species==='orchidmantis'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateOrchidMantisModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,forePose:item.forePose,caught:item.caught});
+  }
+  // ORCHID_MANTIS_MODEL_END
+  // TIGER_BEETLE_MODEL_BEGIN
+  if(group.userData.species==='tigerbeetle'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateTigerBeetleModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,flightPose:item.flightPose,caught:item.caught});
+  }
+  // TIGER_BEETLE_MODEL_END
+  // WETAPUNGA_MODEL_BEGIN
+  if(group.userData.species==='wetapunga'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateWetapungaModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,caught:item.caught});
+  }
+  // WETAPUNGA_MODEL_END
+  if(group.userData.species==='giantwaterbug'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateGiantWaterbugModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,heading:item.heading,pitch:item.pitch,grip:item.grip,stroke:item.stroke,strokeStrength:item.strokeStrength,forelegFold:item.forelegFold,caught:item.caught});
+  }
   if(group.userData.species==='fivehorn'){
     if(!group.userData.inspection)group.visible=!item.caught;
     return updateFiveHornModel(group,{position:{x:item.x,y:item.y,z:item.z},heading:item.heading,pitch:item.pitch,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,headLift:item.headLift,warningBlend:item.warningBlend,phase:item.fiveHornPhase,caught:item.caught});
@@ -845,6 +954,16 @@ export function updateInsectModel(group, item, time = 0, support = null) {
   if(group.userData.species==='miyama'){
     if(!group.userData.inspection)group.visible=!item.caught;
     return updateMiyamaModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,warningBlend:item.warningBlend,phase:item.miyamaPhase,caught:item.caught});
+  }
+  // GIRAFFE_STAG_MODEL_BEGIN
+  if(group.userData.species==='giraffestag'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateGiraffeStagModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,caught:item.caught});
+  }
+  // GIRAFFE_STAG_MODEL_END
+  if(group.userData.species==='europestag'){
+    if(!group.userData.inspection)group.visible=!item.caught;
+    return updateEuropeStagModel(group,{position:{x:item.x,y:item.y,z:item.z},orientation:item.orientation,walkPhase:item.walkPhase,walkSpeed:item.walkSpeed,jawOpen:item.jawOpen,caught:item.caught});
   }
   if(group.userData.species==='rainbowstag'){
     if(!group.userData.inspection)group.visible=!item.caught;
@@ -1014,7 +1133,10 @@ export function updateInsectModel(group, item, time = 0, support = null) {
       const flightAngle=.2+Math.sin(phase)*.82;
       // Small faster hinge preparation distinguishes a wary perch from rest;
       // it never changes the feet, inspection pose or an existing flight.
-      const angle=inspection?.12+Math.sin(time*1.4)*.06:restAngle*(1-flight)+flightAngle*flight+warning*(.28+.07*Math.sin(time*14));
+      // BUTTERFLY_ARRIVAL_RENDER_BEGIN
+      const wingFlight=!inspection&&Number.isFinite(item.butterflyWingBlend)?item.butterflyWingBlend:flight;
+      const angle=inspection?.12+Math.sin(time*1.4)*.06:restAngle*(1-wingFlight)+flightAngle*wingFlight+warning*(.28+.07*Math.sin(time*14));
+      // BUTTERFLY_ARRIVAL_RENDER_END
       pivot.rotation.z=side*angle;
     } else if(species==='dragonfly') {
       const restAngle=.16+Math.sin(time*2.2+(item.phase||0)+(pivot.userData.back?.5:0))*.035;
@@ -1023,6 +1145,14 @@ export function updateInsectModel(group, item, time = 0, support = null) {
       // A fixed, shallow opposite incidence on fore/hind wings avoids four
       // edge-on planes from the front. This is display geometry, not steering.
       if (!inspection) pivot.rotation.x=(pivot.userData.back?-.18:.18)*(1-flight);
+      // DRAGONFLY_LANDING_BEGIN
+      // The separate render blend changes wings only; body/feet keep old flight.
+      if (!inspection && !item.caught && Number.isFinite(item.dragonflyWingBlend)) {
+        const wingFlight = item.dragonflyWingBlend, wingWarning = item.dragonflyArriving ? 0 : warning;
+        pivot.rotation.z=side*(restAngle*(1-wingFlight)+flightAngle*wingFlight+wingWarning*.08);
+        pivot.rotation.x=(pivot.userData.back?-.18:.18)*(1-wingFlight);
+      }
+      // DRAGONFLY_LANDING_END
     } else {
       const restMotion=Math.sin(time*1.7+(item.phase||0))*.028;
       pivot.rotation.z=-side*(.32+(inspection?Math.sin(time)*.018:restMotion*(1-flight)+flight*.2*Math.sin(phase)+(species==='cicada'?warning*.08:0)));
@@ -1054,6 +1184,9 @@ export function updateInsectModel(group, item, time = 0, support = null) {
         }
       }
     }
+    // CICADA_CLEARANCE_BEGIN
+    applyCicadaClearance(group,item,support,flight);
+    // CICADA_CLEARANCE_END
   }
   if(!inspection&&species!=='cicada') visual.rotation.x=Math.sin(time*2+(item.phase||0))*.035*flight;
 }

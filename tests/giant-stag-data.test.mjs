@@ -34,7 +34,7 @@ const untouched=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY].map(
 test('sixth companion is exactly fixed night/insect-6, preserves five prior entries, and releases only explicitly',async()=>{
  const f=fixture(),raw=f.values.get(COMPANION_KEY),protectedRaw=untouched(f),journalRaw=f.values.get(JOURNAL_KEY),r=make(f);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','europestag']);
  assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);assert.equal(isCompanionSpecies('giantstag'),true);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),raw);
  const result=r.add(giant);assert.deepEqual(result,{ok:true,entry:entry(giant,1000)});assert.equal(r.entries.length,6);

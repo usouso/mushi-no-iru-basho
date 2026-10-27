@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {priorTigerModel,priorTigerMain} from './fixtures/tiger-beetle-integration-prior.mjs';
+test('053 factory/main additions alone reverse to exact052; altered extension blocks or old logic are rejected',()=>{for(const[file,fn]of [['insect-models',priorTigerModel],['main',priorTigerMain]]){const s=fs.readFileSync(new URL('../src/'+file+'.js',import.meta.url),'utf8');assert.ok(fn(s));assert.throws(()=>fn(s.replace('TIGER_BEETLE_','BROKEN_')));assert.throws(()=>fn(s+'\n// unrelated alteration\n'));}});

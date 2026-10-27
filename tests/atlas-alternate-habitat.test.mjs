@@ -1,0 +1,56 @@
+/** CPU actual meshes/rays only. No GPU visibility or human discovery claim. */
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createHash} from 'node:crypto';
+const box={console};vm.runInNewContext(fs.readFileSync(new URL('../assets/vendor/three.min.js',import.meta.url),'utf8'),box);const T=box.THREE,context=new Proxy({},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)});globalThis.window={THREE:T};globalThis.document={createElement:()=>({getContext:()=>context})};
+const {createUnderstoryWorld}=await import('../src/world-understory.js');
+const {createMetalliferHabitat}=await import('../src/metallifer-habitat.js');
+const {createAtlasHabitat}=await import('../src/atlas-habitat.js');
+const {createFiveHornHabitat}=await import('../src/five-horn-habitat.js');
+const {createEuchirusHabitat}=await import('../src/euchirus-habitat.js');
+const {createAtlasAlternateHabitat,ATLAS_ALTERNATE_BRANCH:B}=await import('../src/atlas-alternate-habitat.js');
+const {createAtlasModel,updateAtlasModel,ATLAS_DIMENSIONS:D}=await import('../src/atlas-model.js');
+const {createAtlasStudy,ATLAS_MOTION:M}=await import('../src/atlas-study.js');
+const {createCaptureVisibility}=await import('../src/capture-visibility.js');
+const {createInsects}=await import('../src/insects.js');
+const vec=p=>new T.Vector3(p.x,p.y,p.z);
+function signature(mesh){const h=createHash('sha256');h.update(JSON.stringify(mesh.matrix.elements));for(const [k,a]of Object.entries(mesh.geometry.attributes)){h.update(k);h.update(Buffer.from(a.array.buffer,a.array.byteOffset,a.array.byteLength));}if(mesh.geometry.index){const a=mesh.geometry.index.array;h.update(Buffer.from(a.buffer,a.byteOffset,a.byteLength));}for(const a of[mesh.instanceMatrix,mesh.instanceColor])if(a)h.update(Buffer.from(a.array.buffer));return h.digest('hex');}
+function fixture(){const scene=new T.Scene(),world=createUnderstoryWorld(scene),oldAddons=[createMetalliferHabitat(world,scene),createAtlasHabitat(world,scene),createFiveHornHabitat(world,scene),createEuchirusHabitat(world,scene)];scene.updateMatrixWorld(true);const old=scene.children.filter(o=>o.isMesh),before=old.map(signature),data=JSON.stringify({homes:world.insectHomes,colliders:world.colliders,addons:oldAddons.map(a=>({homes:a.homes,colliders:a.colliders}))}),addon=createAtlasAlternateHabitat(world,scene);scene.updateMatrixWorld(true);return{scene,world,oldAddons,old,before,data,addon,wood:addon.captureOccluders[0]};}
+function vertices(root){const out=[];root.traverse(o=>{if(o.isMesh){const a=o.geometry.attributes.position;for(let i=0;i<a.count;i++)out.push(new T.Vector3().fromBufferAttribute(a,i).applyMatrix4(o.matrixWorld));}});return out;}
+function trunkTriangles(mesh){const a=mesh.geometry.attributes.position,index=mesh.geometry.index,tri=[];for(let i=0;i<(index?.count??a.count);i+=3){const p=[0,1,2].map(j=>new T.Vector3().fromBufferAttribute(a,index?index.getX(i+j):i+j).applyMatrix4(mesh.matrixWorld));if(p.every(v=>v.x>-9.6&&v.x<-8.4&&v.z>4.4&&v.z<5.6))tri.push(p);}assert.ok(tri.length>4);return tri;}
+function clipY(poly,edge,above){const result=[];for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],inside=v=>above?v.y>=edge:v.y<=edge,ai=inside(a),bi=inside(b);if(ai)result.push(a);if(ai!==bi)result.push(a.clone().lerp(b,(edge-a.y)/(b.y-a.y)));}return result;}
+function eastSkin(tri,minY,maxY){let x=-Infinity;for(const p of tri)for(const v of clipY(clipY(p,minY,true),maxY,false))x=Math.max(x,v.x);assert.ok(Number.isFinite(x));return x;}
+function poses(home,scale){const s=createAtlasStudy({position:home,heading:B.heading,scale,motionSeed:23,fixedWorldBounds:true}),out=[s.state];s.disturb();for(const target of[.09,.7,1.4,2.8]){while(s.state.time<target-1e-10)s.update(Math.min(.01,target-s.state.time));out.push(s.state);}while(s.state.phase!=='walking')s.update(.05);for(let i=0;i<20;i++)s.update(.05);out.push(s.state);let guard=0;while(!(s.state.phase==='resting'&&s.state.distance>.1)&&guard++<400)s.update(.25);assert.ok(guard<400);out.push(s.state);return out;}
+function clearance(points,colliders){let result=Infinity;for(let k=1;k<points.length;k++){const a=points[k-1],b=points[k],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.025);for(let i=0;i<=n;i++)for(const c of colliders)result=Math.min(result,Math.hypot(a[0]+(b[0]-a[0])*i/n-c.x,a[1]+(b[1]-a[1])*i/n-c.z)-c.r-.28);}return result;}
+
+test('one attached visible branch preserves all existing meshes, origins and colliders; constructor fails closed and disposes only its own resources',()=>{
+ const f=fixture();assert.deepEqual(f.old.map(signature),f.before);assert.equal(JSON.stringify({homes:f.world.insectHomes,colliders:f.world.colliders,addons:f.oldAddons.map(a=>({homes:a.homes,colliders:a.colliders}))}),f.data);assert.equal(f.scene.children.filter(o=>o.isMesh).length,f.old.length+1);assert.deepEqual(f.addon.stats,{addedMeshes:1,addedTriangles:32,addedTextures:0});assert.equal(f.addon.homes.length,1);assert.equal(f.addon.atlasSupports[0].heading,Math.PI/2);assert.equal(f.addon.atlasSupports[0].home.x,-7.6);assert.equal(f.addon.atlasSupports[0].home.z,5);
+ assert.throws(()=>createAtlasAlternateHabitat(f.world,f.scene),/already exists/);assert.throws(()=>createAtlasAlternateHabitat(f.world,new T.Scene()),/Existing/);
+ let disposed=0;f.wood.geometry.addEventListener('dispose',()=>disposed++);f.addon.dispose();f.addon.dispose();assert.equal(disposed,1);assert.deepEqual(f.old.map(signature),f.before);assert.equal(f.scene.getObjectByName('atlas-west-observation-branch'),undefined);
+ const scene=new T.Scene(),world=createUnderstoryWorld(scene);assert.throws(()=>createAtlasAlternateHabitat({...world,heightAt:()=>NaN},scene),/terrain/);assert.throws(()=>createAtlasAlternateHabitat({...world,heightAt:(x,z)=>x===B.homeX?NaN:world.heightAt(x,z)},scene),/Finite/);scene.getObjectByName('understory-trunks').position.x=2;assert.throws(()=>createAtlasAlternateHabitat(world,scene),/connected/);assert.equal(scene.getObjectByName('atlas-west-observation-branch'),undefined);
+});
+
+test('actual trunk and branch skins overlap at the rear joint; eastward home adds real trunk clearance without changing the lane',t=>{
+ const f=fixture(),home=f.addon.atlasSupports[0].home,top=home.y-D.rootAboveSupport,trunk=f.scene.getObjectByName('understory-trunks'),tri=trunkTriangles(trunk),ray=new T.Raycaster();
+ const y=top-B.radius*Math.cos(Math.PI/8);ray.set(new T.Vector3(-10,y,5),new T.Vector3(1,0,0));ray.far=2;const west=ray.intersectObject(trunk)[0].point.x;ray.set(new T.Vector3(-8,y,5),new T.Vector3(-1,0,0));const east=ray.intersectObject(trunk)[0].point.x;assert.ok(west<B.startX&&B.startX<east);assert.ok(east-B.startX>.1);
+ const model=createAtlasModel(),comparisons=[];for(const x of[-7.85,-7.65,-7.60]){updateAtlasModel(model,{position:{x:x-.05-.70,y:top+D.rootAboveSupport*1.15,z:5},heading:B.heading,scale:1.15,walkPhase:-.70/(D.cycleDistance*1.15)*Math.PI*2,headLift:1});const p=vertices(model),minY=Math.min(...p.map(v=>v.y)),maxY=Math.max(...p.map(v=>v.y)),margin=Math.min(...p.map(v=>v.x))-eastSkin(tri,minY,maxY);comparisons.push({homeX:x,trunkEastMargin:margin});}
+ assert.ok(comparisons[0].trunkEastMargin>0,'old proposal has small positive clearance, not a proven collision');assert.ok(comparisons[0].trunkEastMargin<.1);assert.ok(comparisons[2].trunkEastMargin>.1);assert.ok(Math.abs(comparisons[2].trunkEastMargin-comparisons[0].trunkEastMargin-.25)<1e-8);t.diagnostic(JSON.stringify({home,top,joint:{west,east,rear:B.startX},comparisons}));model.userData.dispose();
+});
+
+test('native maximum scaled six-foot skin stays on the real flat wood for three sites, warning, retreat, end and return; body/horns clear the old trunk',t=>{
+ const f=fixture(),base=f.addon.atlasSupports[0].home,top=base.y-D.rootAboveSupport,tri=trunkTriangles(f.scene.getObjectByName('understory-trunks')),model=createAtlasModel(),ray=new T.Raycaster();let rays=0,maxSkinGap=0,maxBoneError=0,minTrunkGap=Infinity,minFloor=Infinity,minSideMargin=Infinity,states=0;
+ for(const scale of[1,1.15])for(const site of[-1,0,1]){const home={x:base.x+site*.05,y:top+D.rootAboveSupport*scale,z:base.z};for(const state of poses(home,scale)){
+  updateAtlasModel(model,state);const points=vertices(model),low=Math.min(...points.map(p=>p.y)),high=Math.max(...points.map(p=>p.y)),left=Math.min(...points.map(p=>p.x)),right=Math.max(...points.map(p=>p.x));minFloor=Math.min(minFloor,low-top);minTrunkGap=Math.min(minTrunkGap,left-eastSkin(tri,low,high));assert.ok(low>=top-1e-6);assert.ok(left>B.startX&&right<B.endX);assert.ok(left-eastSkin(tri,low,high)>.1);
+  for(const leg of model.userData.legs){maxBoneError=Math.max(maxBoneError,Math.abs(vec(leg.hip).distanceTo(vec(leg.knee))-D.upperLegLength)*scale,Math.abs(vec(leg.knee).distanceTo(vec(leg.foot))-D.lowerLegLength)*scale);const foot=vec(leg.foot).applyMatrix4(model.matrixWorld),a=leg.mesh.geometry.attributes.position;let gap=Infinity;for(let i=0;i<a.count;i++)gap=Math.min(gap,new T.Vector3().fromBufferAttribute(a,i).applyMatrix4(leg.mesh.matrixWorld).distanceTo(foot));maxSkinGap=Math.max(maxSkinGap,gap);assert.ok(gap<1e-6);if(!leg.contact)continue;
+   ray.set(foot.clone().add(new T.Vector3(0,.03,0)),new T.Vector3(0,-1,0));ray.far=.06;const hit=ray.intersectObject(f.wood)[0];assert.ok(hit,'real wood beneath stance foot');assert.ok(hit.face.normal.y>.999);assert.ok(Math.abs(hit.point.y-foot.y)<1e-6);minSideMargin=Math.min(minSideMargin,B.radius*Math.sin(Math.PI/8)-Math.abs(foot.z-B.z));rays++;
+  }assert.ok(Number.isFinite(state.walkSpeed)&&Math.abs(state.walkSpeed)<=M.retreatSpeed+1e-9);states++;
+ }}assert.ok(maxBoneError<1e-9);assert.ok(minSideMargin>.0005);t.diagnostic(JSON.stringify({states,rays,maxSkinGap,maxBoneError,minTrunkGap,minFloor,minSideMargin}));model.userData.dispose();
+});
+
+test('entry and both side approaches remain collider-safe; normal/quiet exact nets catch and the old trunk still blocks rear capture',t=>{
+ const f=fixture(),a=f.addon,home=a.atlasSupports[0].home,solids=[...f.world.captureOccluders,...f.oldAddons.flatMap(a=>a.captureOccluders),...a.captureOccluders],los=createCaptureVisibility(solids),colliders=[...f.world.colliders,...f.oldAddons.flatMap(a=>a.colliders),...a.colliders],entry=[[0,10],[-5,10],[-5,7],[-7.6,7],[-7.6,6.6]],around=[[-7.6,6.6],[-6,6.6],[-6,3.4],[-10.3,3.4],[-10.3,6.6],[-7.6,6.6]],entryGap=clearance(entry,colliders),aroundGap=clearance(around,colliders);assert.ok(entryGap>0);assert.ok(aroundGap>0);
+ const observations=[];for(const z of[6.6,3.4])for(const quiet of[false,true]){const eye={x:home.x,z,y:f.world.heightAt(home.x,z)+(quiet?1.28:1.65),quiet,speed:0},direction=vec(home).sub(vec(eye));assert.ok(colliders.every(c=>Math.hypot(eye.x-c.x,eye.z-c.z)>c.r+.28));assert.ok(los(eye,home));const sim=createInsects(f.world.heightAt,{homes:a.homes,atlasSupports:a.atlasSupports,bounds:f.world.bounds,hasLineOfSight:los});assert.equal(sim.findTarget(eye,direction)?.item.species,'atlas');assert.equal(sim.swing(eye,direction).ok,true);observations.push({z,quiet,range:direction.length()});}
+ const rear={x:-9.8,y:f.world.heightAt(-9.8,5)+1.28,z:5};assert.ok(vec(home).distanceTo(vec(rear))<2.6);assert.equal(los(rear,home),false);t.diagnostic(JSON.stringify({entryGap,aroundGap,observations}));
+});

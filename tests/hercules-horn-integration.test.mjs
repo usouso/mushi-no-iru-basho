@@ -1,0 +1,1 @@
+import test from'node:test';import fs from'node:fs';import{priorModel}from'./fixtures/hercules-horn-prior.mjs';test('only one Hercules thoraxhorn first control restores complete frozen062 model source',()=>{priorModel(fs.readFileSync(new URL('../src/insect-models.js',import.meta.url),'utf8'));});

@@ -1,5 +1,5 @@
 /** One observation-adjusted shallow swim, independent of natural body dimensions. */
-import {DIVING_DIMENSIONS as D} from './diving-kinematics.js?v=0.41.0&b=bed5219b02cd';
+import {DIVING_DIMENSIONS as D} from './diving-kinematics.js?v=0.64.0&b=3616c2fe808e';
 export const DIVING_CENTER=Object.freeze({x:23.2,z:-15.4});
 export const DIVING_WATER_Y=-.29;
 const tail=D.tailBreathingPoint;

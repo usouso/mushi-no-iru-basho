@@ -1,4 +1,4 @@
-import {sampleGoliathPose,GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.41.0&b=bed5219b02cd';
+import {sampleGoliathPose,GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.64.0&b=3616c2fe808e';
 /** Original male Goliathus goliatus display. Short Y-shaped head horn, contrasting
  * pronotum and brown closed elytra; no flight, feeding or precision pattern claim.
  * Display dimensions are NOT specimen measurements. No image-derived assets. */

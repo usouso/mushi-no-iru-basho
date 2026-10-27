@@ -1,0 +1,2 @@
+import test from 'node:test';import fs from'node:fs';import{prior}from'./fixtures/goliath-individual-integration-prior.mjs';
+test('only Goliath factory scale/start offsets and gen9 Atlas acceptance reconstruct complete frozen058 sources',()=>{for(const name of['main.js','insect-models.js','goliath-layout.js','atlas-encounter-layout.js'])prior(name,fs.readFileSync(new URL('../src/'+name,import.meta.url),'utf8'));});

@@ -1,17 +1,22 @@
-import {createRainbowStagBattleView} from './rainbow-stag-battle-view.js?v=0.41.0&b=bed5219b02cd';
-import {createManticoraBattleView} from './manticora-battle-view.js?v=0.41.0&b=bed5219b02cd';
-import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.41.0&b=bed5219b02cd';
-import {createInsectModel} from './insect-models.js?v=0.41.0&b=bed5219b02cd';
-import {createBattleRig} from './battle-pose.js?v=0.41.0&b=bed5219b02cd';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.41.0&b=bed5219b02cd';
+import {createGiraffeStagBattleView} from './giraffe-stag-battle-view.js?v=0.64.0&b=3616c2fe808e';
+import {createEuropeStagBattleView} from './europe-stag-battle-view.js?v=0.64.0&b=3616c2fe808e';
+import {createRainbowStagBattleView} from './rainbow-stag-battle-view.js?v=0.64.0&b=3616c2fe808e';
+import {createManticoraBattleView} from './manticora-battle-view.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.64.0&b=3616c2fe808e';
+import {createInsectModel} from './insect-models.js?v=0.64.0&b=3616c2fe808e';
+import {createBattleRig} from './battle-pose.js?v=0.64.0&b=3616c2fe808e';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.64.0&b=3616c2fe808e';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
-const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama']);
+const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','xylotrupes']);
 const finite=(n,f=0)=>Number.isFinite(n)?n:f,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function createBattleView({playerSpecies,opponentSpecies,playerSizePermille=null,opponentSizePermille=null,aspect=1}={}){
+ if(playerSpecies==='giraffestag'||opponentSpecies==='giraffestag')return createGiraffeStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='euchirus'||opponentSpecies==='euchirus')return createEuchirusBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
+ if(playerSpecies==='europestag'||opponentSpecies==='europestag')return createEuropeStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='rainbowstag'||opponentSpecies==='rainbowstag')return createRainbowStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='manticora'||opponentSpecies==='manticora')return createManticoraBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
+ if(playerSpecies==='xylotrupes'||opponentSpecies==='xylotrupes')return createRainbowStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect,xylotrupesPress:true});
  if(!ELIGIBLE.has(playerSpecies)||!ELIGIBLE.has(opponentSpecies))throw new TypeError('Battle view requires supported beetles');
  const scene=new T.Scene();scene.background=new T.Color('#647368');scene.add(new T.HemisphereLight('#f7f1db','#475640',1.15));const sun=new T.DirectionalLight('#ffe9c8',1.2);sun.position.set(-2,4,3);scene.add(sun);const fill=new T.DirectionalLight('#cce2e4',.5);fill.position.set(3,2,-2);scene.add(fill);
  const camera=new T.OrthographicCamera(-1,1,1,-1,.01,20);camera.position.set(0,1.25,2);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
@@ -20,9 +25,10 @@ export function createBattleView({playerSpecies,opponentSpecies,playerSizePermil
  const player=beetle(playerSpecies,'battle-player',Math.PI/2,playerSizePermille),opponent=beetle(opponentSpecies,'battle-opponent',-Math.PI/2,opponentSizePermille),entries={player,opponent};
  const scaledGiantPair=[player,opponent].some(e=>e.species==='giantstag'&&e.model.userData.individualScale>1);
  const scaledAtlasPair=[player,opponent].some(e=>e.species==='atlas'&&e.model.userData.individualScale>1);
+ const scaledGoliathPair=[player,opponent].some(e=>e.species==='goliath'&&e.model.userData.individualScale>1);
  player.baseX=-.01-player.front;opponent.baseX=.01+opponent.front;
  function place(e,x,y,z=0,pitch=0,roll=0){e.anchor.position.set(x,y,z);e.anchor.rotation.set(pitch,e.heading,roll,'YXZ');e.anchor.updateMatrixWorld(true);}
- for(const e of[player,opponent]){place(e,e.baseX,0);scratch.setFromObject(e.anchor);e.restY=-scratch.min.y;place(e,e.baseX,e.restY);e.rig=createBattleRig(e.model,e.species,{groundedKnees:scaledGiantPair&&e.species==='giantstag'||scaledAtlasPair});e.rig.resetFeet();}
+ for(const e of[player,opponent]){place(e,e.baseX,0);scratch.setFromObject(e.anchor);e.restY=-scratch.min.y;place(e,e.baseX,e.restY);e.rig=createBattleRig(e.model,e.species,{groundedKnees:scaledGiantPair&&e.species==='giantstag'||scaledAtlasPair||scaledGoliathPair||playerSpecies==='xylotrupes'||opponentSpecies==='xylotrupes'});e.rig.resetFeet();}
  scratch.setFromObject(player.anchor);fit.copy(scratch);scratch.setFromObject(opponent.anchor);fit.union(scratch);const radius=Math.max(.65,Math.abs(fit.min.x),Math.abs(fit.max.x))+.36;
  const ringRadius=radius*.78;
  const positiveEnd=ringRadius-corner.copy(opponent.bodyCenter).applyMatrix4(opponent.anchor.matrixWorld).x,negativeEnd=-ringRadius-corner.copy(player.bodyCenter).applyMatrix4(player.anchor.matrixWorld).x;

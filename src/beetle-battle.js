@@ -24,7 +24,10 @@ export const BATTLE_SPECIES=freeze({
  miyama:{label:'ミヤマクワガタ',role:'張り出した頭と大顎',help:'頭の後ろの張出しと、左右の大顎が目印。'},
  euchirus:{label:'テナガコガネ',role:'長い前脚で押し合う',help:'Euchirus longimanus の雄。長い左右の前脚が目印。押し合いはゲーム上の動作です。'},
  manticora:{label:'マンティコラ（M. latipennis・雄）',role:'大きな頭と曲がった顎',help:'Manticora latipennis の雄。大きな頭と曲がった大顎が目印。押し合いはゲーム上の動作です。'},
- rainbowstag:{label:'ニジイロクワガタ（雄）',role:'丸い背と上向く大顎',help:'Phalacrognathus muelleri の雄。丸い背と上向く左右の大顎が目印。押し合いはゲーム上の動作です。'}
+ rainbowstag:{label:'ニジイロクワガタ（雄）',role:'丸い背と上向く大顎',help:'Phalacrognathus muelleri の雄。丸い背と上向く左右の大顎が目印。押し合いはゲーム上の動作です。'},
+ europestag:{label:'ヨーロッパミヤマクワガタ（雄）',role:'鹿角状の顎で押し合う',help:'Lucanus cervus の雄。黒い頭と赤褐色の大顎が目印。押し合いの数値はゲーム上の設定です。'},
+ giraffestag:{label:'ギラファノコギリクワガタ（雄）',role:'長く伸びる大顎',help:'Prosopocoilus giraffa の雄。フローレス島の雄標本を参考にした模型です。押し合いはゲーム上の動作です。'},
+ xylotrupes:{label:'豪州サイカブト',role:'上下の角で押し合う',help:'Xylotrupes australicus の雄。上下に向き合う角が目印。押し合いはゲーム上の動作です。'}
 });
 // Integer mixing is deliberately independent of Math.random and wall time.
 // Domain-separated slots give a repeatable temperament and exchange variation.

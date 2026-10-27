@@ -1,0 +1,5 @@
+import {priorModel} from './giraffe-individual-field-prior.mjs';
+/** Exact051 anatomy inverse to frozen050; no runtime imports or git dependency. */
+import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+const hash=s=>createHash('sha256').update(s).digest('hex'),normalize=s=>s.replace(/(from\s*['"]\.\/[^'"?\n]+)(?:\?[^'"\n]*)?(['"])/g,'$1$2');
+export function inverseCicadaThorax(source){source=priorModel(source);const blocks=source.match(/^[ \t]*\/\/ CICADA_THORAX_BEGIN\n[\s\S]*?^[ \t]*\/\/ CICADA_THORAX_END\n/gm)||[];assert.equal(blocks.length,2);assert.equal(hash(blocks.join('')),'7f0045a024ee5cda84965cde22c7b9e16e02d873d004e3c29c1ac717b5991375');const call='  // CICADA_THORAX_BEGIN\n  cicadaThoraxLegs(root,dark);\n  // CICADA_THORAX_END\n  root.userData.wings=pivots;';assert.equal(source.split(call).length-1,1);source=source.replace(call,'  legs(root,dark,1.6);root.userData.wings=pivots;').replace(/^\/\/ CICADA_THORAX_BEGIN\n[\s\S]*?^\/\/ CICADA_THORAX_END\n/gm,'');assert.equal(hash(normalize(source)),'fadd89f00b6dc1d48cc535fe09ce10d2c707d1aa2ee0a6ee7a256d955689f345');return source;}

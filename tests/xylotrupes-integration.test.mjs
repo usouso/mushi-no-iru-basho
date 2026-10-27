@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import{priorModel,priorMain}from'./fixtures/xylotrupes-integration-prior.mjs';
+test('058 factory/main additions reconstruct complete frozen057 and reject changed new/old code',()=>{for(const[n,f]of[['insect-models.js',priorModel],['main.js',priorMain]]){const s=fs.readFileSync(new URL('../src/'+n,import.meta.url),'utf8');f(s);assert.throws(()=>f(s+'\n//mutation'));assert.throws(()=>f(s.replace('XYLOTRUPES_','ALTERED_')));}});

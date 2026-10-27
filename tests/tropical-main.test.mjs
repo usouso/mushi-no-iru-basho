@@ -96,7 +96,7 @@ test('four actual species records and notes survive habitat switching and fresh 
  assert.equal(g.journal.entries.length,4);const expected=g.journal.entries;
  await g.journal.flush();const {createJournal}=await import(moduleURL('journal.js'));assert.deepEqual(createJournal(localStorage).entries,expected);
  choose('tropical');assert.equal(g.simulation.caught,null);assert.deepEqual(g.journal.entries,expected);
- g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,30);g.closeJournal({lock:false});
+ g.openJournal();assert.equal(descendants(modal()).filter(n=>n.className?.split(' ').includes('fj-card')).length,34);g.closeJournal({lock:false});
  choose('meadow');assert.deepEqual(g.journal.entries,expected);
 });
 test('repeated habitat switches dispose obsolete geometry/material/world textures while retaining cached insect maps',()=>{

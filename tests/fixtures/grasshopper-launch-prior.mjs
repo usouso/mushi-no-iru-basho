@@ -1,0 +1,5 @@
+import {priorInsects as priorOrchidInsects} from './orchid-mantis-field-prior.mjs';
+/** Exact 054 one-branch inverse to frozen053; no local git dependency. */
+import assert from 'node:assert/strict';import {createHash}from 'node:crypto';
+const old="    item.heading+=Math.atan2(Math.sin(heading-item.heading),Math.cos(heading-item.heading))*(1-Math.exp(-dt*10));",added="    // GRASSHOPPER_LAUNCH_BEGIN\n    // The departure tick has u=0 and all six feet still on their support.\n    // Turn only after root travel starts; u=1 still completes the airborne approach.\n    if(u>0)item.heading+=Math.atan2(Math.sin(heading-item.heading),Math.cos(heading-item.heading))*(1-Math.exp(-dt*10));\n    // GRASSHOPPER_LAUNCH_END";
+export function priorInsects(source){let s=priorOrchidInsects(source).replace(/(from\s*['"]\.\/[^'"?\n]+)(?:\?[^'"\n]*)?(['"])/g,'$1$2');assert.equal(s.split('GRASSHOPPER_LAUNCH_BEGIN').length-1,1);assert.equal(s.split('GRASSHOPPER_LAUNCH_END').length-1,1);assert.equal(s.split(added).length-1,1);s=s.replace(added,old);assert.equal(createHash('sha256').update(s).digest('hex'),"1564a1d1c35a4f46908ca426acd8560ce7538a059dd9ddcefd670d92e8c35913");return s;}

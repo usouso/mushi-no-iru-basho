@@ -1,6 +1,18 @@
-# 22種・5区画候補の配信物回帰
+# 現行候補の限定検査 — 0.64.0
 
-Node.js 24.22.1で検証。repoのrootで:
+Node.js24、repo root:
+```sh
+node --test tests/moonmoth-*.test.mjs
+node --test tests/journal-capacity.test.mjs tests/aggregate-main.test.mjs tests/hercules-horn-integration.test.mjs tests/xylotrupes-individual-integration.test.mjs tests/anax-integration.test.mjs tests/butterfly-ambient-integration.test.mjs tests/goliath-individual-prior-chain.test.mjs tests/published-graph.test.mjs
+```
+
+現行39種／10区画／相撲16種。今回の模型・支持・捕獲一巡、保存の境界、全区画の資源解放を限定検査しています。古い固定種数・世代の全test glob一括合格は主張しません。`MOONMOTH-README.md` に今回の根拠と数値の限界を記載しています。
+
+実WebGL・実音・本物のブラウザ保存/Web Locks・パッド・自然さ・楽しさは未検証です。保存の削除・初期化は不要。テストは本番に読み込まれず、追加依存や外部ネットワークも不要です。下は旧版の制作記録で、現行の再実行は上の手順を使ってください。
+
+## 旧22種・5区画時点の記録（現行全件合格の主張ではありません）
+
+当時の一括コマンド。固定した旧仕様・種数を含むので現行版の推奨実行には使わず、上の限定手順を使ってください:
 
 ```sh
 node --test tests/*.test.mjs

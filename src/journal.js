@@ -7,7 +7,7 @@ export const JOURNAL_KEY = 'mushi-journal-v2';
 export const LEGACY_JOURNAL_KEY = 'mushi-journal-v1';
 export const JOURNAL_VERSION = 2;
 export const NOTE_LIMIT = 500;
-const speciesIds = new Set(['butterfly', 'dragonfly', 'cicada', 'morpho', 'grasshopper', 'hercules', 'leafinsect', 'waterstrider', 'leafcutterant', 'firefly', 'dungbeetle', 'divingbeetle', 'mantis', 'ladybird', 'rhino', 'stag', 'bee', 'swallowtail', 'jewel', 'longhorn', 'metallifer', 'atlas', 'giantstag', 'elephant', 'goliath', 'fivehorn', 'miyama', 'euchirus', 'manticora', 'rainbowstag']);
+const speciesIds = new Set(['butterfly', 'dragonfly', 'cicada', 'morpho', 'grasshopper', 'hercules', 'leafinsect', 'waterstrider', 'leafcutterant', 'firefly', 'dungbeetle', 'divingbeetle', 'mantis', 'ladybird', 'rhino', 'stag', 'bee', 'swallowtail', 'jewel', 'longhorn', 'metallifer', 'atlas', 'giantstag', 'elephant', 'goliath', 'fivehorn', 'miyama', 'euchirus', 'manticora', 'rainbowstag', 'europestag', 'giantwaterbug', 'wetapunga', 'giraffestag', 'tigerbeetle', 'orchidmantis', 'xylotrupes', 'anax', 'moonmoth']);
 const LOCATION_LIMIT = 120;
 // JSON can escape one UTF-16 unit as six characters (\uXXXX). Each row also
 // reserves 256 characters for field names, punctuation and four finite numeric

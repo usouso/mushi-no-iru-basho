@@ -1,11 +1,11 @@
-import {createInsectModel} from './insect-models.js?v=0.41.0&b=bed5219b02cd';
-import {createBattleRig} from './battle-pose.js?v=0.41.0&b=bed5219b02cd';
-import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.41.0&b=bed5219b02cd';
-import {sampleEuchirusPose} from './euchirus-kinematics.js?v=0.41.0&b=bed5219b02cd';
-import {createEuchirusContactPlan,sampleEuchirusContactPose,createEuchirusSelfContactPlan,sampleEuchirusSelfContactPose,solveEuchirusContactLeg,applyEuchirusContactLegs} from './euchirus-battle-contact.js?v=0.41.0&b=bed5219b02cd';
+import {createInsectModel} from './insect-models.js?v=0.64.0&b=3616c2fe808e';
+import {createBattleRig} from './battle-pose.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.64.0&b=3616c2fe808e';
+import {sampleEuchirusPose} from './euchirus-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusContactPlan,sampleEuchirusContactPose,createEuchirusSelfContactPlan,sampleEuchirusSelfContactPose,solveEuchirusContactLeg,applyEuchirusContactLegs} from './euchirus-battle-contact.js?v=0.64.0&b=3616c2fe808e';
 /** New-pair-only foreleg presentation. No winner/rule/storage/field mutations.
  * Original ten-species pairs never enter this module. No throw or body pitch. */
-const T=window.THREE,old=new Set(['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','manticora','rainbowstag']),V=p=>new T.Vector3(p.x,p.y,p.z),P=v=>({x:v.x,y:v.y,z:v.z}),clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);},ramp=(t,a,b)=>ease((t-a)/(b-a));
+const T=window.THREE,old=new Set(['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','manticora','rainbowstag','europestag','giraffestag','xylotrupes']),V=p=>new T.Vector3(p.x,p.y,p.z),P=v=>({x:v.x,y:v.y,z:v.z}),clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);},ramp=(t,a,b)=>ease((t-a)/(b-a));
 export const EUCHIRUS_BATTLE_TIMING=Object.freeze({contact:.46,pushEnd:.72,release:.98,replant:1.18,settled:1.42,ringWalkEnd:2.98,ringSettled:3.20});
 function basis(a,b){const axis=b.clone().sub(a).normalize(),u=new T.Vector3(0,1,0);if(Math.abs(axis.dot(u))>.95)u.set(1,0,0);const v=new T.Vector3().crossVectors(axis,u).normalize();u.crossVectors(v,axis).normalize();return{axis,u,v};}
 // Receiver geometry uses its own original native links. Horizontal terminal

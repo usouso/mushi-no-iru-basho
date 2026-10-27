@@ -23,7 +23,7 @@ const protectedRaw=f=>[LEGACY_COMPANION_KEY,LEGACY_JOURNAL_KEY,EXPEDITION_KEY,LE
 test('eighth companion appends without altering seven old g1/g2/fixed records; only explicit same-species replacement changes origin',async()=>{
  const f=fixture(),r=make(f),oldRaw=f.values.get(COMPANION_KEY),protectedBefore=protectedRaw(f),journalRaw=f.values.get(JOURNAL_KEY);
  assert.equal(COMPANION_KEY,'mushi-companions-v2');assert.equal(COMPANION_VERSION,2);
- assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
+ assert.deepEqual(COMPANION_SPECIES,['hercules','rhino','stag','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','euchirus','manticora','rainbowstag','europestag']);assert.deepEqual(V1_SPECIES,['hercules','rhino','stag','metallifer']);
  assert.deepEqual(r.entries,oldRoster);assert.equal(await r.flush(),true);assert.equal(f.writes.length,0);assert.equal(f.values.get(COMPANION_KEY),oldRaw);
  assert.deepEqual(r.add(goliath()),{ok:true,entry:entry(goliath(),1000)});assert.equal(await r.flush(),true);
  assert.deepEqual(r.add(goliath('insect-2')),{ok:false,reason:'already-owned'});assert.deepEqual(r.replace('forest/insect-1',goliath()),{ok:false,reason:'same-individual'});

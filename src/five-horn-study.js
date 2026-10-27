@@ -1,7 +1,7 @@
 /** Fixed-axis slope observation. Timing, speeds and retreat are game tuning,
  * not measured wild defence. Shared stepping runs in signed arc-distance. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.41.0&b=bed5219b02cd';
-import {FIVE_HORN_DIMENSIONS as D} from './five-horn-kinematics.js?v=0.41.0&b=bed5219b02cd';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.64.0&b=3616c2fe808e';
+import {FIVE_HORN_DIMENSIONS as D} from './five-horn-kinematics.js?v=0.64.0&b=3616c2fe808e';
 export const FIVE_HORN_MOTION=Object.freeze({warningSeconds:.35,retreatDistance:.24,retreatSpeed:.12,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1,maxSlopeDegrees:30});
 function point(v){return !!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===3&&['x','y','z'].every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k])&&Math.abs(v[k])<=1e4);}
 export function createFiveHornStudy({home,axis}={}){

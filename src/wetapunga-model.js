@@ -1,0 +1,41 @@
+import {sampleWetapungaPose,WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.64.0&b=3616c2fe808e';
+/** Original adult female Deinacrida heteracantha. Zoo photos informed broad
+ * silhouette only; no photograph pixels, tracing or texture. Segment/spine
+ * counts and proportions are authored approximations. No wings or jump pose. */
+const T=window.THREE,vector=p=>new T.Vector3(p.x,p.y,p.z);
+function ellipsoid(parent,name,p,s,mat){const m=new T.Mesh(new T.SphereGeometry(1,12,8),mat);m.name=name;m.position.set(...p);m.scale.set(...s);parent.add(m);return m;}
+function meshFrom(p,idx,mat,name){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));if(idx)g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();const m=new T.Mesh(g,mat);m.name=name;return m;}
+function tube(parent,name,points,radii,mat,flat=1){const p=[],idx=[],N=8;for(let i=0;i<points.length;i++){const a=new T.Vector3(...points[i]),axis=new T.Vector3(...points[Math.min(i+1,points.length-1)]).sub(new T.Vector3(...points[Math.max(0,i-1)])).normalize(),u=new T.Vector3(0,1,0),v=new T.Vector3().crossVectors(axis,u).normalize();u.crossVectors(v,axis).normalize();for(let j=0;j<N;j++){const angle=j/N*Math.PI*2;p.push(a.x+radii[i]*(u.x*Math.cos(angle)*flat+v.x*Math.sin(angle)),a.y+radii[i]*(u.y*Math.cos(angle)*flat+v.y*Math.sin(angle)),a.z+radii[i]*(u.z*Math.cos(angle)*flat+v.z*Math.sin(angle)));}}for(let k=0;k<points.length-1;k++)for(let j=0;j<N;j++){const a=k*N+j,b=k*N+(j+1)%N;idx.push(a,b,a+N,b,b+N,a+N);}for(let j=1;j<N-1;j++)idx.push(0,j+1,j);const m=meshFrom(p,idx,mat,name);parent.add(m);return m;}
+function merge(group,name,mat){const p=[],n=[],components=[];for(const m of [...group.children]){m.updateMatrix();const g=m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone();g.applyMatrix4(m.matrix);components.push({name:m.name,start:p.length/3,count:g.attributes.position.count});p.push(...g.attributes.position.array);n.push(...g.attributes.normal.array);m.geometry.dispose();g.dispose();group.remove(m);}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setAttribute('normal',new T.Float32BufferAttribute(n,3));g.computeBoundingSphere();const mesh=new T.Mesh(g,mat);mesh.name=name;mesh.userData.components=components;group.add(mesh);return mesh;}
+const N=8,SPAN=26;
+function createLeg(root,p,mat){const positions=new Float32Array((SPAN*2+(p.role==='hind'?16*3:0))*3),idx=[];for(let b=0;b<2;b++){const o=b*SPAN;for(let ring=0;ring<2;ring++)for(let j=0;j<N;j++){const k=(j+1)%N,a=o+ring*N+j,c=o+ring*N+k;idx.push(a,c,c+N,a,c+N,a+N);}for(let j=0;j<N;j++){const k=(j+1)%N;idx.push(o+24,o+k,o+j,o+25,o+16+j,o+16+k);}}
+ if(p.role==='hind')for(let j=0;j<16;j++){const o=SPAN*2+j*3;idx.push(o,o+1,o+2);}
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(positions,3));g.setIndex(idx);const mesh=new T.Mesh(g,mat);mesh.name=`wetapunga-leg-${p.id}`;root.add(mesh);return {mesh,id:p.id,role:p.role,side:p.side,boneVertexPairs:[[24,25],[50,51]],tipVertex:51};}
+function updateLeg(l,p){const a=l.mesh.geometry.attributes.position;for(let b=0;b<2;b++){
+ const start=vector(b?p.knee:p.hip),end=vector(b?p.foot:p.knee),axis=end.clone().sub(start).normalize(),u=new T.Vector3(0,1,0),v=new T.Vector3().crossVectors(axis,u).normalize();u.crossVectors(v,axis).normalize();const hind=p.role==='hind';
+ const radii=b?[.0046,.0034,0]:hind?[.007,.018,.008]:[.0045,.006,.004];
+ for(let ring=0;ring<3;ring++)for(let j=0;j<N;j++){const c=start.clone().lerp(end,ring/2),angle=j/N*Math.PI*2,r=radii[ring],q=c.addScaledVector(u,Math.cos(angle)*r).addScaledVector(v,Math.sin(angle)*r*(hind&&!b?1.18:1));a.setXYZ(b*SPAN+ring*N+j,q.x,q.y,q.z);}
+ a.setXYZ(b*SPAN+24,start.x,start.y,start.z);a.setXYZ(b*SPAN+25,end.x,end.y,end.z);
+ if(hind&&b===1)for(let j=0;j<8;j++)for(const side of [-1,1]){const f=.14+j*.085,c=start.clone().lerp(end,f),out=v.clone().multiplyScalar(side),base=c.clone().addScaledVector(out,.004*(1-f)),tip=base.clone().addScaledVector(out,.007*(1-.35*f)).addScaledVector(axis,-.004),o=SPAN*2+(j*2+(side+1)/2)*3;a.setXYZ(o,base.x,base.y,base.z);a.setXYZ(o+1,tip.x,tip.y,tip.z);a.setXYZ(o+2,base.x+axis.x*.0025,base.y+axis.y*.0025,base.z+axis.z*.0025);}
+ }
+ a.needsUpdate=true;l.mesh.geometry.computeVertexNormals();l.mesh.geometry.computeBoundingSphere();l.mesh.geometry.computeBoundingBox();Object.assign(l,{hip:{...p.hip},knee:{...p.knee},foot:{...p.foot},contact:p.contact,boneLengths:p.boneLengths});}
+export function createWetapungaModel({inspection=false}={}){
+ const root=new T.Group();root.name=`wetapunga-${inspection?'inspection':'field'}`;
+ const brown=new T.MeshStandardMaterial({color:'#906d49',roughness:.8,side:T.DoubleSide}),pale=new T.MeshStandardMaterial({color:'#ad8d60',roughness:.83,side:T.DoubleSide}),dark=new T.MeshStandardMaterial({color:'#4d382b',roughness:.8}),eye=new T.MeshStandardMaterial({color:'#1e1c18',roughness:.24}),red=new T.MeshStandardMaterial({color:'#804734',roughness:.63,side:T.DoubleSide});
+ const body=new T.Group(),plates=new T.Group(),details=new T.Group();root.add(body,plates,details);
+ ellipsoid(body,'rounded-female-abdomen',[0,0,-.045],[.058,.050,.085],brown);ellipsoid(body,'broad-pronotum',[0,.002,.052],[.047,.036,.040],brown);ellipsoid(body,'female-head',[0,-.005,.105],[.033,.032,.025],brown);
+ // Exposed tergite bands wrap the rounded abdomen; no pair of wingcase shells.
+ for(let k=0;k<7;k++){const z=.016-k*.018,half=.0075,p=[],idx=[],steps=16;for(let end=0;end<2;end++)for(let j=0;j<=steps;j++){const zz=z+(end?half:-half),r=Math.sqrt(Math.max(0,1-((zz+.045)/.085)**2)),theta=(j/steps*Math.PI*1.55-Math.PI*.275);p.push((.058*r+.0007)*Math.sin(theta),(.050*r+.0007)*Math.cos(theta),zz);}for(let j=0;j<steps;j++){const a=j,b=j+steps+1;idx.push(a,b,a+1,a+1,b,b+1);}plates.add(meshFrom(p,idx,pale,`exposed-abdominal-segment-${k}`));}
+ const pose=sampleWetapungaPose();for(const p of pose.legs)ellipsoid(body,`coxa-${p.id}`,[p.hip.x,p.hip.y,p.hip.z],[.010,.008,.012],brown);
+ const bodyMesh=merge(body,'wetapunga-body-and-connected-coxae',brown),segmentMesh=merge(plates,'wetapunga-exposed-abdominal-segments',pale);
+ const eyes=new T.Group();root.add(eyes);for(const side of[-1,1]){ellipsoid(eyes,'compound-eye',[side*.028,.008,.114],[.006,.009,.009],eye);tube(details,`short-palpus-${side}`,[[side*.018,-.016,.124],[side*.025,-.029,.139],[side*.029,-.027,.15]],[.0017,.0013,0],dark);}const eyeMesh=merge(eyes,'wetapunga-two-dark-eyes',eye);merge(details,'wetapunga-mouth-palps',dark);
+ const antennae=[];for(const side of[-1,1]){const points=[[side*.018,.014,.12],[side*.045,.050,.17],[side*.074,.070,.24],[side*.11,.068,.32],[side*.14,.05,.37]],mesh=tube(root,`wetapunga-long-antenna-${side}`,points,[.0024,.0016,.0011,.0007,0],brown);antennae.push({mesh,side,points:points.map(([x,y,z])=>({x,y,z}))});}
+ const ovipositor=tube(root,'wetapunga-female-ovipositor',[[0,-.005,-.12],[0,.005,-.145],[0,.015,-.18],[0,.025,-.22]],[.005,.004,.0028,0],red,.65),cerci=[];
+ for(const side of[-1,1])cerci.push(tube(root,`wetapunga-cercus-${side}`,[[side*.023,.004,-.111],[side*.030,.010,-.138],[side*.037,.012,-.157]],[.002,.0012,0],brown));
+ const legs=pose.legs.map(p=>createLeg(root,p,brown));for(let i=0;i<6;i++)updateLeg(legs[i],pose.legs[i]);let disposed=false;
+ root.userData={species:'wetapunga',sex:'female',inspection,dimensions:D,bodyMesh,segmentMesh,eyeMesh,legs,antennae,ovipositor,cerci,wingCount:0,approximations:['segment count','spine count and spacing','natural ratios','gait sequence'],dispose(){if(disposed)return;disposed=true;root.traverse(m=>{if(m.isMesh)m.geometry.dispose();});for(const m of[brown,pale,dark,eye,red])m.dispose();root.parent?.remove(root);}};root.updateMatrixWorld(true);return root;
+}
+export function updateWetapungaModel(root,state={}){
+ if(root.userData.inspection||state.caught||state.captured)return root;
+ const pose=sampleWetapungaPose(state);root.position.set(pose.body.position.x,pose.body.position.y,pose.body.position.z);root.quaternion.set(pose.body.orientation.x,pose.body.orientation.y,pose.body.orientation.z,pose.body.orientation.w);for(let i=0;i<6;i++)updateLeg(root.userData.legs[i],pose.legs[i]);root.updateMatrixWorld(true);return root;
+}

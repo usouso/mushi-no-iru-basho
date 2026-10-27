@@ -1,6 +1,6 @@
 /** Horizontal, supported lab motion only. Speeds, waits and retreat distance are
  * game choices, not measured C. atlas defensive behaviour. No flight/teleport. */
-import {ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.41.0&b=bed5219b02cd';
+import {ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.64.0&b=3616c2fe808e';
 export const ATLAS_MOTION=Object.freeze({normalRange:.12,retreatRange:.70,normalSpeed:.04,retreatSpeed:.36,warningSeconds:.18,settleSeconds:1.2,normalRamp:.4,retreatRamp:.45,maxStepSeconds:.25});
 const smooth=t=>t*t*(3-2*t),TAU=Math.PI*2;
 export function createAtlasStudy({position,heading=0,scale=1,motionSeed=null,fixedWorldBounds=false}={}){

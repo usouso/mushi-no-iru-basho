@@ -1,0 +1,1 @@
+import test from'node:test';import fs from'node:fs';import{priorMain}from'./fixtures/butterfly-ambient-main-prior.mjs';test('only the meadow timing sidecar wiring reconstructs full frozen059 main',()=>{priorMain(fs.readFileSync(new URL('../src/main.js',import.meta.url),'utf8'));});

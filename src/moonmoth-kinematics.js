@@ -1,0 +1,11 @@
+/** Authored male Actias aliena display; dimensions and motion are game values,
+ * not natural measurements. +Z head, +Y dorsum; caller owns world quaternion. */
+const P=(x,y,z)=>({x,y,z}),freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);};
+const R=.020,footY=-.065+R/Math.sqrt(2),roles=['front','middle','hind'];
+export const MOONMOTH_DIMENSIONS=freeze({bodyLength:.16,openWingspan:.42,totalLength:.32,rootAboveSupport:.045,supportRadius:R,supportSides:16,supportAxis:{origin:P(0,-.065,0),direction:P(0,0,1)},upperLegLength:.032,lowerLegLength:.032,restWingAngle:.95,flightWingAmplitude:.50,supportContacts:[-1,1].flatMap(side=>roles.map((role,i)=>({id:`${role}-${side}`,position:P(side*R/Math.sqrt(2),footY,[.040,.005,-.030][i])})))});
+const finite=(n,f=0)=>Number.isFinite(n)?n:f,clamp=n=>Math.max(0,Math.min(1,finite(n))),norm=p=>{const n=Math.hypot(p.x,p.y,p.z);return P(p.x/n,p.y/n,p.z/n);};
+export function sampleMoonmothPose(state={}){const D=MOONMOTH_DIMENSIONS,tuck=clamp(state.legTuck),flight=clamp(state.flightBlend),phase=finite(state.wingPhase),warning=clamp(state.warningBlend),legs=[];
+ for(const side of[-1,1])for(let i=0;i<3;i++){const hip=P(side*.012,-.008,[.025,.008,-.010][i]),rest=D.supportContacts.find(p=>p.id===`${roles[i]}-${side}`).position,target=P(side*.027,-.026,[.025,.008,-.010][i]-.010),foot=P(rest.x+(target.x-rest.x)*tuck,rest.y+(target.y-rest.y)*tuck,rest.z+(target.z-rest.z)*tuck),delta=P(foot.x-hip.x,foot.y-hip.y,foot.z-hip.z),r=Math.hypot(delta.x,delta.y,delta.z),axis=norm(delta),out=P(side,0,0),dot=out.x*axis.x,bend=norm(P(out.x-axis.x*dot,-axis.y*dot,-axis.z*dot)),along=r/2,h=Math.sqrt(D.upperLegLength**2-along**2),knee=P(hip.x+axis.x*along+bend.x*h,hip.y+axis.y*along+bend.y*h,hip.z+axis.z*along+bend.z*h);legs.push({id:`${roles[i]}-${side}`,role:roles[i],side,hip,knee,foot,contact:tuck===0});}
+ const p=state.position||{},q=state.orientation||{},x=finite(q.x),y=finite(q.y),z=finite(q.z),w=finite(q.w,1),length=Math.hypot(x,y,z,w)||1;
+ return{body:{position:P(finite(p.x),finite(p.y),finite(p.z)),orientation:{x:x/length,y:y/length,z:z/length,w:Math.hypot(x,y,z,w)?w/length:1}},legs,legTuck:tuck,flightBlend:flight,wingPhase:phase,warningBlend:warning,wingAngle:(D.restWingAngle-.10*warning)*(1-flight)+D.flightWingAmplitude*flight*Math.cos(phase)};
+}
