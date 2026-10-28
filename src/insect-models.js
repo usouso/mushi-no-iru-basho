@@ -1,52 +1,52 @@
 // MOONMOTH_MODEL_BEGIN
-import {createMoonmothModel,updateMoonmothModel} from './moonmoth-model.js?v=0.64.0&b=3616c2fe808e';
+import {createMoonmothModel,updateMoonmothModel} from './moonmoth-model.js?v=0.67.0&b=06ee2abee345';
 // MOONMOTH_MODEL_END
 // ANAX_MODEL_BEGIN
-import {createAnaxModel,updateAnaxModel} from './anax-model.js?v=0.64.0&b=3616c2fe808e';
+import {createAnaxModel,updateAnaxModel} from './anax-model.js?v=0.67.0&b=06ee2abee345';
 // ANAX_MODEL_END
 // XYLOTRUPES_MODEL_BEGIN
-import {createXylotrupesModel,updateXylotrupesModel} from './xylotrupes-model.js?v=0.64.0&b=3616c2fe808e';
+import {createXylotrupesModel,updateXylotrupesModel} from './xylotrupes-model.js?v=0.67.0&b=06ee2abee345';
 // XYLOTRUPES_MODEL_END
 // ORCHID_MANTIS_MODEL_BEGIN
-import {createOrchidMantisModel,updateOrchidMantisModel} from './orchid-mantis-model.js?v=0.64.0&b=3616c2fe808e';
+import {createOrchidMantisModel,updateOrchidMantisModel} from './orchid-mantis-model.js?v=0.67.0&b=06ee2abee345';
 // ORCHID_MANTIS_MODEL_END
 // TIGER_BEETLE_MODEL_BEGIN
-import {createTigerBeetleModel,updateTigerBeetleModel} from './tiger-beetle-model.js?v=0.64.0&b=3616c2fe808e';
+import {createTigerBeetleModel,updateTigerBeetleModel} from './tiger-beetle-model.js?v=0.67.0&b=06ee2abee345';
 // TIGER_BEETLE_MODEL_END
 // CICADA_CLEARANCE_BEGIN
-import {applyCicadaClearance} from './cicada-clearance.js?v=0.64.0&b=3616c2fe808e';
+import {applyCicadaClearance} from './cicada-clearance.js?v=0.67.0&b=06ee2abee345';
 // CICADA_CLEARANCE_END
 // GIRAFFE_STAG_MODEL_BEGIN
-import {createGiraffeStagModel,updateGiraffeStagModel} from './giraffe-stag-model.js?v=0.64.0&b=3616c2fe808e';
+import {createGiraffeStagModel,updateGiraffeStagModel} from './giraffe-stag-model.js?v=0.67.0&b=06ee2abee345';
 // GIRAFFE_STAG_MODEL_END
 // WETAPUNGA_MODEL_BEGIN
-import {createWetapungaModel,updateWetapungaModel} from './wetapunga-model.js?v=0.64.0&b=3616c2fe808e';
+import {createWetapungaModel,updateWetapungaModel} from './wetapunga-model.js?v=0.67.0&b=06ee2abee345';
 // WETAPUNGA_MODEL_END
-import {createGiantWaterbugModel,updateGiantWaterbugModel} from './giant-waterbug-model.js?v=0.64.0&b=3616c2fe808e';
-import {createEuropeStagModel,updateEuropeStagModel} from './europe-stag-model.js?v=0.64.0&b=3616c2fe808e';
-import {createRainbowStagModel,updateRainbowStagModel} from './rainbow-stag-model.js?v=0.64.0&b=3616c2fe808e';
-import {createManticoraModel,updateManticoraModel} from './manticora-model.js?v=0.64.0&b=3616c2fe808e';
-import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.64.0&b=3616c2fe808e';
-import {createMiyamaModel,updateMiyamaModel} from './miyama-model.js?v=0.64.0&b=3616c2fe808e';
-import {createFiveHornModel,updateFiveHornModel} from './five-horn-model.js?v=0.64.0&b=3616c2fe808e';
-import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.64.0&b=3616c2fe808e';
-import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.64.0&b=3616c2fe808e';
-import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.64.0&b=3616c2fe808e';
-import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.64.0&b=3616c2fe808e';
-import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.64.0&b=3616c2fe808e';
-import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.64.0&b=3616c2fe808e';
-import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.64.0&b=3616c2fe808e';
-import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.64.0&b=3616c2fe808e';
-import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.64.0&b=3616c2fe808e';
-import {createStagModel,updateStagModel} from './stag-model.js?v=0.64.0&b=3616c2fe808e';
-import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.64.0&b=3616c2fe808e';
-import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.64.0&b=3616c2fe808e';
-import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.64.0&b=3616c2fe808e';
-import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.64.0&b=3616c2fe808e';
-import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.64.0&b=3616c2fe808e';
-import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.64.0&b=3616c2fe808e';
-import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import {applyInsectReadability} from './insect-readability.js?v=0.64.0&b=3616c2fe808e';
+import {createGiantWaterbugModel,updateGiantWaterbugModel} from './giant-waterbug-model.js?v=0.67.0&b=06ee2abee345';
+import {createEuropeStagModel,updateEuropeStagModel} from './europe-stag-model.js?v=0.67.0&b=06ee2abee345';
+import {createRainbowStagModel,updateRainbowStagModel} from './rainbow-stag-model.js?v=0.67.0&b=06ee2abee345';
+import {createManticoraModel,updateManticoraModel} from './manticora-model.js?v=0.67.0&b=06ee2abee345';
+import {createEuchirusModel,updateEuchirusModel} from './euchirus-model.js?v=0.67.0&b=06ee2abee345';
+import {createMiyamaModel,updateMiyamaModel} from './miyama-model.js?v=0.67.0&b=06ee2abee345';
+import {createFiveHornModel,updateFiveHornModel} from './five-horn-model.js?v=0.67.0&b=06ee2abee345';
+import {createGoliathModel,updateGoliathModel} from './goliath-model.js?v=0.67.0&b=06ee2abee345';
+import {createElephantModel,updateElephantModel} from './elephant-model.js?v=0.67.0&b=06ee2abee345';
+import {createGiantStagModel,updateGiantStagModel} from './giant-stag-model.js?v=0.67.0&b=06ee2abee345';
+import {createAtlasModel,updateAtlasModel} from './atlas-model.js?v=0.67.0&b=06ee2abee345';
+import {createLonghornModel,updateLonghornModel} from './longhorn-model.js?v=0.67.0&b=06ee2abee345';
+import {createMetalliferModel,updateMetalliferModel} from './metallifer-model.js?v=0.67.0&b=06ee2abee345';
+import {createJewelModel,updateJewelModel} from './jewel-model.js?v=0.67.0&b=06ee2abee345';
+import {createSwallowtailModel,updateSwallowtailModel} from './swallowtail-model.js?v=0.67.0&b=06ee2abee345';
+import {createBeeModel,updateBeeModel} from './bee-model.js?v=0.67.0&b=06ee2abee345';
+import {createStagModel,updateStagModel} from './stag-model.js?v=0.67.0&b=06ee2abee345';
+import {createRhinoModel,updateRhinoModel} from './rhino-model.js?v=0.67.0&b=06ee2abee345';
+import {createRhinoFlightModel,updateRhinoFlightModel} from './rhino-flight-rig.js?v=0.67.0&b=06ee2abee345';
+import {createLadybirdModel,updateLadybirdModel} from './ladybird-model.js?v=0.67.0&b=06ee2abee345';
+import {createMantisModel,updateMantisModel} from './mantis-model.js?v=0.67.0&b=06ee2abee345';
+import {createDivingModel,updateDivingModel} from './diving-model.js?v=0.67.0&b=06ee2abee345';
+import {createDungBeetleModel,updateDungBeetleModel} from './dung-model.js?v=0.67.0&b=06ee2abee345';
+import {createStriderPose,sampleStriderPose} from './strider-kinematics.js?v=0.67.0&b=06ee2abee345';
+import {applyInsectReadability} from './insect-readability.js?v=0.67.0&b=06ee2abee345';
 /** Original procedural insect art. Rendering state only; no simulation mutates here. */
 const THREE = window.THREE;
 // Initial prototype display dimensions; inspection keeps its independent framing.

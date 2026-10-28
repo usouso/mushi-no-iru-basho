@@ -1,8 +1,8 @@
 /** Battle-only adapter over independently owned inspection geometry. Field and
  * journal models keep their ordinary rig. Feet stay world-planted while the
  * real torso/horns lean; only swing/recovery feet move to a new support point. */
-import {sampleRhinoPose} from './rhino-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import {sampleStagPose} from './stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleRhinoPose} from './rhino-kinematics.js?v=0.67.0&b=06ee2abee345';
+import {sampleStagPose} from './stag-kinematics.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE;
 const smooth=x=>{const t=Math.max(0,Math.min(1,x));return t*t*(3-2*t);};
 const vec=p=>new T.Vector3(p.x,p.y,p.z);
@@ -42,6 +42,15 @@ export function createBattleRig(model,species,{groundedKnees=false}={}){
  function setWeaponPitch(angle=0){if(['atlas','elephant','goliath','fivehorn','xylotrupes'].includes(species)){data.headPivot.rotation.x=atlasHeadBase+angle*(species==='xylotrupes'?.30:species==='fivehorn'?.35:['elephant','goliath'].includes(species)?.60:.70);syncSurfaces();return;}if(!headParts.length)return;const root=new T.Vector3(...data.bodyMesh.userData.battleHead.pivot),q=new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),angle),p=new T.Vector3();for(const part of headParts){const{mesh,start,count,original,normals}=part,a=mesh.geometry.attributes.position,n=mesh.geometry.attributes.normal;for(let i=start;i<start+count;i++){p.fromArray(original,i*3).sub(root).applyQuaternion(q).add(root);a.setXYZ(i,p.x,p.y,p.z);p.fromArray(normals,i*3).applyQuaternion(q);n.setXYZ(i,p.x,p.y,p.z);}a.needsUpdate=true;n.needsUpdate=true;mesh.geometry.computeBoundingBox();mesh.geometry.computeBoundingSphere();}}
 
  let ready=false,originX=0,originZ=0,travel=0,lastPosition=new T.Vector3(),recoveryStarts=null;
+ // Pure unbraced target at a specified pose/time. Sampling never advances the
+ // gait or deforms geometry; the technique caller supplies its canonical pose.
+ function sampleGaitFoot(l,position,age,yaw){
+  const offset=l.index%3===1?(l.side<0?0:.5):(l.side<0?.5:0),cycleDistance=.04*rig.scale,distance=position.x-originX,phase=distance/cycleDistance,raw=((phase+offset)%1+1)%1,q=Math.abs(raw-.5)<1e-10?.5:raw<1e-10||raw>1-1e-10?0:raw,contact=q<=.5,initial=offset===0?.25:-.25,footTravel=((contact?.25-q:-.25+.5*smooth((q-.5)*2))-initial)*cycleDistance;
+  const foot=l.restWorldFoot.clone();foot.x+=distance+footTravel;foot.z+=(position.z-originZ)*(Math.abs(distance)>1e-6?1+footTravel/distance:1);foot.y=contact?0:.010*rig.scale*Math.sin(Math.PI*(q-.5)*2)**2;let planted=contact;
+  if(age<.18){foot.y=0;planted=true;}
+  const prepGroup=offset===0?0:.09,prep=smooth((age-prepGroup)/.09),gather=l.points[0].clone().sub(l.points.at(-1)).multiplyScalar(.28*rig.scale*prep);gather.y=0;foot.add(gather.applyAxisAngle(new T.Vector3(0,1,0),yaw));if(age>prepGroup&&age<prepGroup+.09){foot.y+=.006*rig.scale*Math.sin(Math.PI*(age-prepGroup)/.09)**2;planted=false;}
+  return{foot,contact,planted};
+ }
  const rig={species,model,legs,jaws,torsoMeshes,weapon:{mesh:weaponMesh,index:weaponIndex},contactPatch:{mesh:contactMesh,localPoint:contactLocal.clone(),triangleIndex:hit.faceIndex},bodyLocal,groundHeight:-new T.Box3().setFromObject(model).min.y,scale:data.individualScale||1,
   syncSurfaces,setWeaponPitch,
   resetContactTargets(){weaponIndex=defaultWeaponIndex;rig.weapon.index=weaponIndex;contactMesh=defaultContactMesh;contactLocal.copy(defaultContactLocal);rig.contactPatch.mesh=contactMesh;rig.contactPatch.localPoint.copy(contactLocal);rig.contactPatch.triangleIndex=hit.faceIndex;},
@@ -60,19 +69,40 @@ export function createBattleRig(model,species,{groundedKnees=false}={}){
   contactWorld(out=new T.Vector3()){syncSurfaces();return out.copy(contactLocal).applyMatrix4(contactMesh.matrixWorld);},
   torsoBox(out=new T.Box3()){syncSurfaces();out.makeEmpty();const p=new T.Vector3();for(const m of torsoMeshes){const a=m.geometry.attributes.position,index=m.geometry.index;for(let i=0;i<(index?.count??a.count);i++)out.expandByPoint(p.fromBufferAttribute(a,index?index.getX(i):i).applyMatrix4(m.matrixWorld));}return out;},
   resetFeet(){model.updateWorldMatrix(true,true);for(const l of legs){l.worldFoot.copy(l.points.at(-1)).applyMatrix4(l.mesh.parent.matrixWorld);l.worldFoot.y=0;l.anchor.copy(l.worldFoot);l.target.copy(l.worldFoot);l.restWorldFoot=l.worldFoot.clone();l.braceFoot=null;l.wasSwing=false;l.contact=true;l.foot.copy(l.points.at(-1));l.mesh.userData.foot={x:l.foot.x,y:l.foot.y,z:l.foot.z};l.reachError=0;}lastPosition.setFromMatrixPosition(model.matrixWorld);originX=lastPosition.x;originZ=lastPosition.z;travel=0;ready=true;recoveryStarts=null;},
+  sampleSupportFeet({age=0,yaw=0}={}){if(!ready)this.resetFeet();model.updateWorldMatrix(true,true);const position=new T.Vector3().setFromMatrixPosition(model.matrixWorld);return legs.map(l=>sampleGaitFoot(l,position,age,yaw).foot.setY(0));},
   restore(){rig.resetContactTargets();setWeaponPitch(0);for(const l of legs){l.mesh.geometry.attributes.position.array.set(l.original);l.mesh.geometry.attributes.normal.array.set(l.normals);l.mesh.geometry.attributes.position.needsUpdate=true;l.mesh.geometry.attributes.normal.needsUpdate=true;l.mesh.geometry.computeBoundingSphere();l.mesh.geometry.computeBoundingBox();}for(const j of jaws)j.pivot.rotation.y=j.base;ready=false;recoveryStarts=null;},
-  updateFeet({dt=0,age=0,yaw=0,stage='settled',lift=0,attacker=false,recovery=0}={}){
+  updateFeet({dt=0,age=0,yaw=0,stage='settled',lift=0,attacker=false,recovery=0,airborne=0,supportRelease=1,supportEngage=null,supportAnchors=null}={}){
    if(!ready)this.resetFeet();model.updateWorldMatrix(true,true);const position=new T.Vector3().setFromMatrixPosition(model.matrixWorld),delta=position.clone().sub(lastPosition);delta.y=0;travel+=delta.length();lastPosition.copy(position);
    if(stage==='recover'&&!recoveryStarts)recoveryStarts=legs.map(l=>l.worldFoot.clone());else if(stage!=='recover')recoveryStarts=null;
    for(const l of legs){
     const base=l.points.at(-1).clone().multiplyScalar(rig.scale).applyAxisAngle(new T.Vector3(0,1,0),yaw).add(position);base.y=0;
-    const offset=l.index%3===1?(l.side<0?0:.5):(l.side<0?.5:0),cycleDistance=.04*rig.scale,distance=position.x-originX,phase=distance/cycleDistance,raw=((phase+offset)%1+1)%1,q=Math.abs(raw-.5)<1e-10?.5:raw<1e-10||raw>1-1e-10?0:raw,contact=q<=.5,initial=offset===0?.25:-.25,footTravel=((contact?.25-q:-.25+.5*smooth((q-.5)*2))-initial)*cycleDistance,brace=['contact','drive'].includes(stage)&&l.role==='hind';
-    l.worldFoot.copy(l.restWorldFoot);l.worldFoot.x+=distance+footTravel;l.worldFoot.z+=(position.z-originZ)*(Math.abs(distance)>1e-6?1+footTravel/distance:1);l.worldFoot.y=contact?0:.010*rig.scale*Math.sin(Math.PI*(q-.5)*2)**2;l.contact=contact;
-    if(age<.18){l.worldFoot.y=0;l.contact=true;}
-    const prepGroup=offset===0?0:.09,prep=smooth((age-prepGroup)/.09),gather=l.points[0].clone().sub(l.points.at(-1)).multiplyScalar(.28*rig.scale*prep);gather.y=0;l.worldFoot.add(gather.applyAxisAngle(new T.Vector3(0,1,0),yaw));if(age>prepGroup&&age<prepGroup+.09){l.worldFoot.y+=.006*rig.scale*Math.sin(Math.PI*(age-prepGroup)/.09)**2;l.contact=false;}
+    const gait=sampleGaitFoot(l,position,age,yaw),contact=gait.contact,engage=Number.isFinite(supportEngage)?Math.max(0,Math.min(1,supportEngage)):Number(['contact','drive'].includes(stage)),brace=engage>0&&l.role==='hind';
+    l.worldFoot.copy(gait.foot);l.contact=gait.planted;
     if(stage==='recover'){l.worldFoot.lerp(base,smooth(recovery));l.contact=contact||recovery>=1;}
-    if(brace){if(!l.braceFoot)l.braceFoot=l.worldFoot.clone();l.worldFoot.copy(l.braceFoot);l.worldFoot.y=0;l.contact=true;}else l.braceFoot=null;
+    // Optional release ramp keeps the last hind support instead of dropping
+    // it on a stage boundary. The stored brace may predate its floor clamp,
+    // so begin at its actual planted Y=0. Default one keeps immediate release.
+    const release=Number.isFinite(supportRelease)?Math.max(0,Math.min(1,supportRelease)):1;
+    // An opt-in authored anchor is sampled at a fixed timeline instant, not
+    // the first rendered frame after engagement. Copy: callers retain ownership.
+    const prescribed=l.role==='hind'?supportAnchors?.[l.index]:null;
+    if(prescribed&&(brace||release<1))l.braceFoot=prescribed.clone();
+    // Opt-in approach ramp plants the hind support before contact, avoiding
+    // an abrupt floor clamp. Omitted/default keeps the exact legacy copy path.
+    if(brace){if(!l.braceFoot)l.braceFoot=l.worldFoot.clone();if(engage===1)l.worldFoot.copy(l.braceFoot).setY(0);else l.worldFoot.lerp(l.braceFoot.clone().setY(0),engage);l.contact=engage===1||l.contact;}else if(l.braceFoot&&release<1){l.worldFoot.lerpVectors(l.braceFoot.clone().setY(0),l.worldFoot,release);l.contact=release===0||l.contact;}else l.braceFoot=null;
     if(!attacker&&lift>0&&l.role==='front'){l.worldFoot.y+=.020*rig.scale*lift;l.contact=false;}
+    // Opt-in carried receiver: depart the planted support continuously, then
+    // retain the original valid local stance rather than reaching for the floor.
+    // Callers lower this weight as the root returns to its supported height;
+    // it is not an automatic reach clamp or permission to stretch the skeleton.
+    const air=Number.isFinite(airborne)?Math.max(0,Math.min(1,airborne)):0;
+    if(air>0){
+     l.worldFoot.lerp(l.points.at(-1).clone().applyMatrix4(l.mesh.parent.matrixWorld),air);l.contact=false;
+     if(air===1){
+      const geometry=l.mesh.geometry;geometry.attributes.position.array.set(l.original);geometry.attributes.normal.array.set(l.normals);geometry.attributes.position.needsUpdate=true;geometry.attributes.normal.needsUpdate=true;geometry.computeBoundingSphere();geometry.computeBoundingBox();
+      l.foot.copy(l.points.at(-1));l.mesh.userData.foot={x:l.foot.x,y:l.foot.y,z:l.foot.z};l.mesh.userData.battleContact=false;l.reachError=0;continue;
+     }
+    }
     const parent=l.mesh.parent,inv=parent.matrixWorld.clone().invert(),foot=l.worldFoot.clone().applyMatrix4(inv),hip=l.points[0],ankle=l.toe?l.worldFoot.clone().add(new T.Vector3(-l.toe.x*rig.scale,.005*rig.scale,-l.toe.z*rig.scale).applyAxisAngle(new T.Vector3(0,1,0),yaw)).applyMatrix4(inv):foot;
     const direction=ankle.clone().sub(hip),length=direction.length(),axis=direction.clone().normalize(),reach=l.upper+l.lower;l.reachError=Math.max(0,length-reach);const a=(l.upper*l.upper-l.lower*l.lower+length*length)/(2*Math.max(1e-8,length)),h=Math.sqrt(Math.max(0,l.upper*l.upper-a*a)),oldAxis=l.points[2].clone().sub(hip).normalize(),up=l.points[1].clone().sub(hip);up.addScaledVector(oldAxis,-up.dot(oldAxis)).normalize().applyQuaternion(new T.Quaternion().setFromUnitVectors(oldAxis,axis));if(['elephant','goliath','fivehorn','miyama','xylotrupes'].includes(species)||groundedKnees){const vertical=new T.Vector3(0,1,0).transformDirection(inv);vertical.addScaledVector(axis,-vertical.dot(axis));const capacity=vertical.length();if(capacity>1e-8&&h>1e-8){vertical.divideScalar(capacity);const center=hip.clone().addScaledVector(axis,a).applyMatrix4(parent.matrixWorld),required=(.006*rig.scale-center.y)/(h*rig.scale*capacity);if(up.dot(vertical)<required){const k=Math.min(1,Math.max(-1,required)),side=up.clone().addScaledVector(vertical,-up.dot(vertical));if(side.lengthSq()<1e-12)side.crossVectors(axis,vertical);side.normalize();up.copy(vertical).multiplyScalar(k).addScaledVector(side,Math.sqrt(Math.max(0,1-k*k)));}}}const knee=hip.clone().addScaledVector(axis,a).addScaledVector(up,h),points=[hip,knee,ankle,...(l.toe?[foot]:[])],frames=points.slice(0,-1).map((p,k)=>{const axis=points[k+1].clone().sub(p).normalize(),q=new T.Quaternion().setFromUnitVectors(l.frames[k].axis,axis);return{axis,u:l.frames[k].u.clone().applyQuaternion(q),v:l.frames[k].v.clone().applyQuaternion(q)};}),attr=l.mesh.geometry.attributes.position;
     for(let i=0;i<l.bindings.length;i++){const b=l.bindings[i],f=frames[b.bone],p=points[b.bone].clone().addScaledVector(f.axis,b.t*points[b.bone].distanceTo(points[b.bone+1])).addScaledVector(f.u,b.u).addScaledVector(f.v,b.v);p.applyMatrix4(parent.matrixWorld);if(p.y<0)p.y=0;p.applyMatrix4(inv);attr.setXYZ(i,p.x,p.y,p.z);}

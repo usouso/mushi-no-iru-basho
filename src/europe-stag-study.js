@@ -3,8 +3,8 @@
  * Near/fast/quiet/failed-net and LOS selection belong to the field caller, not
  * to this support-only state machine. Durations, speeds and jaw motion are
  * game tuning, NOT measured natural behaviour. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.64.0&b=3616c2fe808e';
-import {EUROPE_STAG_DIMENSIONS as D} from './europe-stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.67.0&b=06ee2abee345';
+import {EUROPE_STAG_DIMENSIONS as D} from './europe-stag-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const EUROPE_STAG_MOTION=Object.freeze({warningSeconds:.22,retreatDistance:.18,retreatSpeed:.14,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1});
 function record(v,keys){return !!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k]));}
 export function createEuropeStagStudy({scale=1,position={x:0,y:D.rootAboveSupport*scale,z:0},orientation={x:0,y:0,z:0,w:1},retreatBounds={min:-.34,max:.34},motionSeed=1729}={}){

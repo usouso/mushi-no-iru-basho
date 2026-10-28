@@ -1,4 +1,4 @@
-import {sampleXylotrupesPose,XYLOTRUPES_DIMENSIONS as D} from './xylotrupes-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleXylotrupesPose,XYLOTRUPES_DIMENSIONS as D} from './xylotrupes-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original qualitative Xylotrupes australicus male display, not a specimen copy.
  * Short opposed horns: no flight/feeding mechanics or measured natural ratios. */
 const T=window.THREE;export {D as XYLOTRUPES_DIMENSIONS};

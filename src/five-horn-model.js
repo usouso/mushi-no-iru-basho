@@ -1,4 +1,4 @@
-import {sampleFiveHornPose,FIVE_HORN_DIMENSIONS as D} from './five-horn-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleFiveHornPose,FIVE_HORN_DIMENSIONS as D} from './five-horn-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Independently parameterised male Eupatorus gracilicornis display: one rising
  * head horn and FOUR separately rooted pronotal horns. Institutional specimen
  * reference informs general anatomy only: no traced coordinates or image assets.

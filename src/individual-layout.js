@@ -1,16 +1,16 @@
 /** Supported individual variants. Scale is a game display index, not measured
  * wild length or a strength multiplier. No new geometry or frame-random draws. */
 // XYLOTRUPES_INDIVIDUAL_BEGIN
-import {XYLOTRUPES_SITES} from './xylotrupes-layout.js?v=0.64.0&b=3616c2fe808e';
+import {XYLOTRUPES_SITES} from './xylotrupes-layout.js?v=0.67.0&b=06ee2abee345';
 // XYLOTRUPES_INDIVIDUAL_END
 // GOLIATH_INDIVIDUAL_BEGIN
-import {GOLIATH_INDIVIDUAL_OFFSETS} from './goliath-layout.js?v=0.64.0&b=3616c2fe808e';
+import {GOLIATH_INDIVIDUAL_OFFSETS} from './goliath-layout.js?v=0.67.0&b=06ee2abee345';
 // GOLIATH_INDIVIDUAL_END
 // RAINBOW_INDIVIDUAL_BEGIN
-import {RAINBOW_STAG_SITES} from './rainbow-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {RAINBOW_STAG_SITES} from './rainbow-stag-layout.js?v=0.67.0&b=06ee2abee345';
 // RAINBOW_INDIVIDUAL_END
-import {GIRAFFE_STAG_SITES} from './giraffe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
-import {EUROPE_STAG_SITES} from './europe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {GIRAFFE_STAG_SITES} from './giraffe-stag-layout.js?v=0.67.0&b=06ee2abee345';
+import {EUROPE_STAG_SITES} from './europe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 // RAINBOW_INDIVIDUAL_BEGIN
 // GOLIATH_INDIVIDUAL_BEGIN
 // XYLOTRUPES_INDIVIDUAL_BEGIN

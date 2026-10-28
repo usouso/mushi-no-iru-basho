@@ -1,6 +1,6 @@
 /** Small authored northern-New-Zealand forest display, not surveyed habitat or
  * natural-size staging. The lane uses the native model's metre-space contract. */
-import {WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const NEWZEALAND_BOUNDS=7;
 export const NEWZEALAND_SPAWN=Object.freeze({x:0,z:4.4});
 export const WETAPUNGA_BRANCH=Object.freeze({minX:-1.5,maxX:1.3,top:.94,bottom:.62,halfWidth:.26,topHalfWidth:.20});

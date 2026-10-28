@@ -1,5 +1,5 @@
 /** Read-only adapter on three actual existing terrain triangles. Owns no visual/collision resources. */
-import {TIGER_BEETLE_SITES as S,TIGER_BEETLE_ROOT_HEIGHT as H,TIGER_BEETLE_HEADING as F,TIGER_BEETLE_STOPS as C} from './tiger-beetle-layout.js?v=0.64.0&b=3616c2fe808e';
+import {TIGER_BEETLE_SITES as S,TIGER_BEETLE_ROOT_HEIGHT as H,TIGER_BEETLE_HEADING as F,TIGER_BEETLE_STOPS as C} from './tiger-beetle-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);},plain=v=>({x:v.x,y:v.y,z:v.z});
 export function createTigerBeetleHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];if(!scene?.isScene||!ground?.isMesh||scene.getObjectById(ground.id)!==ground||typeof world.heightAt!=='function')throw new TypeError('Existing meadow terrain mesh required');

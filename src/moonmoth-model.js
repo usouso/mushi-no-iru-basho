@@ -1,4 +1,4 @@
-import {sampleMoonmothPose,MOONMOTH_DIMENSIONS as D} from './moonmoth-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleMoonmothPose,MOONMOTH_DIMENSIONS as D} from './moonmoth-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original pale-green male Actias aliena model. Sex is an authored choice from
  * documented feather-antenna/long-tail traits, not sexing the viewed photograph.
  * No tracing, texture, photographic asset, natural wingbeat or exact vein claim. */

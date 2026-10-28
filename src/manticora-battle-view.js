@@ -1,6 +1,6 @@
-import {createInsectModel} from './insect-models.js?v=0.64.0&b=3616c2fe808e';
-import {createBattleRig} from './battle-pose.js?v=0.64.0&b=3616c2fe808e';
-import {solveManticoraSkinSeparation} from './manticora-battle-contact.js?v=0.64.0&b=3616c2fe808e';
+import {createInsectModel} from './insect-models.js?v=0.67.0&b=06ee2abee345';
+import {createBattleRig} from './battle-pose.js?v=0.67.0&b=06ee2abee345';
+import {solveManticoraSkinSeparation} from './manticora-battle-contact.js?v=0.67.0&b=06ee2abee345';
 /** New Manticora pairs only: upright one-point press, release, native-foot walk. */
 const T=window.THREE,V=p=>new T.Vector3(p.x,p.y,p.z),clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);},ramp=(t,a,b)=>ease((t-a)/(b-a));
 function basis(a,b){const axis=b.clone().sub(a).normalize(),u=new T.Vector3(0,1,0);if(Math.abs(axis.dot(u))>.95)u.set(1,0,0);const v=new T.Vector3().crossVectors(axis,u).normalize();u.crossVectors(v,axis).normalize();return{axis,u,v};}

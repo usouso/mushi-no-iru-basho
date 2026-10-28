@@ -1,4 +1,4 @@
-import {sampleEuropeStagPose,EUROPE_STAG_DIMENSIONS as D} from './europe-stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleEuropeStagPose,EUROPE_STAG_DIMENSIONS as D} from './europe-stag-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original qualitative male Lucanus cervus display. Primary institutional text
  * informs black head/thorax, chestnut wingcases and antler-like mandibles.
  * No reference photograph was obtained or traced; these are authored game

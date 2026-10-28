@@ -1,7 +1,7 @@
-import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.64.0&b=3616c2fe808e';
-import {createInsectModel} from './insect-models.js?v=0.64.0&b=3616c2fe808e';
-import {createBattleRig} from './battle-pose.js?v=0.64.0&b=3616c2fe808e';
-import {solveManticoraSkinSeparation} from './manticora-battle-contact.js?v=0.64.0&b=3616c2fe808e';
+import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.67.0&b=06ee2abee345';
+import {createInsectModel} from './insect-models.js?v=0.67.0&b=06ee2abee345';
+import {createBattleRig} from './battle-pose.js?v=0.67.0&b=06ee2abee345';
+import {solveManticoraSkinSeparation} from './manticora-battle-contact.js?v=0.67.0&b=06ee2abee345';
 /** Giraffe-only presentation: real long-jaw set/press, release and native six-foot walk.
  * Independent owned geometry. Existing fourteen-species views are untouched. */
 const T=window.THREE,V=p=>new T.Vector3(p.x,p.y,p.z),clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);},ramp=(t,a,b)=>ease((t-a)/(b-a));

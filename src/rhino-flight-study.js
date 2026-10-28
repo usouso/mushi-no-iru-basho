@@ -1,6 +1,6 @@
 /** Field-only, bounded departure prototype. Durations/trajectory are game tuning,
  * not measured escape responses. Uses the existing supported walk unchanged. */
-import {createRhinoStudy} from './rhino-study.js?v=0.64.0&b=3616c2fe808e';
+import {createRhinoStudy} from './rhino-study.js?v=0.67.0&b=06ee2abee345';
 const TAU=2*Math.PI,clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),ease=x=>{const t=clamp(x,0,1);return t*t*(3-2*t);};
 export const RHINO_FLIGHT_TIMING=Object.freeze({prepare:.65,flight:5.7,landing:.65,cooldown:8});
 // Local +X is the existing branch's forward direction, +Z the selected clear side.

@@ -1,6 +1,6 @@
 /** One real low branch attached to an existing tree. This is an exhibit
  * placement, not a claim about natural Atlas perch heights or behaviour. */
-import {ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {ATLAS_DIMENSIONS as D} from './atlas-kinematics.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE;
 export const ATLAS_ALTERNATE_BRANCH=Object.freeze({treeX:-9,z:5,startX:-9.10,endX:-6.85,radius:.32,surfaceAboveGround:1.12,homeX:-7.60,heading:Math.PI/2});
 export function createAtlasAlternateHabitat(world,scene){

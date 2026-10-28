@@ -1,5 +1,5 @@
 /** Adapter on the world's one real branch; owns no geometry or material. */
-import {GIRAFFE_STAG_BRANCH as B,GIRAFFE_STAG_SUPPORT as S} from './giraffe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {GIRAFFE_STAG_BRANCH as B,GIRAFFE_STAG_SUPPORT as S} from './giraffe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);};
 export function createGiraffeStagHabitat(world,scene){
  const branch=world?.giraffeStagBranch;

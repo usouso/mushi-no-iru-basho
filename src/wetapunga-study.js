@@ -3,7 +3,7 @@
  * Field caller owns quiet/fast/miss, distance and real leaf/branch LOS filtering.
  * Native signed-distance gait owns foot/bone geometry; terrain owns clearance.
  */
-import {WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const WETAPUNGA_MOTION=Object.freeze({normalSpeed:.05,retreatSpeed:.12,normalDistance:.06,retreatDistance:.12,rampSeconds:.25,finishMaxSeconds:.5,releaseRampSeconds:.35,maxStepSeconds:.1});
 const TAU=2*Math.PI,M=WETAPUNGA_MOTION,C=D.cycleDistance,H=C/2;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=u=>u*u*(3-2*u),integral=u=>u*u*u-.5*u*u*u*u;

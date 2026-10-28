@@ -1,6 +1,6 @@
 /** Unregistered ladybird pose study. Durations, stride and flight path are game
  * tuning, not biological measurements. No prey, physics, audio or renderer. */
-import {LADYBIRD_DIMENSIONS as D} from './ladybird-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {LADYBIRD_DIMENSIONS as D} from './ladybird-kinematics.js?v=0.67.0&b=06ee2abee345';
 const TAU=2*Math.PI,walkLength=.036,walkSpeed=.018,rampTime=.5;
 const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>x*x*(3-2*x),angle=(a,b)=>Math.atan2(Math.sin(b-a),Math.cos(b-a));
 export function createLadybirdStudy(supports){

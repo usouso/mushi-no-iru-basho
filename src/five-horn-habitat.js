@@ -1,7 +1,7 @@
 /** One sloping facet attached to the existing living tree. No new foliage,
  * bait or feeding claim, and no edits to the older world/observation branches. */
-import {FIVE_HORN_BRANCH as B,FIVE_HORN_TREE as TREE} from './five-horn-layout.js?v=0.64.0&b=3616c2fe808e';
-import {FIVE_HORN_DIMENSIONS as D} from './five-horn-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {FIVE_HORN_BRANCH as B,FIVE_HORN_TREE as TREE} from './five-horn-layout.js?v=0.67.0&b=06ee2abee345';
+import {FIVE_HORN_DIMENSIONS as D} from './five-horn-kinematics.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE;
 export function createFiveHornHabitat(world,scene){
  const ground=scene?.getObjectByName('understory-ground'),treeWood=scene?.getObjectByName('understory-trunks');

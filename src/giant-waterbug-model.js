@@ -1,4 +1,4 @@
-import {sampleGiantWaterbugPose,GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleGiantWaterbugPose,GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original procedural adult water bug. No source image/texture/trace.
  * Internal hindwings, exact antennal segmentation and sex-specific anatomy are
  * deliberately unmodelled. Static inspection never overwrites caller transform.

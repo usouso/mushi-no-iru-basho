@@ -1,7 +1,7 @@
 /** Fixed-heading adult-female leaf study. Walking speeds, warning pulse and
  * reaction distances are game tuning, not measured Hymenopus escape behaviour. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.64.0&b=3616c2fe808e';
-import {ORCHID_MANTIS_DIMENSIONS as D} from './orchid-mantis-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.67.0&b=06ee2abee345';
+import {ORCHID_MANTIS_DIMENSIONS as D} from './orchid-mantis-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const ORCHID_MANTIS_MOTION=Object.freeze({warningSeconds:.25,retreatDistance:.06,retreatSpeed:.05,normalSpeed:.02,maxStepSeconds:.1});
 const TAU=2*Math.PI;
 const record=(v,keys)=>v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k]));
