@@ -1,7 +1,7 @@
 /** Add one rooted stalk to the existing meadow pond. Never replace the water
  * material, old world geometry, supports, routes, stores or collision arrays. */
-import {GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import {GIANT_WATERBUG_CENTER as CENTER,GIANT_WATERBUG_WATER_Y as WATER_Y,GIANT_WATERBUG_HOME as HOME,GIANT_WATERBUG_REST_PITCH as PITCH,GIANT_WATERBUG_ENVELOPE as E,GIANT_WATERBUG_RETREAT as RETREAT} from './giant-waterbug-layout.js?v=0.64.0&b=3616c2fe808e';
+import {GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.67.0&b=06ee2abee345';
+import {GIANT_WATERBUG_CENTER as CENTER,GIANT_WATERBUG_WATER_Y as WATER_Y,GIANT_WATERBUG_HOME as HOME,GIANT_WATERBUG_REST_PITCH as PITCH,GIANT_WATERBUG_ENVELOPE as E,GIANT_WATERBUG_RETREAT as RETREAT} from './giant-waterbug-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,V=p=>new T.Vector3(p.x,p.y,p.z),xyz=p=>Object.freeze({x:p.x,y:p.y,z:p.z});
 export function createGiantWaterbugHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];

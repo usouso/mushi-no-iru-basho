@@ -1,5 +1,5 @@
 /** Additive real blade and connected stem only; never edits old understory geometry or RNG. */
-import {ORCHID_MANTIS_LEAF as L,ORCHID_MANTIS_STEM as S,ORCHID_MANTIS_SUPPORT as C} from './orchid-mantis-layout.js?v=0.64.0&b=3616c2fe808e';
+import {ORCHID_MANTIS_LEAF as L,ORCHID_MANTIS_STEM as S,ORCHID_MANTIS_SUPPORT as C} from './orchid-mantis-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);};
 export function createOrchidMantisHabitat(world,scene){
  const ground=scene?.getObjectByName('understory-ground');if(!scene?.isScene||!ground?.isMesh||!world?.captureOccluders?.includes(ground)||typeof world.heightAt!=='function')throw new TypeError('Existing understory terrain required');if(scene.getObjectByName('orchid-mantis-observation-leaf'))throw new Error('Orchid-mantis habitat already exists');ground.updateWorldMatrix(true,false);const ray=new T.Raycaster(),down=new T.Vector3(0,-1,0);

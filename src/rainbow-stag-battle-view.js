@@ -1,6 +1,6 @@
-import {createInsectModel} from './insect-models.js?v=0.64.0&b=3616c2fe808e';
-import {createBattleRig} from './battle-pose.js?v=0.64.0&b=3616c2fe808e';
-import {solveManticoraSkinSeparation} from './manticora-battle-contact.js?v=0.64.0&b=3616c2fe808e';
+import {createInsectModel} from './insect-models.js?v=0.67.0&b=06ee2abee345';
+import {createBattleRig} from './battle-pose.js?v=0.67.0&b=06ee2abee345';
+import {solveManticoraSkinSeparation} from './manticora-battle-contact.js?v=0.67.0&b=06ee2abee345';
 /** Rainbow-stag pairs and explicit Xylotrupes opt-in: upright one-point
  * skin press, release, native-foot walk. Non-Xylotrupes/default paths are unchanged. */
 const T=window.THREE,V=p=>new T.Vector3(p.x,p.y,p.z),clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);},ramp=(t,a,b)=>ease((t-a)/(b-a));

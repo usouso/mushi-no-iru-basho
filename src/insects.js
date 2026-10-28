@@ -1,83 +1,83 @@
 // MOONMOTH_FIELD_BEGIN
-import {createMoonmothStudy} from './moonmoth-study.js?v=0.64.0&b=3616c2fe808e';
-import {MOONMOTH_PERCH,MOONMOTH_FLIGHT} from './moonmoth-layout.js?v=0.64.0&b=3616c2fe808e';
+import {createMoonmothStudy} from './moonmoth-study.js?v=0.67.0&b=06ee2abee345';
+import {MOONMOTH_PERCH,MOONMOTH_FLIGHT} from './moonmoth-layout.js?v=0.67.0&b=06ee2abee345';
 // MOONMOTH_FIELD_END
 // ANAX_FIELD_BEGIN
-import {createAnaxStudy} from './anax-study.js?v=0.64.0&b=3616c2fe808e';
-import {ANAX_PERCH,ANAX_PATROL} from './anax-layout.js?v=0.64.0&b=3616c2fe808e';
+import {createAnaxStudy} from './anax-study.js?v=0.67.0&b=06ee2abee345';
+import {ANAX_PERCH,ANAX_PATROL} from './anax-layout.js?v=0.67.0&b=06ee2abee345';
 // ANAX_FIELD_END
 // XYLOTRUPES_FIELD_BEGIN
-import {createXylotrupesStudy} from './xylotrupes-study.js?v=0.64.0&b=3616c2fe808e';
+import {createXylotrupesStudy} from './xylotrupes-study.js?v=0.67.0&b=06ee2abee345';
 // XYLOTRUPES_INDIVIDUAL_BEGIN
-import {XYLOTRUPES_SUPPORT,XYLOTRUPES_SITES} from './xylotrupes-layout.js?v=0.64.0&b=3616c2fe808e';
+import {XYLOTRUPES_SUPPORT,XYLOTRUPES_SITES} from './xylotrupes-layout.js?v=0.67.0&b=06ee2abee345';
 // XYLOTRUPES_INDIVIDUAL_END
 // XYLOTRUPES_FIELD_END
 // ORCHID_MANTIS_BEGIN
-import {createOrchidMantisStudy} from './orchid-mantis-study.js?v=0.64.0&b=3616c2fe808e';
-import {ORCHID_MANTIS_SUPPORT} from './orchid-mantis-layout.js?v=0.64.0&b=3616c2fe808e';
+import {createOrchidMantisStudy} from './orchid-mantis-study.js?v=0.67.0&b=06ee2abee345';
+import {ORCHID_MANTIS_SUPPORT} from './orchid-mantis-layout.js?v=0.67.0&b=06ee2abee345';
 // ORCHID_MANTIS_END
 // TIGER_BEETLE_BEGIN
-import {createTigerBeetleStudy} from './tiger-beetle-study.js?v=0.64.0&b=3616c2fe808e';
-import {TIGER_BEETLE_STOPS} from './tiger-beetle-layout.js?v=0.64.0&b=3616c2fe808e';
+import {createTigerBeetleStudy} from './tiger-beetle-study.js?v=0.67.0&b=06ee2abee345';
+import {TIGER_BEETLE_STOPS} from './tiger-beetle-layout.js?v=0.67.0&b=06ee2abee345';
 // TIGER_BEETLE_END
 // GIRAFFE_INDIVIDUAL_BEGIN
-import {GIRAFFE_STAG_BRANCH,GIRAFFE_STAG_SUPPORT,GIRAFFE_STAG_SITES} from './giraffe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {GIRAFFE_STAG_BRANCH,GIRAFFE_STAG_SUPPORT,GIRAFFE_STAG_SITES} from './giraffe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 // GIRAFFE_INDIVIDUAL_END
 // GIRAFFE_STAG_BEGIN
-import {createGiraffeStagStudy} from './giraffe-stag-study.js?v=0.64.0&b=3616c2fe808e';
+import {createGiraffeStagStudy} from './giraffe-stag-study.js?v=0.67.0&b=06ee2abee345';
 // GIRAFFE_STAG_END
 // EUROPE_INDIVIDUAL_BEGIN
-import {EUROPE_STAG_LANE,EUROPE_STAG_SITES} from './europe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {EUROPE_STAG_LANE,EUROPE_STAG_SITES} from './europe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 // EUROPE_INDIVIDUAL_END
-import {createEuropeStagStudy} from './europe-stag-study.js?v=0.64.0&b=3616c2fe808e';
+import {createEuropeStagStudy} from './europe-stag-study.js?v=0.67.0&b=06ee2abee345';
 // RAINBOW_INDIVIDUAL_BEGIN
-import {RAINBOW_LANE,RAINBOW_STAG_SITES} from './rainbow-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {RAINBOW_LANE,RAINBOW_STAG_SITES} from './rainbow-stag-layout.js?v=0.67.0&b=06ee2abee345';
 // RAINBOW_INDIVIDUAL_END
-import {createRainbowStagStudy} from './rainbow-stag-study.js?v=0.64.0&b=3616c2fe808e';
-import {createManticoraStudy} from './manticora-study.js?v=0.64.0&b=3616c2fe808e';
-import {createEuchirusStudy} from './euchirus-study.js?v=0.64.0&b=3616c2fe808e';
-import {createMiyamaStudy} from './miyama-study.js?v=0.64.0&b=3616c2fe808e';
-import {createFiveHornStudy} from './five-horn-study.js?v=0.64.0&b=3616c2fe808e';
-import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createRainbowStagStudy} from './rainbow-stag-study.js?v=0.67.0&b=06ee2abee345';
+import {createManticoraStudy} from './manticora-study.js?v=0.67.0&b=06ee2abee345';
+import {createEuchirusStudy} from './euchirus-study.js?v=0.67.0&b=06ee2abee345';
+import {createMiyamaStudy} from './miyama-study.js?v=0.67.0&b=06ee2abee345';
+import {createFiveHornStudy} from './five-horn-study.js?v=0.67.0&b=06ee2abee345';
+import {FIVE_HORN_DIMENSIONS as FIVE_HORN} from './five-horn-kinematics.js?v=0.67.0&b=06ee2abee345';
 // GOLIATH_INDIVIDUAL_BEGIN
-import {GOLIATH_INDIVIDUAL_OFFSETS,GOLIATH_SITES,FOREST_TREES,GOLIATH_RETREAT_BOUNDS} from './goliath-layout.js?v=0.64.0&b=3616c2fe808e';
+import {GOLIATH_INDIVIDUAL_OFFSETS,GOLIATH_SITES,FOREST_TREES,GOLIATH_RETREAT_BOUNDS} from './goliath-layout.js?v=0.67.0&b=06ee2abee345';
 // GOLIATH_INDIVIDUAL_END
-import {createGoliathStudy} from './goliath-study.js?v=0.64.0&b=3616c2fe808e';
-import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import {createElephantStudy} from './elephant-study.js?v=0.64.0&b=3616c2fe808e';
-import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import {createGiantStagStudy} from './giant-stag-study.js?v=0.64.0&b=3616c2fe808e';
-import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.64.0&b=3616c2fe808e';
-import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import { individualScale } from './individual-layout.js?v=0.64.0&b=3616c2fe808e';
+import {createGoliathStudy} from './goliath-study.js?v=0.67.0&b=06ee2abee345';
+import {GOLIATH_DIMENSIONS as GOLIATH} from './goliath-kinematics.js?v=0.67.0&b=06ee2abee345';
+import {createElephantStudy} from './elephant-study.js?v=0.67.0&b=06ee2abee345';
+import {ELEPHANT_DIMENSIONS as ELEPHANT} from './elephant-kinematics.js?v=0.67.0&b=06ee2abee345';
+import {createGiantStagStudy} from './giant-stag-study.js?v=0.67.0&b=06ee2abee345';
+import {GIANT_STAG_DIMENSIONS as GIANT_STAG} from './giant-stag-kinematics.js?v=0.67.0&b=06ee2abee345';
+import {createAtlasStudy,ATLAS_MOTION} from './atlas-study.js?v=0.67.0&b=06ee2abee345';
+import {ATLAS_DIMENSIONS as ATLAS} from './atlas-kinematics.js?v=0.67.0&b=06ee2abee345';
+import { individualScale } from './individual-layout.js?v=0.67.0&b=06ee2abee345';
 /** Pure, deterministic insect simulation. All coordinates are metres; y is absolute. */
-import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.64.0&b=3616c2fe808e';
-import { createLonghornStudy } from './longhorn-study.js?v=0.64.0&b=3616c2fe808e';
-import { createJewelStudy } from './jewel-study.js?v=0.64.0&b=3616c2fe808e';
-import { createSwallowtailStudy } from './swallowtail-study.js?v=0.64.0&b=3616c2fe808e';
-import { createBeeStudy } from './bee-study.js?v=0.64.0&b=3616c2fe808e';
-import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.64.0&b=3616c2fe808e';
-import { createStagStudy } from './stag-study.js?v=0.64.0&b=3616c2fe808e';
-import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import { createRhinoStudy } from './rhino-study.js?v=0.64.0&b=3616c2fe808e';
-import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.64.0&b=3616c2fe808e';
-import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import { createLadybirdStudy } from './ladybird-study.js?v=0.64.0&b=3616c2fe808e';
-import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import { createMantisStudy } from './mantis-study.js?v=0.64.0&b=3616c2fe808e';
-import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.64.0&b=3616c2fe808e';
-import { createDivingStudy } from './diving-study.js?v=0.64.0&b=3616c2fe808e';
-import { createDungContactStudy } from './dung-contact-study.js?v=0.64.0&b=3616c2fe808e';
-import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import { CAPTURE_AWARENESS, NET_STARTLE, clearAwareness, advanceAwareness } from './capture-awareness.js?v=0.67.0&b=06ee2abee345';
+import { createLonghornStudy } from './longhorn-study.js?v=0.67.0&b=06ee2abee345';
+import { createJewelStudy } from './jewel-study.js?v=0.67.0&b=06ee2abee345';
+import { createSwallowtailStudy } from './swallowtail-study.js?v=0.67.0&b=06ee2abee345';
+import { createBeeStudy } from './bee-study.js?v=0.67.0&b=06ee2abee345';
+import { BEE_DIMENSIONS as BEE } from './bee-kinematics.js?v=0.67.0&b=06ee2abee345';
+import { createMetalliferStudy, METALLIFER_MOTION as METALLIFER } from './metallifer-study.js?v=0.67.0&b=06ee2abee345';
+import { createStagStudy } from './stag-study.js?v=0.67.0&b=06ee2abee345';
+import { STAG_DIMENSIONS as STAG } from './stag-kinematics.js?v=0.67.0&b=06ee2abee345';
+import { createRhinoStudy } from './rhino-study.js?v=0.67.0&b=06ee2abee345';
+import {createRhinoFlightStudy} from './rhino-flight-study.js?v=0.67.0&b=06ee2abee345';
+import { RHINO_DIMENSIONS as RHINO } from './rhino-kinematics.js?v=0.67.0&b=06ee2abee345';
+import { createLadybirdStudy } from './ladybird-study.js?v=0.67.0&b=06ee2abee345';
+import { LADYBIRD_DIMENSIONS as LADYBIRD } from './ladybird-kinematics.js?v=0.67.0&b=06ee2abee345';
+import { createMantisStudy } from './mantis-study.js?v=0.67.0&b=06ee2abee345';
+import { MANTIS_DIMENSIONS as MANTIS } from './mantis-kinematics.js?v=0.67.0&b=06ee2abee345';
+import { createDivingStudy } from './diving-study.js?v=0.67.0&b=06ee2abee345';
+import { createDungContactStudy } from './dung-contact-study.js?v=0.67.0&b=06ee2abee345';
+import { DUNG_DIMENSIONS as DUNG } from './dung-kinematics.js?v=0.67.0&b=06ee2abee345';
 // GIANT_WATERBUG_BEGIN
-import {createGiantWaterbugStudy} from './giant-waterbug-study.js?v=0.64.0&b=3616c2fe808e';
-import {GIANT_WATERBUG_HOME as WATERBUG_HOME,GIANT_WATERBUG_ENVELOPE as WATERBUG_ENVELOPE,GIANT_WATERBUG_RETREAT as WATERBUG_RETREAT,GIANT_WATERBUG_REST_PITCH as WATERBUG_PITCH,GIANT_WATERBUG_WATER_Y as WATERBUG_WATER_Y} from './giant-waterbug-layout.js?v=0.64.0&b=3616c2fe808e';
+import {createGiantWaterbugStudy} from './giant-waterbug-study.js?v=0.67.0&b=06ee2abee345';
+import {GIANT_WATERBUG_HOME as WATERBUG_HOME,GIANT_WATERBUG_ENVELOPE as WATERBUG_ENVELOPE,GIANT_WATERBUG_RETREAT as WATERBUG_RETREAT,GIANT_WATERBUG_REST_PITCH as WATERBUG_PITCH,GIANT_WATERBUG_WATER_Y as WATERBUG_WATER_Y} from './giant-waterbug-layout.js?v=0.67.0&b=06ee2abee345';
 // GIANT_WATERBUG_END
 // WETAPUNGA_BEGIN
-import {createWetapungaStudy} from './wetapunga-study.js?v=0.64.0&b=3616c2fe808e';
-import {WETAPUNGA_DIMENSIONS as WETAPUNGA} from './wetapunga-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createWetapungaStudy} from './wetapunga-study.js?v=0.67.0&b=06ee2abee345';
+import {WETAPUNGA_DIMENSIONS as WETAPUNGA} from './wetapunga-kinematics.js?v=0.67.0&b=06ee2abee345';
 // WETAPUNGA_END
 // TIGER_BEETLE_BEGIN
 // Sophiodela japonica is appended without changing existing species metadata.

@@ -1,4 +1,4 @@
-import {ORCHID_MANTIS_DIMENSIONS as D,sampleOrchidMantisPose} from './orchid-mantis-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {ORCHID_MANTIS_DIMENSIONS as D,sampleOrchidMantisPose} from './orchid-mantis-kinematics.js?v=0.67.0&b=06ee2abee345';
 export {D as ORCHID_MANTIS_DIMENSIONS};
 /** Original adult female H. coronatus proposal. Closed four-wing anatomy only.
  * No image assets, nymph curled abdomen, flight, feeding, or species-specific defensive claims. */

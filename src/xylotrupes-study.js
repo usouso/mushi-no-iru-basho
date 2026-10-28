@@ -1,7 +1,7 @@
 /** Fixed short observation-branch response. Seconds/speeds/head motion are
  * game tuning, not measured natural activity, feeding or fighting behaviour. */
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.64.0&b=3616c2fe808e';
-import {XYLOTRUPES_DIMENSIONS as D} from './xylotrupes-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.67.0&b=06ee2abee345';
+import {XYLOTRUPES_DIMENSIONS as D} from './xylotrupes-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const XYLOTRUPES_MOTION=Object.freeze({warningSeconds:.25,retreatDistance:.06,retreatSpeed:.08,normalSpeed:.02,maxStepSeconds:.1});
 const TAU=2*Math.PI,record=(v,keys)=>v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k]));
 export function createXylotrupesStudy(options={}){

@@ -1,4 +1,4 @@
-import {sampleWetapungaPose,WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleWetapungaPose,WETAPUNGA_DIMENSIONS as D} from './wetapunga-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original adult female Deinacrida heteracantha. Zoo photos informed broad
  * silhouette only; no photograph pixels, tracing or texture. Segment/spine
  * counts and proportions are authored approximations. No wings or jump pose. */

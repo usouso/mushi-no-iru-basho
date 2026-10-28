@@ -1,5 +1,5 @@
 /** One finite lane on the world's actual log skin. No added meshes or ecology. */
-import {RAINBOW_LANE as L} from './rainbow-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {RAINBOW_LANE as L} from './rainbow-stag-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,xyz=v=>({x:v.x,y:v.y,z:v.z});
 export function createRainbowStagHabitat(world,scene){
  const log=world?.rainbowLog;

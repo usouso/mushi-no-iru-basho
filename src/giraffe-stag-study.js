@@ -1,8 +1,8 @@
 // GIRAFFE_INDIVIDUAL_BEGIN
 /** Authored branch display, not field biology. Optional scale/seed preserve the same gait; no flight/feeding options. Field caller owns canonical world-lane validation. */
 // GIRAFFE_INDIVIDUAL_END
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.64.0&b=3616c2fe808e';
-import {GIRAFFE_STAG_DIMENSIONS as D} from './giraffe-stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.67.0&b=06ee2abee345';
+import {GIRAFFE_STAG_DIMENSIONS as D} from './giraffe-stag-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const GIRAFFE_STAG_MOTION=Object.freeze({warningSeconds:.22,retreatDistance:.12,retreatSpeed:.14,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1});
 function record(v,keys){return !!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.prototype.hasOwnProperty.call(v,k)&&'value'in Object.getOwnPropertyDescriptor(v,k)&&Number.isFinite(v[k]));}
 export function createGiraffeStagStudy(options={}){

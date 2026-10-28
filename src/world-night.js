@@ -1,4 +1,4 @@
-import {NIGHT_BOUNDS,NIGHT_SPAWN,NIGHT_HOMES,NIGHT_SECOND_LEAF,NIGHT_ROUTE,NIGHT_LEAF_NORMAL,NIGHT_LEAF_FORWARD} from './night-layout.js?v=0.64.0&b=3616c2fe808e';
+import {NIGHT_BOUNDS,NIGHT_SPAWN,NIGHT_HOMES,NIGHT_SECOND_LEAF,NIGHT_ROUTE,NIGHT_LEAF_NORMAL,NIGHT_LEAF_FORWARD} from './night-layout.js?v=0.67.0&b=06ee2abee345';
 const THREE=window.THREE,EXTENT=30,STEP=1,TAU=Math.PI*2;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function smooth(a,b,x){const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);}

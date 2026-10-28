@@ -1,6 +1,6 @@
 /** Independent small forest corner: original procedural branch and dead-frond
  * forms, fixed readable evening light, no coast, clock, texture or shared world mutation. */
-import {NEWZEALAND_BOUNDS,NEWZEALAND_SPAWN,NEWZEALAND_TREES,WETAPUNGA_BRANCH as B,WETAPUNGA_SUPPORT as SUPPORT,WETAPUNGA_ROUTE} from './wetapunga-layout.js?v=0.64.0&b=3616c2fe808e';
+import {NEWZEALAND_BOUNDS,NEWZEALAND_SPAWN,NEWZEALAND_TREES,WETAPUNGA_BRANCH as B,WETAPUNGA_SUPPORT as SUPPORT,WETAPUNGA_ROUTE} from './wetapunga-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE;
 export const heightAt=()=>0;
 function branchGeometry(){const ring=[[-B.topHalfWidth,B.bottom],[-B.halfWidth,.69],[-B.halfWidth,.83],[-B.topHalfWidth,B.top],[B.topHalfWidth,B.top],[B.halfWidth,.83],[B.halfWidth,.69],[B.topHalfWidth,B.bottom]],p=[],index=[];for(const x of[B.minX,B.maxX])for(const[z,y]of ring)p.push(x,y,z);for(let i=0;i<8;i++){const j=(i+1)%8;index.push(i,j,i+8,j,j+8,i+8);}for(let i=1;i<7;i++)index.push(0,i+1,i,8,8+i,8+i+1);const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(index);g.computeVertexNormals();g.computeBoundingSphere();return g;}

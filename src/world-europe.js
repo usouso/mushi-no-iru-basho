@@ -1,6 +1,6 @@
 /** Small independent broadleaf woodland-edge display with readable warm light.
  * Original generic tree forms; no measured terrain, vegetation or time system. */
-import {EUROPE_BOUNDS,EUROPE_SPAWN,EUROPE_TREES,EUROPE_LOG as L} from './europe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {EUROPE_BOUNDS,EUROPE_SPAWN,EUROPE_TREES,EUROPE_LOG as L} from './europe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE;
 export const heightAt=()=>0;
 function logGeometry(){

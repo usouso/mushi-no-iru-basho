@@ -1,6 +1,6 @@
 /** One fixed original pond display. Metres and timings are game tuning, not
  * natural body size, preferred depth, or a new region. */
-import {GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const GIANT_WATERBUG_CENTER=Object.freeze({x:25.7,z:-15.7});
 export const GIANT_WATERBUG_WATER_Y=-.29;
 export const GIANT_WATERBUG_REST_PITCH=.95;

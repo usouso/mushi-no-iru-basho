@@ -2,8 +2,8 @@
 /** Supported male on one real branch. Optional display scale and saved motion
  * do not represent natural size or strength. Response timing is game tuning. */
 // GOLIATH_INDIVIDUAL_END
-import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.64.0&b=3616c2fe808e';
-import {GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {createBranchRetreatStudy} from './branch-retreat-study.js?v=0.67.0&b=06ee2abee345';
+import {GOLIATH_DIMENSIONS as D} from './goliath-kinematics.js?v=0.67.0&b=06ee2abee345';
 export const GOLIATH_MOTION=Object.freeze({warningSeconds:.35,retreatDistance:.24,retreatSpeed:.10,normalSpeed:.02,normalRange:.12,maxStepSeconds:.1});
 // GOLIATH_INDIVIDUAL_BEGIN
 export function createGoliathStudy(options={}){

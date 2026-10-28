@@ -1,6 +1,6 @@
 /** Authored Flores-reference forest edge. Light bark and a short walk-around;
  * no claims about wild feeding, activity time, or measured habitat structure. */
-import {FLORES_BOUNDS,FLORES_SPAWN,FLORES_TREES,FLORES_ROUTE,GIRAFFE_STAG_BRANCH as B} from './giraffe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {FLORES_BOUNDS,FLORES_SPAWN,FLORES_TREES,FLORES_ROUTE,GIRAFFE_STAG_BRANCH as B} from './giraffe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE;
 export const heightAt=()=>0;
 function geometry(p,index){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));if(index)g.setIndex(index);g.computeVertexNormals();g.computeBoundingSphere();return g;}

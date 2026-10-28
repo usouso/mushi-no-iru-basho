@@ -3,7 +3,7 @@
  * YXZ orientation is applied by the native model exactly once. Real water,
  * bottom, shoreline and support-skin clearance remain integration checks.
  */
-import {GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {GIANT_WATERBUG_DIMENSIONS as D} from './giant-waterbug-kinematics.js?v=0.67.0&b=06ee2abee345';
 const TAU=Math.PI*2,RAMP=.5,RATE=TAU*1.4;
 const smooth=u=>u*u*(3-2*u),integral=u=>u*u*u-.5*u*u*u*u;
 const phases=['warning','releasing','diving','swimming','turning','returning','gripping','settling'];

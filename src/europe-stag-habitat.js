@@ -1,5 +1,5 @@
 /** One bounded horizontal lane on the real low log. No added render geometry. */
-import {EUROPE_STAG_LANE as L} from './europe-stag-layout.js?v=0.64.0&b=3616c2fe808e';
+import {EUROPE_STAG_LANE as L} from './europe-stag-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,xyz=v=>({x:v.x,y:v.y,z:v.z});
 export function createEuropeStagHabitat(world,scene){
  const log=world?.europeStagLog;

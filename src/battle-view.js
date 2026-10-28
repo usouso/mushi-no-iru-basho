@@ -1,16 +1,18 @@
-import {createGiraffeStagBattleView} from './giraffe-stag-battle-view.js?v=0.64.0&b=3616c2fe808e';
-import {createEuropeStagBattleView} from './europe-stag-battle-view.js?v=0.64.0&b=3616c2fe808e';
-import {createRainbowStagBattleView} from './rainbow-stag-battle-view.js?v=0.64.0&b=3616c2fe808e';
-import {createManticoraBattleView} from './manticora-battle-view.js?v=0.64.0&b=3616c2fe808e';
-import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.64.0&b=3616c2fe808e';
-import {createInsectModel} from './insect-models.js?v=0.64.0&b=3616c2fe808e';
-import {createBattleRig} from './battle-pose.js?v=0.64.0&b=3616c2fe808e';
-import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.64.0&b=3616c2fe808e';
+import {createTechniqueBattleView} from './battle-technique-view.js?v=0.67.0&b=06ee2abee345';
+import {createGiraffeStagBattleView} from './giraffe-stag-battle-view.js?v=0.67.0&b=06ee2abee345';
+import {createEuropeStagBattleView} from './europe-stag-battle-view.js?v=0.67.0&b=06ee2abee345';
+import {createRainbowStagBattleView} from './rainbow-stag-battle-view.js?v=0.67.0&b=06ee2abee345';
+import {createManticoraBattleView} from './manticora-battle-view.js?v=0.67.0&b=06ee2abee345';
+import {createEuchirusBattleView} from './euchirus-battle-view.js?v=0.67.0&b=06ee2abee345';
+import {createInsectModel} from './insect-models.js?v=0.67.0&b=06ee2abee345';
+import {createBattleRig} from './battle-pose.js?v=0.67.0&b=06ee2abee345';
+import {BATTLE_CHOREOGRAPHY,RING_OUT_CHOREOGRAPHY,sampleBattleChoreography} from './battle-choreography.js?v=0.67.0&b=06ee2abee345';
 /** Paired original sumo presentation, not battle rules or a licensed technique.
  * Contact is one constrained timeline shared by attacker and receiver. */
 const T=window.THREE,ELIGIBLE=new Set(['rhino','stag','hercules','metallifer','atlas','giantstag','elephant','goliath','fivehorn','miyama','xylotrupes']);
 const finite=(n,f=0)=>Number.isFinite(n)?n:f,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export function createBattleView({playerSpecies,opponentSpecies,playerSizePermille=null,opponentSizePermille=null,aspect=1}={}){
+ if(['rhino','stag'].includes(playerSpecies)&&['rhino','stag'].includes(opponentSpecies))return createTechniqueBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='giraffestag'||opponentSpecies==='giraffestag')return createGiraffeStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='euchirus'||opponentSpecies==='euchirus')return createEuchirusBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});
  if(playerSpecies==='europestag'||opponentSpecies==='europestag')return createEuropeStagBattleView({playerSpecies,opponentSpecies,playerSizePermille,opponentSizePermille,aspect});

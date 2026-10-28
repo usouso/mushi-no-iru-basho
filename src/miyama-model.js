@@ -1,4 +1,4 @@
-import {sampleMiyamaPose,MIYAMA_DIMENSIONS as D} from './miyama-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleMiyamaPose,MIYAMA_DIMENSIONS as D} from './miyama-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original Lucanus maculifemoratus male display; independent head flange and jaw
  * coordinates, not a recoloured stag rig. Institution images inform general
  * form only. Golden short pubescence is approximated by SAME-surface colour,

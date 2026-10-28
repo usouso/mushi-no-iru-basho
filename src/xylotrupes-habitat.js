@@ -1,6 +1,6 @@
 /** Two visible connected support meshes beside, not replacing, the Australian log.
  * Generic observation support; no plant/food/activity ecology is asserted. */
-import {XYLOTRUPES_BRANCH as B,XYLOTRUPES_SUPPORT as S} from './xylotrupes-layout.js?v=0.64.0&b=3616c2fe808e';
+import {XYLOTRUPES_BRANCH as B,XYLOTRUPES_SUPPORT as S} from './xylotrupes-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);};
 function branchGeometry(){
  const ring=[[-.12,B.bottom],[-B.halfWidth,.63],[-B.topHalfWidth,B.top],[B.topHalfWidth,B.top],[B.halfWidth,.63],[.12,B.bottom]],p=[],indices=[];

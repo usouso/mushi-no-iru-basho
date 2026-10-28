@@ -1,4 +1,4 @@
-import {sampleTigerBeetlePose,TIGER_BEETLE_DIMENSIONS as D} from './tiger-beetle-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleTigerBeetlePose,TIGER_BEETLE_DIMENSIONS as D} from './tiger-beetle-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Unregistered native lab: institution-text + municipal photograph qualitative silhouette; not a traced specimen. */
 const T=window.THREE;export {D as TIGER_BEETLE_DIMENSIONS};
 const point=a=>({x:a[0],y:a[1],z:a[2]});

@@ -1,4 +1,4 @@
-import {sampleStagPose,STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleStagPose,STAG_DIMENSIONS as D} from './stag-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original large-male saw-stag display. Curved mandibles are mouthparts, not horns.
  * Closed-wing walking only; no feeding, fighting or flight is simulated. */
 const T=window.THREE;

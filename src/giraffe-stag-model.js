@@ -1,4 +1,4 @@
-import {sampleGiraffeStagPose,GIRAFFE_STAG_DIMENSIONS as D} from './giraffe-stag-kinematics.js?v=0.64.0&b=3616c2fe808e';
+import {sampleGiraffeStagPose,GIRAFFE_STAG_DIMENSIONS as D} from './giraffe-stag-kinematics.js?v=0.67.0&b=06ee2abee345';
 /** Original male Prosopocoilus giraffa display, informed by viewed RBINS Flores
  * keisukei-labelled dorsal/oblique specimens. No photograph tracing or texture.
  * Broad head/pronotum, long shafts, major inner tooth, distal denticles and a

@@ -1,6 +1,6 @@
 /** Small independent Central-African forest-edge display. Generic mature
  * broadleaf forms, not a claim to reconstruct a particular plant community. */
-import {FOREST_BOUNDS,FOREST_SPAWN,FOREST_ROUTE,FOREST_TREES,GOLIATH_SITES} from './goliath-layout.js?v=0.64.0&b=3616c2fe808e';
+import {FOREST_BOUNDS,FOREST_SPAWN,FOREST_ROUTE,FOREST_TREES,GOLIATH_SITES} from './goliath-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,EXTENT=16,STEP=1,TAU=Math.PI*2,clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const vertexHeight=(x,z)=>Math.fround(.05*Math.sin(x*.17)*Math.cos(z*.13)+.035*Math.sin(z*.21));
 export function heightAt(x,z){const gx=clamp((x+EXTENT)/STEP,0,EXTENT*2/STEP-1e-8),gz=clamp((z+EXTENT)/STEP,0,EXTENT*2/STEP-1e-8),i=Math.floor(gx),j=Math.floor(gz),u=gx-i,v=gz-j,xx=i*STEP-EXTENT,zz=j*STEP-EXTENT,a=vertexHeight(xx,zz),b=vertexHeight(xx+STEP,zz),c=vertexHeight(xx,zz+STEP),d=vertexHeight(xx+STEP,zz+STEP);return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);}

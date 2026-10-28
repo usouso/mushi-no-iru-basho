@@ -1,5 +1,5 @@
 /** One visible vertical observation stem; no old plant, terrain or water edits. */
-import {ANAX_STEM as S,ANAX_PERCH as P,ANAX_SUPPORT,ANAX_PATROL} from './anax-layout.js?v=0.64.0&b=3616c2fe808e';
+import {ANAX_STEM as S,ANAX_PERCH as P,ANAX_SUPPORT,ANAX_PATROL} from './anax-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);};
 export function createAnaxHabitat(world,scene){
  const ground=world?.captureOccluders?.[0];if(!scene?.isScene||!ground?.isMesh||scene.getObjectById(ground.id)!==ground||typeof world?.heightAt!=='function'||Math.abs(world.heightAt(S.x,S.z)+1.4-P.position.y)>1e-9)throw new TypeError('Canonical meadow Anax support required');

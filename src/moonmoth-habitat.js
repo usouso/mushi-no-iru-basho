@@ -1,5 +1,5 @@
 /** One ground-anchored rest twig. No host/feeding claim or old-world mutation. */
-import {MOONMOTH_STEM as S,MOONMOTH_PERCH as P,MOONMOTH_FLIGHT} from './moonmoth-layout.js?v=0.64.0&b=3616c2fe808e';
+import {MOONMOTH_STEM as S,MOONMOTH_PERCH as P,MOONMOTH_FLIGHT} from './moonmoth-layout.js?v=0.67.0&b=06ee2abee345';
 const T=window.THREE,freeze=o=>{for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v);return Object.freeze(o);};
 export function createMoonmothHabitat(world,scene){
  const ground=scene?.getObjectByName('night-ground');
