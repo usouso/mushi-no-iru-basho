@@ -431,7 +431,7 @@ function refreshCapturedChoices(item){
  $('capture-battle-note').textContent=!eligible?'この虫は虫相撲の対象外です。':owned?`今の仲間：${individualLabel(owned)}。入れ替えると今の仲間を元の生息地へ返します。`:'仲間にしてCOMと対戦。勝敗でいなくなりません。';
 }
 function captureOwnership(item){return{species:item.species,originHabitat:state.habitat,originIndividualId:item.id,originKind:item.encounterId?'expedition':'legacy',originEncounterId:item.encounterId||null,sizePermille:item.encounterId?item.sizePermille:null,measureVersion:item.encounterId?1:null};}
-function keepCaptured({resumeAudio=true}={}){
+function keepCaptured({resumeAudio=true,lock=false}={}){
  const item=simulation.caught;if(state.mode!=='inspect'||!item||!isCompanionSpecies(item.species))return;
  const owned=roster.entries.find(entry=>entry.species===item.species);
  if(owned&&replaceArmed!==item.id){replaceArmed=item.id;refreshCapturedChoices(item);return;}
@@ -440,8 +440,8 @@ function keepCaptured({resumeAudio=true}={}){
  if(!simulation.retain())return;
  const accepted=owned?roster.replace(owned.id,captureOwnership(item)):roster.add(captureOwnership(item));
  replaceArmed=null;applyCompanionPresence();state.mode='playing';state.cooldown=.8;captureDelay=0;state.swing=0;input.clear();syncScreens();
- if(!accepted.ok){audio.start();restoreControl(false);toast('仲間にできなかったため、この虫を野原へ返しました。元の仲間はそのままです。',7);return;}
- companionEdited=true;if(resumeAudio){audio.start();restoreControl(false);}
+ if(!accepted.ok){audio.start();restoreControl(lock);toast('仲間にできなかったため、この虫を野原へ返しました。元の仲間はそのままです。',7);return;}
+ companionEdited=true;if(resumeAudio){audio.start();restoreControl(lock);}
  toast(`${SPECIES[item.species].name}が仲間になりました。B「仲間・虫相撲」から対戦できます。`,6);companionStatus();return accepted.entry;
 }
 function battleCaptured(){
@@ -456,10 +456,10 @@ function openCompanions(){
  if(outingChanging||!['playing','paused'].includes(state.mode)||simulation.caught)return;
  companionReturn=state.mode;state.mode='companions';releaseArmed=null;state.player.speed=0;input.clear();unlock();audio.pause();refreshCompanions();syncScreens();$('companions-close-button').focus({preventScroll:true});
 }
-function closeCompanions(){
+function closeCompanions({lock=false}={}){
  if(state.mode!=='companions')return;
  releaseArmed=null;state.mode=companionReturn;input.clear();syncScreens();
- if(state.mode==='playing'){applySettings();audio.start();restoreControl(false);companionStatus();}else $('resume-button').focus({preventScroll:true});
+ if(state.mode==='playing'){applySettings();audio.start();restoreControl(lock);companionStatus();}else $('resume-button').focus({preventScroll:true});
 }
 function releaseCompanion(){
  if(state.mode!=='companions')return;const id=$('companion-select').value;
@@ -516,7 +516,7 @@ function leaveBattle(){
  if(battle.phase==='watching')battle=cancelBattle(battle);
  audio.pause();battlePresentationEvents=[];battleRingOutShown=false;battleView?.dispose();battleView=null;state.mode='companions';input.clear();refreshCompanions();syncScreens();$('companions-close-button').focus({preventScroll:true});
 }
-function returnFromBattle(){leaveBattle();companionReturn='playing';closeCompanions();}
+function returnFromBattle({lock=false}={}){leaveBattle();companionReturn='playing';closeCompanions({lock});}
 function positionInspector(){
  if(!inspectCamera)return;
  inspectCamera.aspect=innerWidth/innerHeight;inspectCamera.updateProjectionMatrix();
@@ -677,10 +677,12 @@ try{
  syncTravelChoice();$('travel-habitat-select').addEventListener('change',updateTravelChoice);$('travel-button').onclick=travelHabitat;
  for(const [id,species] of Object.entries(BATTLE_SPECIES)){const option=document.createElement('option');option.value=id;option.textContent=species.label;$('battle-opponent-select').append(option);}
  $('battle-opponent-select').value='rhino';
- $('capture-battle-button').onclick=battleCaptured;$('keep-button').onclick=keepCaptured;$('companions-button').onclick=openCompanions;$('pause-companions-button').onclick=openCompanions;
- $('companions-close-button').onclick=closeCompanions;$('companion-release-button').onclick=releaseCompanion;
+ // Only explicit return-button gestures re-lock here. Escape, gamepad polling
+ // and intermediate capture-to-battle transitions retain the unlocked default.
+ $('capture-battle-button').onclick=battleCaptured;$('keep-button').onclick=()=>keepCaptured({lock:true});$('companions-button').onclick=openCompanions;$('pause-companions-button').onclick=openCompanions;
+ $('companions-close-button').onclick=()=>closeCompanions({lock:true});$('companion-release-button').onclick=releaseCompanion;
  $('companion-select').addEventListener('change',()=>{releaseArmed=null;refreshCompanions();});
- $('battle-start-button').onclick=startBattle;$('battle-exit-button').onclick=leaveBattle;$('battle-finish-button').onclick=returnFromBattle;
+ $('battle-start-button').onclick=startBattle;$('battle-exit-button').onclick=leaveBattle;$('battle-finish-button').onclick=()=>returnFromBattle({lock:true});
  roster.subscribe(companionStatus);expedition.subscribe(expeditionStatus);
  $('sensitivity').value=state.sensitivity;$('volume').value=state.volume;audio.setVolume(state.volume);
  $('sensitivity').addEventListener('input',applySettings);$('volume').addEventListener('input',applySettings);
