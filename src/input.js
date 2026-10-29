@@ -36,6 +36,8 @@ export function createInput(canvas, callbacks) {
   document.addEventListener('keydown', e => {
     syncMode();
     if (e.code === 'Escape') {
+      // Cancelling IME conversion must not close its editor or change game mode.
+      if (e.isComposing || e.keyCode === 229) return;
       e.preventDefault();
       if (!e.repeat) { clear(); callbacks.pause({ lock: false }); }
       return;
@@ -62,6 +64,9 @@ export function createInput(canvas, callbacks) {
       return;
     }
     if (elementIsControl(e)) return;
+    // Space used by IME conversion or browser/OS shortcuts is not a net swing.
+    // Keep Shift+Space available while running; do not cancel native handling.
+    if (e.code === 'Space' && (e.isComposing || e.keyCode === 229 || e.ctrlKey || e.altKey || e.metaKey)) return;
     if (controls.has(e.code)) e.preventDefault();
     if (e.repeat) return; // Held keys cannot re-arm themselves after clear/blur.
     if (e.code === 'Space') callbacks.action();
